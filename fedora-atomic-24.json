@@ -1,0 +1,36 @@
+{
+    "variables": {
+        "ssh_name": "kappataumu",
+        "ssh_pass": "kappataumu",
+        "hostname": "packer-test"
+    },
+
+    "builders": [{
+        "boot_command": [
+            "<tab> linux text biosdevname=0 ks=http://{{ .HTTPIP }}:{{ .HTTPPort}}/ks-fedora-atomic-24.cfg<enter><enter>"
+        ],
+        "type": "virtualbox-iso",
+        "guest_os_type": "Fedora_64",
+
+        "vboxmanage": [
+            ["modifyvm", "{{.Name}}", "--vram", "32"]
+        ],
+
+        "disk_size" : 10000,
+
+        "iso_url": "https://download.fedoraproject.org/pub/alt/atomic/stable/Atomic/x86_64/iso/Fedora-Atomic-dvd-x86_64-24-20160721.0.iso",
+        "iso_checksum": "120fdb493e3cb3a7687ba56e0bfea70b50b4339a1545be00bf3fdca0d5eac9a3",
+        "iso_checksum_type": "sha256",
+
+        "http_directory" : "files",
+        "http_port_min" : 9001,
+        "http_port_max" : 9001,
+
+        "ssh_username": "root",
+        "ssh_password": "atomic",
+        "ssh_wait_timeout": "20m",
+
+        "shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now"
+
+    }]
+}
