@@ -46,5 +46,13 @@
         "inline": ["sudo systemctl daemon-reload",
             "sudo systemctl enable local-registry",
             "sudo systemctl start local-registry"]
+    },{
+      "type": "file",
+      "source": "files/etcd.conf",
+      "destination": "/etc/etcd/etcd.conf"
+    },{
+      "type": "file",
+      "source": "files/kubernetes-config",
+      "destination": "/etc/kubernetes/config"
     }]
 }
