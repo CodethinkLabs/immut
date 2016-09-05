@@ -18,8 +18,8 @@
 
         "disk_size" : 10000,
 
-        "iso_url": "http://mirror.datacenter.by/pub/fedoraproject.org/alt/atomic/stable/Atomic/x86_64/iso/Fedora-Atomic-dvd-x86_64-24-20160809.0.iso",
-        "iso_checksum": "0a03b3e0b0be22a307fa4ab5ac495201972f9acf604f6e7315cceb8a857db342",
+        "iso_url": "http://mirror.datacenter.by/pub/fedoraproject.org/alt/atomic/stable/Atomic/x86_64/iso/Fedora-Atomic-dvd-x86_64-24-20160820.0.iso",
+        "iso_checksum": "9adbbde1a888545bf785f802ad07986ab841a32c01c37b1d5ca4b638d8dfb248",
         "iso_checksum_type": "sha256",
 
         "http_directory" : "files",
