@@ -9,12 +9,7 @@
 	"boot_command": [
 		"<tab> linux text biosdevname=0 ks=http://{{ .HTTPIP }}:{{ .HTTPPort}}/ks-fedora-atomic-24.cfg<enter><enter>"
 	],
-	"type": "virtualbox-iso",
-	"guest_os_type": "Fedora_64",
-
-	"vboxmanage": [
-		["modifyvm", "{{.Name}}", "--vram", "32"]
-	],
+	"type": "qemu",
 
 	"disk_size" : 40000,
 
@@ -26,6 +21,7 @@
 	"http_port_min" : 9001,
 	"http_port_max" : 9001,
 
+	"format": "qcow2",
 	"ssh_pty" : "true",
 	"ssh_username": "root",
 	"ssh_password": "atomic",
