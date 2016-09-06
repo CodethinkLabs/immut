@@ -32,5 +32,15 @@
 
         "shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now"
 
+    }],
+
+    "provisioners": [{
+      "type": "file",
+      "source": "files/atomic-tree-builder",
+      "destination": "/home/atomic-tree-builder"
+    }, {
+      "type": "shell",
+      "inline": ["docker build --rm -t /home/atomic-tree-builder",
+          "docker run --privileged -d -p 8000:8000 --name atomicrepo /home/atomic-tree-builder"]
     }]
 }
