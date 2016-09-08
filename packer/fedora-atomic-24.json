@@ -26,6 +26,7 @@
         "http_port_min" : 9001,
         "http_port_max" : 9001,
 
+        "ssh_pty" : "true",
         "ssh_username": "root",
         "ssh_password": "atomic",
         "ssh_wait_timeout": "20m",
@@ -37,10 +38,10 @@
     "provisioners": [{
       "type": "file",
       "source": "files/atomic-tree-builder",
-      "destination": "/home/atomic-tree-builder"
+      "destination": "/home/Dockerfile"
     }, {
       "type": "shell",
-      "inline": ["docker build --rm -t /home/atomic-tree-builder",
-          "docker run --privileged -d -p 8000:8000 --name atomicrepo /home/atomic-tree-builder"]
+      "inline": ["cd /home",
+          "docker build --rm -t $USER/atomic-tree-builder ."]
     }]
 }

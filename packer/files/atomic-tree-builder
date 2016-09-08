@@ -23,6 +23,12 @@ ostree --repo=repo init --mode=archive-z2
 EXPOSE 8000
 WORKDIR /home/working
 
+cd /home/working/fedora-atomic/
+git checkout f24
+curl -o fedora-24-updates.repo https://git.fedorahosted.org/cgit/fedora-repos.git/plain/fedora-updates.repo?h=f24
+sed -i 's\/\\$releasever\/24\/g' fedora-24-updates.repo
+# rpm-ostree compose tree  --proxy=http://127.0.0.1:8123  --repo=/srv/rpm-ostree/repo fedora-atomic-docker-host.json
+
 # start web proxy and SimpleHTTPServer
 
 CMD polipo; pushd /srv/rpm-ostree/repo; python -m SimpleHTTPServer; popd
