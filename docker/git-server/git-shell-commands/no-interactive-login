@@ -1,0 +1,3 @@
+#!/bin/sh
+printf '%s\n' "INTERACTIVE SHELL ACCESS DISABLED!!"
+exit 128
