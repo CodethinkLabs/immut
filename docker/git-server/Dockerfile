@@ -24,6 +24,11 @@ COPY git-shell-commands /home/git/git-shell-commands
 COPY sshd_config /etc/ssh/sshd_config
 COPY start.sh start.sh
 
-EXPOSE 22
+# Install tools needed for
+RUN dnf -y install sssd-client
+COPY sss_test /etc/pam.d/sss_test
 
+
+# Configure port and program to start
+EXPOSE 22
 CMD ["sh", "start.sh"]
