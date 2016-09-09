@@ -3,14 +3,17 @@
     "builders":[{
         "type": "docker",
         "image": "fedora",
-        "export_path": "files/image.tar"
+        "export_path": "files/image.tar",
+		"privileged": "true"
     }],
     "provisioners":[ {
         "type": "shell",
         "inline": [
+			"echo \"Updating container.\"",
             "dnf -y update",
 			"dnf install -y rpm-ostree git",
 			"dnf clean all",
+			"echo \"Cloning build repositories\"",
 			"mkdir -p /home/working",
 			"cd /home/working",
 			"git clone https://github.com/CentOS/sig-atomic-buildscripts",
@@ -18,9 +21,12 @@
 			"mkdir -p /srv/rpm-ostree/repo && cd /srv/rpm-ostree/ && ostree --repo=repo init --mode=archive-z2",
 			"cd /home/working/fedora-atomic/",
 			"git fetch",
+			"echo \"Checking out fedora 23 branch \"",
 			"git checkout f23",
 			"curl -o fedora-23-updates.repo https://git.fedorahosted.org/cgit/fedora-repos.git/plain/fedora-updates.repo?h=f23",
-			"sed -i 's\/\\$releasever\/23\/g' fedora-23-updates.repo"
+			"sed -i 's\/\\$releasever\/23\/g' fedora-23-updates.repo",
+			"echo \"Composing ostree\"",
+			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-docker-host.json"
 		]
     }]
 }
