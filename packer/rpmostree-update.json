@@ -3,13 +3,13 @@
     "builders":[{
         "type": "docker",
         "image": "fedora",
-        "export_path": "image.tar"
+        "export_path": "files/image.tar"
     }],
     "provisioners":[ {
         "type": "shell",
         "inline": [
             "dnf -y update",
-			"dnf install -y python rpm-ostree git polipo",
+			"dnf install -y rpm-ostree git",
 			"dnf clean all",
 			"mkdir -p /home/working",
 			"cd /home/working",

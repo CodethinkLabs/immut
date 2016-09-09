@@ -37,11 +37,17 @@
 
     "provisioners": [{
       "type": "file",
-      "source": "files/atomic-tree-builder",
-      "destination": "/home/Dockerfile"
-    }, {
-      "type": "shell",
-      "inline": ["cd /home",
-          "docker build --rm -t $USER/atomic-tree-builder ."]
-    }]
+      "source": "files/image.tar",
+      "destination": "/home/image.tar"
+      }, {
+       "type": "shell",
+       "inline": ["cd /home",
+          "docker import - atomic-tree-builder < image.tar",
+          "docker run --expose=8123 -d atomic-tree-builder rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-docker-host.json && ostree trivial-httpd -d -p 8123 - /srv/rpm-ostree/repo",
+          "for i in `seq 1 10`;  do sleep 2 && echo $i; done",
+		  "docker ps",
+		  "ostree remote add test http://127.0.0.1:8123/repo --no-gpg-verify",
+		  "rpm-ostree rebase test:fedora-atomic/f23/x86_64/docker-host"
+          ]
+     }]
 }
