@@ -32,7 +32,6 @@
         "ssh_wait_timeout": "20m",
 
         "shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now"
-
     }],
 
     "provisioners": [{
@@ -43,14 +42,11 @@
        "type": "shell",
        "inline": ["cd /home",
           "docker import - atomic-tree-builder < image.tar",
-		  "docker ps",
-		  "echo \" -- RUNNING DOCKER RUN -- \"",
-		  "docker run --expose=8123 -d atomic-tree-builder ostree trivial-httpd -p 8123 - /srv/rpm-ostree/repo",
-		  "docker ps",
-		  "for i in `seq 1 10`;  do sleep 2 && echo $i; done",
-		  "docker ps",
-		  "echo \" -- END OF DOCKER RUN -- \"",
-		  "ostree remote add test http://127.0.0.1:8123/repo --no-gpg-verify",
+		  "docker network create --subnet=172.18.0.0/16 update-net",
+		  "docker run -d --net update-net --ip 172.18.0.10 --expose=8123 atomic-tree-builder ostree trivial-httpd -v -P 8123 /srv/rpm-ostree/repo",
+		  "echo 'Waiting 5 seconds for http server'",
+		  "for i in `seq 1 5`;  do sleep 1 && echo $i; done",
+		  "ostree remote add test http://172.18.0.10:8123 --no-gpg-verify",
 		  "rpm-ostree rebase test:fedora-atomic/f23/x86_64/docker-host"
           ]
      }]
