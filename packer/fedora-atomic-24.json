@@ -1,53 +1,53 @@
 {
-    "variables": {
-        "ssh_name": "kappataumu",
-        "ssh_pass": "kappataumu",
-        "hostname": "packer-test"
-    },
+	"variables": {
+	"ssh_name": "kappataumu",
+	"ssh_pass": "kappataumu",
+	"hostname": "packer-test"
+},
 
-    "builders": [{
-        "boot_command": [
-            "<tab> linux text biosdevname=0 ks=http://{{ .HTTPIP }}:{{ .HTTPPort}}/ks-fedora-atomic-24.cfg<enter><enter>"
-        ],
-        "type": "virtualbox-iso",
-        "guest_os_type": "Fedora_64",
+"builders": [{
+	"boot_command": [
+		"<tab> linux text biosdevname=0 ks=http://{{ .HTTPIP }}:{{ .HTTPPort}}/ks-fedora-atomic-24.cfg<enter><enter>"
+	],
+	"type": "virtualbox-iso",
+	"guest_os_type": "Fedora_64",
 
-        "vboxmanage": [
-            ["modifyvm", "{{.Name}}", "--vram", "32"]
-        ],
+	"vboxmanage": [
+		["modifyvm", "{{.Name}}", "--vram", "32"]
+	],
 
-        "disk_size" : 40000,
+	"disk_size" : 40000,
 
-        "iso_url": "http://mirror.datacenter.by/pub/fedoraproject.org/alt/atomic/stable/Atomic/x86_64/iso/Fedora-Atomic-dvd-x86_64-24-20160820.0.iso",
-        "iso_checksum": "9adbbde1a888545bf785f802ad07986ab841a32c01c37b1d5ca4b638d8dfb248",
-        "iso_checksum_type": "sha256",
+	"iso_url": "http://mirror.datacenter.by/pub/fedoraproject.org/alt/atomic/stable/Atomic/x86_64/iso/Fedora-Atomic-dvd-x86_64-24-20160820.0.iso",
+	"iso_checksum": "9adbbde1a888545bf785f802ad07986ab841a32c01c37b1d5ca4b638d8dfb248",
+	"iso_checksum_type": "sha256",
 
-        "http_directory" : "files",
-        "http_port_min" : 9001,
-        "http_port_max" : 9001,
+	"http_directory" : "files",
+	"http_port_min" : 9001,
+	"http_port_max" : 9001,
 
-        "ssh_pty" : "true",
-        "ssh_username": "root",
-        "ssh_password": "atomic",
-        "ssh_wait_timeout": "20m",
+	"ssh_pty" : "true",
+	"ssh_username": "root",
+	"ssh_password": "atomic",
+	"ssh_wait_timeout": "20m",
 
-        "shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now"
-    }],
+	"shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now"
+}],
 
-    "provisioners": [{
-      "type": "file",
-      "source": "files/image.tar",
-      "destination": "/home/image.tar"
-      }, {
-       "type": "shell",
-       "inline": ["cd /home",
-          "docker import - atomic-tree-builder < image.tar",
-		  "docker network create --subnet=172.18.0.0/16 update-net",
-		  "docker run -d --net update-net --ip 172.18.0.10 --expose=8123 atomic-tree-builder ostree trivial-httpd -v -P 8123 /srv/rpm-ostree/repo",
-		  "echo 'Waiting 5 seconds for http server'",
-		  "for i in `seq 1 5`;  do sleep 1 && echo $i; done",
-		  "ostree remote add test http://172.18.0.10:8123 --no-gpg-verify",
-		  "rpm-ostree rebase test:fedora-atomic/f23/x86_64/docker-host"
-          ]
-     }]
+"provisioners": [{
+		"type": "file",
+		"source": "files/image.tar",
+		"destination": "/home/image.tar"
+	}, {
+		"type": "shell",
+		"inline": ["cd /home",
+			"docker import - atomic-tree-builder < image.tar",
+			"docker network create --subnet=172.18.0.0/16 update-net",
+			"docker run -d --net update-net --ip 172.18.0.10 --expose=8123 atomic-tree-builder ostree trivial-httpd -v -P 8123 /srv/rpm-ostree/repo",
+			"echo 'Waiting 5 seconds for http server'",
+			"for i in `seq 1 5`;  do sleep 1 && echo $i; done",
+			"ostree remote add test http://172.18.0.10:8123 --no-gpg-verify",
+			"rpm-ostree rebase test:fedora-atomic/f23/x86_64/docker-host"
+		]
+	}]
 }

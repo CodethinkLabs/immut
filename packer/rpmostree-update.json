@@ -1,16 +1,16 @@
 
 {
-    "builders":[{
-        "type": "docker",
-        "image": "fedora",
-        "export_path": "files/image.tar",
+	"builders":[{
+		"type": "docker",
+		"image": "fedora",
+		"export_path": "files/image.tar",
 		"privileged": "true"
-    }],
-    "provisioners":[ {
-        "type": "shell",
-        "inline": [
+	}],
+	"provisioners":[ {
+		"type": "shell",
+		"inline": [
 			"echo \"Updating container.\"",
-            "dnf -y update",
+			"dnf -y update",
 			"dnf install -y rpm-ostree git nc",
 			"dnf clean all",
 			"echo \"Cloning build repositories\"",
@@ -30,5 +30,5 @@
 			"echo \"Composing ostree\"",
 			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-docker-host.json"
 		]
-    }]
+	}]
 }
