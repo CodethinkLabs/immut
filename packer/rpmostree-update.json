@@ -7,6 +7,10 @@
 		"privileged": "true"
 	}],
 	"provisioners":[ {
+		"type": "file",
+		"source": "files/fedora-atomic-update-tree.json",
+		"destination": "/home/fedora-atomic-update-tree.json"
+	},{
 		"type": "shell",
 		"inline": [
 			"echo \"Updating container.\"",
@@ -28,7 +32,8 @@
 			"iptables -I INPUT -j ACCEPT",
 			"iptables -S",
 			"echo \"Composing ostree\"",
-			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-docker-host.json"
+			"mv /home/fedora-atomic-update-tree.json /home/working/fedora-atomic/fedora-atomic-update-tree.json",
+			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-update-tree.json"
 		]
 	}]
 }
