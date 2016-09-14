@@ -1,0 +1,4 @@
+auth required pam_sss.so
+account required pam_sss.so
+password required pam_sss.so
+session required pam_sss.so
