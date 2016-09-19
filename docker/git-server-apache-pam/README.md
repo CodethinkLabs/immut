@@ -71,6 +71,14 @@ in the container you can:
         $ getent passwd -s sss awesomeuser
         awesomeuser:*:1001:1001::/home/awesomeuser:/bin/bash
 
+### Logging
+
+Logs will be sent to syslog using a `GIT-SERVER` tag. If you want to be
+able to access them from the host make sure you mount `/dev/log` into the
+container.
+
+    $ docker run -v=/dev/log:/dev/log .....
+
 ### Build Image
 
 How to make the image:
