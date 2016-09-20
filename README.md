@@ -14,7 +14,7 @@ This is project is a work in progress automating the creation of immutable infra
 
 1. Packer (https://github.com/mitchellh/packer)
 2. Docker
-2. Virtual Box (We also have a qemu builder branch, see: craiggriffiths/qemu_builder)
+3. Virtual Box (and/or qemu)
 
 ## Build
 
@@ -24,5 +24,15 @@ image to perform updates.
 
 To build the project run:
 
-    packer build rpmostree-update.json (Requires root if your user account is not part of the docker group.)
-	packer build fedora-atomic-24.json
+    packer build rpmostree-update.json
+	packer build  fedora-atomic-24.json
+
+This will output all images we currently support. In order to build a single image use the -only packer argument.
+
+for Virtual Box:
+
+    packer-io build -only virtualbox fedora-atomic-24.json
+
+for Qemu:
+
+	packer-io build -only qemu fedora-atomic-24.json
