@@ -47,7 +47,38 @@
 			"echo 'Waiting 5 seconds for http server'",
 			"for i in `seq 1 5`;  do sleep 1 && echo $i; done",
 			"ostree remote add test http://172.18.0.10:8123 --no-gpg-verify",
-			"rpm-ostree rebase test:fedora-atomic/f23/x86_64/docker-host"
+			"rpm-ostree rebase test:fedora-atomic/f23/x86_64/docker-host",
+			"reboot",
+			"sleep 60"
 		]
+	}, {
+		"type": "file",
+		"source": "../docker/git-server",
+		"destination": "/home/git-server"
+	}, {
+		"type": "file",
+		"source": "files/sss_proxy",
+		"destination": "/etc/pam.d/sss_proxy"
+	}, {
+		"type": "file",
+		"source": "files/sssd.conf",
+		"destination": "/etc/sssd/sssd.conf"
+	}, {
+		"type": "shell",
+		"inline": ["chown root /etc/sssd/sssd.conf",
+			"chmod 0600 /etc/sssd/sssd.conf",
+			"systemctl enable sssd",
+			"systemctl start sssd",
+			"systemctl status sssd"
+		]
+	}, {
+		"type": "shell",
+		"inline": ["cd /home/git-server",
+			"docker build -t gitserver ."
+		]
+	}, {
+		"type": "file",
+		"source": "files/docker-git-server.service",
+		"destination": "/etc/systemd/system/docker-git-server.service"
 	}]
 }

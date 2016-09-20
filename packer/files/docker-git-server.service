@@ -1,0 +1,12 @@
+[Unit]
+Description=Redis container
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker run -d -p 2222:22 -v `pwd`/keys:/git-server/keys -v `pwd`/repos:/git-server/repos -v=/var/lib/sss/pipes/:/var/lib/sss/pipes/:rw gitserver
+ExecStop=/usr/bin/docker stop -t 2 gitserver
+
+[Install]
+WantedBy=default.target

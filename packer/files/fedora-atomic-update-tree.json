@@ -77,7 +77,9 @@
 		 "oddjob-mkhomedir",
 		 "atomic-devmode",
 		 "runc",
-		 "consul"],
+		 "consul",
+		 "sssd-common",
+		 "sssd-proxy"],
 
     "default_target": "multi-user.target",
 
