@@ -96,7 +96,7 @@
 			"chmod 0600 /etc/sssd/sssd.conf",
 			"systemctl enable sssd",
 			"systemctl start sssd",
-			"systemctl status sssd"
+			"systemctl status -l sssd"
 		]
 	}, {
 		"type": "shell",
