@@ -28,8 +28,6 @@
 			"git checkout f23",
 			"curl -o fedora-23-updates.repo https://git.fedorahosted.org/cgit/fedora-repos.git/plain/fedora-updates.repo?h=f23",
 			"sed -i 's\/\\$releasever\/23\/g' fedora-23-updates.repo",
-			"iptables -I INPUT -j ACCEPT",
-			"iptables -S",
 			"mv /home/fedora-atomic-update-tree.json /home/working/fedora-atomic/fedora-atomic-update-tree.json",
 			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-update-tree.json"
 		]
