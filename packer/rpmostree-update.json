@@ -13,11 +13,9 @@
 	} , {
 		"type": "shell",
 		"inline": [
-			"echo \"Updating container.\"",
 			"dnf -y update",
 			"dnf install -y rpm-ostree git nc",
 			"dnf clean all",
-			"echo \"Cloning build repositories\"",
 			"mkdir -p /home/working",
 			"cd /home/working",
 			"git clone https://github.com/CentOS/sig-atomic-buildscripts",
@@ -27,13 +25,11 @@
 			"ostree --repo=repo init --mode=archive-z2",
 			"cd /home/working/fedora-atomic/",
 			"git fetch",
-			"echo \"Checking out fedora 23 branch \"",
 			"git checkout f23",
 			"curl -o fedora-23-updates.repo https://git.fedorahosted.org/cgit/fedora-repos.git/plain/fedora-updates.repo?h=f23",
 			"sed -i 's\/\\$releasever\/23\/g' fedora-23-updates.repo",
 			"iptables -I INPUT -j ACCEPT",
 			"iptables -S",
-			"echo \"Composing ostree\"",
 			"mv /home/fedora-atomic-update-tree.json /home/working/fedora-atomic/fedora-atomic-update-tree.json",
 			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-update-tree.json"
 		]
