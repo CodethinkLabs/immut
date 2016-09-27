@@ -73,6 +73,29 @@
 		]
 	}, {
 		"type": "file",
+		"source": "../docker/haproxy",
+		"destination": "/home/haproxy"
+	}, {
+		"type": "shell",
+		"inline": [
+			"cd /home/haproxy",
+			"openssl req -x509 -newkey rsa:4096 -passout pass:password -keyout key.pem -out cert.pem -days 9999 -subj \"/C=GB\"",
+			"cat cert.pem key.pem > ssl.pem",
+			"docker build -t haproxy ."
+		]
+	}, {
+		"type": "file",
+		"source": "files/haproxy.service",
+		"destination": "/etc/systemd/system/haproxy.service"
+	}, {
+		"type": "shell",
+		"inline": [
+			"systemctl enable haproxy",
+			"systemctl start haproxy",
+			"systemctl status -l haproxy"
+		]
+	}, {
+		"type": "file",
 		"source": "../docker/git-server",
 		"destination": "/home/git-server"
 	}, {

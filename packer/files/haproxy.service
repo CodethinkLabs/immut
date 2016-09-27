@@ -1,0 +1,12 @@
+[Unit]
+Description=HAProxy docker container
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker run -d -p 80:80 -p 443:443 -v=/dev/log:/dev/log haproxy
+ExecStop=/usr/bin/docker stop -t 2 haproxy
+
+[Install]
+WantedBy=default.target
