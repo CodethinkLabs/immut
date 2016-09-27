@@ -56,12 +56,12 @@
 
 "provisioners": [{
 		"type": "file",
-		"source": "files/image.tar",
-		"destination": "/home/image.tar"
+		"source": "files/rpm-ostree-update.tar",
+		"destination": "/home/rpm-ostree-update.tar"
 	}, {
 		"type": "shell",
 		"inline": ["cd /home",
-			"docker import - atomic-tree-builder < image.tar",
+			"docker import - atomic-tree-builder < rpm-ostree-update.tar",
 			"docker network create --subnet=172.18.0.0/16 update-net",
 			"docker run -d --net update-net --ip 172.18.0.10 --expose=8123 atomic-tree-builder ostree trivial-httpd -v -P 8123 /srv/rpm-ostree/repo",
 			"ostree remote add test http://172.18.0.10:8123 --no-gpg-verify",

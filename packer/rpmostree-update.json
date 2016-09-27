@@ -3,7 +3,7 @@
 	"builders":[{
 		"type": "docker",
 		"image": "fedora",
-		"export_path": "files/image.tar",
+		"export_path": "files/rpm-ostree-update.tar",
 		"privileged": "true"
 	}],
 	"provisioners":[ {
