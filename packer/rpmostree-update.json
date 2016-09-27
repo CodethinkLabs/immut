@@ -1,16 +1,16 @@
-
 {
-	"builders":[{
+	"builders": [{
 		"type": "docker",
 		"image": "fedora",
 		"export_path": "files/rpm-ostree-update.tar",
 		"privileged": "true"
 	}],
-	"provisioners":[ {
+
+	"provisioners":[{
 		"type": "file",
 		"source": "files/fedora-atomic-update-tree.json",
 		"destination": "/home/fedora-atomic-update-tree.json"
-	},{
+	} , {
 		"type": "shell",
 		"inline": [
 			"echo \"Updating container.\"",
