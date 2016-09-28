@@ -78,6 +78,7 @@
 		 "atomic-devmode",
 		 "runc",
 		 "consul",
+		 "autofs",
 		 "sssd-common",
 		 "sssd-proxy"],
 
