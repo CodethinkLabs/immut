@@ -94,6 +94,15 @@
 		]
 	}, {
 		"type": "shell",
+		"inline": ["rm /etc/auto.master",
+			"rm /etc/auto.misc"
+		]
+	}, {
+		"type": "file",
+		"source": "files/auto.master",
+		"destination": "/etc/auto.master"
+	}, {
+		"type": "shell",
 		"inline": ["systemctl enable cloud-init"]
 	}, {
 		"type": "shell",

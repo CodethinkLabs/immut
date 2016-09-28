@@ -1,0 +1,4 @@
+# Include /etc/auto.master.d/*.autofs
+# The included files must conform to the format of this file.
+#
++dir:/etc/auto.master.d
