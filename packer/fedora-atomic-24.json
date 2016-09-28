@@ -79,7 +79,6 @@
 		"type": "shell",
 		"inline": [
 			"cd /home/haproxy",
-			"openssl req -x509 -newkey rsa:4096 -passout pass:password -keyout key.pem -out cert.pem -days 9999 -subj \"/C=GB\"",
 			"cat cert.pem key.pem > ssl.pem",
 			"docker build -t haproxy ."
 		]
