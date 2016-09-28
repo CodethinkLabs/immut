@@ -1,0 +1,8 @@
+#cloud-config
+password: atomic
+ssh_pwauth: True
+chpasswd: { expire: False }
+
+bootcmd:
+ - echo "this is a test" > /etc/test-cloud-init
+ - docker run -d -p 80:80 -p 443:443 -v=/dev/log:/dev/log haproxy
