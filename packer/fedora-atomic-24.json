@@ -84,17 +84,6 @@
 		]
 	}, {
 		"type": "file",
-		"source": "files/haproxy.service",
-		"destination": "/etc/systemd/system/haproxy.service"
-	}, {
-		"type": "shell",
-		"inline": [
-			"systemctl enable haproxy",
-			"systemctl start haproxy",
-			"systemctl status -l haproxy"
-		]
-	}, {
-		"type": "file",
 		"source": "../docker/git-server",
 		"destination": "/home/git-server"
 	}, {
@@ -132,9 +121,5 @@
 			"cd /home/git-server",
 			"docker build -t gitserver ."
 		]
-	}, {
-		"type": "file",
-		"source": "files/docker-git-server.service",
-		"destination": "/etc/systemd/system/docker-git-server.service"
 	}]
 }
