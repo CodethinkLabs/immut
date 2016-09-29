@@ -72,6 +72,11 @@
 			"sleep 60"
 		]
 	}, {
+		"type": "shell",
+		"inline": [
+			"sed -i -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config"
+		]
+	}, {
 		"type": "file",
 		"source": "../docker/haproxy",
 		"destination": "/home/haproxy"
