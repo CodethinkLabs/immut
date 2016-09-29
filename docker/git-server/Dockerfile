@@ -15,8 +15,9 @@ COPY sss_git /etc/pam.d/sss_git
 
 RUN dnf -y clean all
 
-# Create Apache server for Git
+# Create Apache server for Git and CGit
 COPY git-server.conf /etc/httpd/conf.d/git-server.conf
+COPY cgit.conf /etc/httpd/conf.d/cgit.conf
 
 
 # Configure port and program to start

@@ -3,6 +3,15 @@
 #Include gits path in cgitrc
 echo "scan-path=/data" >> /etc/cgitrc
 
+#Create example repositories if /data is empty
+if ! [ "$(ls -A /data)" ]; then
+    gits="foo bar baz"
+    for reponame in $gits; do
+	git init --bare /data/$reponame
+        cp /data/$reponame/hooks/post-update.sample /data/$reponame/hooks/post-update
+    done
+fi
+
 #fix ownership of git repos
 chown -R apache:apache /data
 
