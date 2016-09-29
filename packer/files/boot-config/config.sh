@@ -64,5 +64,5 @@ done
 docker run -d -p 80:80 -p 443:443 -v=/dev/log:/dev/log \
            --net immut-net --ip 172.101.0.2 \
            -v=/var/lib/sss/pipes/:/var/lib/sss/pipes/:rw \
-           -v=$HAPROXYDIR:/etc/haproxy/:rw \
+           -v=$HAPROXYDIR:/data/:rw \
            haproxy
