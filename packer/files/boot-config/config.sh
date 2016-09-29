@@ -41,6 +41,9 @@ for i in $projects; do
     done
 done
 
+# Start autofs once it's configured, and before starting the containers
+systemctl start autofs
+
 ip=3
 for i in $projects; do
     echo $i i
