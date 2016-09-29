@@ -16,6 +16,7 @@ docker network rm $(docker network ls -q) || true
 
 # Remove any autofs configuration
 rm /etc/auto.master.d/* || true
+rm /etc/auto.master || true
 
 # Create main subnetwork
 docker network create --subnet=172.101.0.0/16 immut-net
@@ -30,7 +31,8 @@ for i in $projects; do
     for j in $services; do
         # Create autofs configuration file
         mkdir -p /var/data/"$i"/"$j"
-        echo /var/lib/immut/"$i"/"$j" -rw,soft :/var/data/"$i"/"$j" >> /etc/auto.master.d/auto."$i"
+        echo "$j" -rw,soft :/var/data/"$i"/"$j" >> /etc/auto.master.d/auto."$i"
+        echo /var/lib/immut/"$i" /etc/auto.master.d/auto."$i" >> /etc/auto.master
 
         # Update haproxy configuration
         echo "    acl host_""$i""_""$j"" hdr(host) -m beg -i ""$j"".""$i" >> "$HAPROXYCONF"
