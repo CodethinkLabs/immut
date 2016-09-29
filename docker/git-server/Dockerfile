@@ -7,7 +7,7 @@ RUN dnf -y clean all
 
 
 WORKDIR /git-server/
-RUN mkdir /opt/git
+RUN mkdir /data
 
 # Configure SSSD PAM client
 RUN dnf -y install sssd-client

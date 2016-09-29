@@ -6,7 +6,7 @@ A git server in Docker served with Apache and using PAM authentication
 
 How to run the container in port 8000 with a git's volume:
 
-    $ sudo docker run -i -t  -p 8000:80 -v=/path/to/gits/:/opt/git/:rw gitserver-apache
+    $ sudo docker run -i -t  -p 8000:80 -v=/path/to/gits/:/data/:rw gitserver-apache
 
 
 How to clone a repository (you must have a configured PAM user)
@@ -53,7 +53,7 @@ How to clone a repository (you must have a configured PAM user)
 
 *   Run the container
 
-        $ sudo docker run -d  -p 8000:80 -v=/var/lib/sss/pipes/:/var/lib/sss/pipes/:rw  -v=/path/to/gits/:/opt/git/:rw gitserver-apache 
+        $ sudo docker run -d  -p 8000:80 -v=/var/lib/sss/pipes/:/var/lib/sss/pipes/:rw  -v=/path/to/gits/:/data/:rw gitserver-apache
 
 If instead of running the container you just want to test if SSSD would work
 in the container you can:

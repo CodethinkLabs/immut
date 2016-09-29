@@ -2,7 +2,7 @@
 
 #fix ownership of git repos
 
-chown -R apache:apache /opt/git
+chown -R apache:apache /data
 
 #set variables
 APACHE_LOCK_DIR="/var/lock/httpd"
