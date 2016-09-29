@@ -4,4 +4,6 @@ ssh_pwauth: True
 chpasswd: { expire: False }
 
 bootcmd:
- - echo "this is a test" > /etc/test-cloud-init
+ - projects="p1"
+ - services="gitserver"
+ - /var/lib/immut-boot/config.sh $projects $services

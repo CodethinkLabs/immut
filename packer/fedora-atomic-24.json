@@ -123,7 +123,10 @@
 		"destination": "/var/lib/immut-boot"
 	}, {
 		"type": "shell",
-		"inline": ["systemctl enable cloud-init"]
+		"inline": [
+			"systemctl enable cloud-init",
+			"chmod +x /var/lib/immut-boot/config.sh"
+			]
 	}, {
 		"type": "shell",
 		"inline": [

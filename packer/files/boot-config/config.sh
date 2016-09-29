@@ -6,8 +6,8 @@ set -e
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
-projects="p1"
-services="gitserver"
+projects=$1
+services=$2
 
 # Stop and remove docker instances and networks
 docker stop $(docker ps -a -q) || true
