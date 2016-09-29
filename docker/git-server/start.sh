@@ -1,7 +1,9 @@
 #!/bin/bash
 
-#fix ownership of git repos
+#Include gits path in cgitrc
+echo "scan-path=/data" >> /etc/cgitrc
 
+#fix ownership of git repos
 chown -R apache:apache /data
 
 #set variables

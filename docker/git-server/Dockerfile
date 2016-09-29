@@ -4,6 +4,7 @@ RUN dnf -y update
 RUN dnf -y install httpd
 RUN dnf -y install mod_authnz_pam
 RUN dnf -y install git-core
+RUN dnf -y install cgit
 
 WORKDIR /git-server/
 RUN mkdir /data
