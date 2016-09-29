@@ -113,6 +113,10 @@
 		"source": "files/auto.master",
 		"destination": "/etc/auto.master"
 	}, {
+		"type": "file",
+		"source": "files/boot-config",
+		"destination": "/var/lib/immut-boot"
+	}, {
 		"type": "shell",
 		"inline": ["systemctl enable cloud-init"]
 	}, {
