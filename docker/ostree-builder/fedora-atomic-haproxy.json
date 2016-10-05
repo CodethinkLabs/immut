@@ -1,0 +1,46 @@
+{
+    "ref": "fedora-atomic/f23/x86_64/docker-haproxy",
+
+    "repos": ["fedora-23", "fedora-23-updates"],
+
+    "selinux": false,
+
+    "container": true,
+
+    "documentation": false,
+
+    "automatic_version_prefix": "23",
+
+    "install-langs": ["en_US"],
+
+    "postprocess-script": "treecompose-post.sh",
+
+    "etc-group-members": ["wheel", "docker"],
+
+    "ignore-removed-users": ["root"],
+    "ignore-removed-groups": ["root"],
+    "check-passwd": { "type": "file", "filename": "passwd" },
+    "check-groups": { "type": "file", "filename": "group" },
+
+    "packages": [
+		 "glibc", "nss-altfiles", "shadow-utils",
+		 "cryptsetup",
+		 "authconfig",
+		 "gnupg2",
+		 "basesystem",
+		 "bash",
+		 "coreutils",
+		 "which",
+		 "curl",
+		 "iptables-services",
+		 "hostname", "initscripts", "iproute", "iputils", "less",
+		 "sos",
+		 "openssh-clients", "openssh-server", "passwd", "plymouth",
+		 "policycoreutils", "procps-ng", "rootfiles", "rpm",
+		 "selinux-policy-targeted", "setup", "shadow-utils",
+		 "less",
+		 "setools-console",
+		 "audit",
+                 "haproxy"]
+
+}
