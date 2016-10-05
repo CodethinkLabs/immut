@@ -1,0 +1,51 @@
+{
+    "ref": "fedora-atomic/f23/x86_64/git-container",
+
+    "repos": ["fedora-23", "fedora-23-updates"],
+
+    "selinux": true,
+
+    "documentation": false,
+
+    "automatic_version_prefix": "23",
+
+    "initramfs-args": ["--no-hostonly", "--add", "iscsi"],
+
+    "install-langs": ["en_US"],
+
+    "postprocess-script": "treecompose-post.sh",
+
+    "ignore-removed-users": ["root"],
+    "ignore-removed-groups": ["root"],
+    "check-passwd": { "type": "file", "filename": "passwd" },
+    "check-groups": { "type": "file", "filename": "group" },
+
+    "packages": ["atomic",
+		 "glibc", "nss-altfiles", "shadow-utils",
+		 "sssd-client", "libsss_sudo",
+		 "fedora-release",
+		 "cryptsetup",
+		 "authconfig",
+		 "btrfs-progs", "e2fsprogs", "xfsprogs",
+		 "grub2", "grub2-efi", "ostree-grub2",
+		 "efibootmgr", "shim",
+		 "gnupg2",
+		 "basesystem",
+		 "bash",
+		 "coreutils",
+		 "iptables-services",
+		 "NetworkManager",
+		 "policycoreutils", "procps-ng", "rootfiles", "rpm",
+		 "selinux-policy-targeted", "setup", "shadow-utils",
+		 "bash-completion",
+		 "policycoreutils-python",
+		 "policycoreutils-python-utils",
+		 "setools-console",
+		 "audit",
+		 "httpd",
+		 "mod_authnz_pam",
+		 "git-core",
+		 "cgit"],
+
+    "default_target": "multi-user.target"
+}

@@ -1,0 +1,55 @@
+{
+    "ref": "fedora-atomic/f23/x86_64/haproxy-container",
+
+    "repos": ["fedora-23", "fedora-23-updates"],
+
+    "selinux": true,
+
+    "documentation": false,
+
+    "automatic_version_prefix": "23",
+
+    "initramfs-args": ["--no-hostonly", "--add", "iscsi"],
+
+    "install-langs": ["en_US"],
+
+    "postprocess-script": "treecompose-post.sh",
+
+    "ignore-removed-users": ["root"],
+    "ignore-removed-groups": ["root"],
+    "check-passwd": { "type": "file", "filename": "passwd" },
+    "check-groups": { "type": "file", "filename": "group" },
+
+    "packages": ["glibc", "nss-altfiles", "shadow-utils",
+		 "sssd-client", "libsss_sudo",
+		 "fedora-release",
+		 "cryptsetup",
+		 "authconfig",
+		 "btrfs-progs", "e2fsprogs", "xfsprogs",
+		 "grub2", "grub2-efi", "ostree-grub2",
+		 "efibootmgr", "shim",
+		 "gnupg2",
+		 "basesystem",
+		 "bash",
+		 "coreutils",
+		 "nfs-utils",
+		 "iptables-services",
+		 "NetworkManager",
+		 "hostname", "initscripts", "iproute", "iputils", "less",
+		 "policycoreutils", "procps-ng", "rootfiles", "rpm",
+		 "selinux-policy-targeted", "setup", "shadow-utils",
+		 "sudo", "systemd", "util-linux",
+		 "cloud-init",
+		 "cloud-utils-growpart",
+		 "bash-completion",
+		 "policycoreutils-python",
+		 "policycoreutils-python-utils",
+		 "setools-console",
+		 "audit",
+		 "iscsi-initiator-utils",
+		 "oddjob-mkhomedir",
+		 "runc",
+		 "haproxy"],
+
+    "default_target": "multi-user.target"	
+}
