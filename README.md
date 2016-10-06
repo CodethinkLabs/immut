@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is project is a work in progress automating the creation of immutable infrastructure.
+This project is a work in progress automating the creation of immutable infrastructure.
 
 ### Goals
 
