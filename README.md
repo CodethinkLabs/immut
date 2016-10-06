@@ -15,12 +15,16 @@ This is project is a work in progress automating the creation of immutable infra
 1. Packer (https://github.com/mitchellh/packer)
 2. Docker
 3. Virtual Box (and/or qemu)
+4. Kernel >= 4.6 (anything > 4 may work, but this is untested)
 
 ## Build
 
 Currently the project consists of a project atomic virtual machine image with SSSD running on the host. 
 SSSD provides authentication to running docker containers. The build depends on the creation of a docker 
 image to perform updates.
+
+We recommend that you do not build this in a virtual environment, as nested virtualization will be
+slow.
 
 To build the project run:
 
