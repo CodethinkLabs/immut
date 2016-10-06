@@ -20,8 +20,7 @@
     "check-passwd": { "type": "file", "filename": "passwd" },
     "check-groups": { "type": "file", "filename": "group" },
 
-    "packages": ["atomic",
-		 "glibc", "nss-altfiles", "shadow-utils",
+    "packages": ["glibc", "nss-altfiles", "shadow-utils",
 		 "sssd-client", "libsss_sudo",
 		 "fedora-release",
 		 "cryptsetup",
