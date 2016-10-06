@@ -17,14 +17,15 @@ chown -R apache:apache /data
 
 #set variables
 APACHE_LOCK_DIR="/var/lock/httpd"
-APACHE_RUN_USER="apache"
-APACHE_RUN_GROUP="apache"
 APACHE_PID_FILE="/var/run/httpd/httpd.pid"
 APACHE_RUN_DIR="/var/run/httpd"
 
 #create directories if necessary
-if ! [ -d /var/run/httpd ]; then mkdir /var/run/httpd;fi
-if ! [ -d /var/lock/httpd ]; then mkdir /var/lock/httpd;fi
+
+dirs="/var/run/httpd /var/lock/httpd /var/www/html /var/log/httpd /run/httpd"
+for dir in $dirs; do
+    if ! [ -d $dir ]; then mkdir -p $dir;fi
+done
 
 #run Apache
 httpd -D FOREGROUND

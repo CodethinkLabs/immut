@@ -1,13 +1,10 @@
-FROM fedora:24
-
-RUN dnf -y update
-RUN dnf -y install haproxy
-RUN dnf -y clean all
-
+FROM haproxy_base
 
 WORKDIR /haproxy
 COPY haproxy.cfg /etc/haproxy/haproxy.cfg
 COPY ssl.pem /etc/pki/tls/private/cert.pem
+
+RUN mkdir -p /var/lib/haproxy/
 
 # Configure port and program to start
 EXPOSE 80
