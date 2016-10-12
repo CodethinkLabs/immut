@@ -35,8 +35,8 @@ This will output all images we currently support. In order to build a single ima
 
 for Virtual Box:
 
-    packer-io build -only virtualbox fedora-atomic-24.json
+    packer build -only virtualbox fedora-atomic-24.json
 
 for Qemu:
 
-	packer-io build -only qemu fedora-atomic-24.json
+	packer build -only qemu fedora-atomic-24.json
