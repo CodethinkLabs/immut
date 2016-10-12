@@ -29,9 +29,17 @@
 
 	"provisioners":[{
 		"type": "file",
-		"source": "files/fedora-atomic-update-tree.json",
+		"source": "files/ostree-builder/fedora-atomic-update-tree.json",
 		"destination": "/home/fedora-atomic-update-tree.json"
-	} , {
+	}, {
+		"type": "file",
+		"source": "files/ostree-builder/fedora-atomic-haproxy.json",
+		"destination": "/home/fedora-atomic-haproxy.json"
+	}, {
+		"type": "file",
+		"source": "files/ostree-builder/fedora-atomic-gitserver.json",
+		"destination": "/home/fedora-atomic-gitserver.json"
+	}, {
 		"type": "shell",
 		"inline": [
 			"dnf install -y rpm-ostree git",
@@ -39,23 +47,28 @@
 			"mkdir -p /home/working",
 			"cd /home/working",
 			"git clone https://github.com/CentOS/sig-atomic-buildscripts",
-			"git clone https://git.fedorahosted.org/git/fedora-atomic.git",
+			"git clone https://git.fedorahosted.org/git/fedora-atomic.git -b f23",
 			"mkdir -p /srv/rpm-ostree/repo",
 			"cd /srv/rpm-ostree/",
 			"ostree --repo=repo init --mode=archive-z2",
 			"cd /home/working/fedora-atomic/",
-			"git fetch",
-			"git checkout f23",
 			"curl -o fedora-23-updates.repo https://git.fedorahosted.org/cgit/fedora-repos.git/plain/fedora-updates.repo?h=f23",
 			"sed -i 's\/\\$releasever\/23\/g' fedora-23-updates.repo",
-			"mv /home/fedora-atomic-update-tree.json /home/working/fedora-atomic/fedora-atomic-update-tree.json",
+			"cp /home/*.json /home/working/fedora-atomic/",
 			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-update-tree.json",
+			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-haproxy.json",
+			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-gitserver.json",
+			"cd /home/working",
+			"ostree --repo=/srv/rpm-ostree/repo checkout -U fedora-atomic/f23/x86_64/docker-gitserver gitserver",
+			"mv gitserver/usr/etc gitserver/etc",
+			"ostree --repo=/srv/rpm-ostree/repo commit -b fedora-atomic/f23/x86_64/docker-gitserver --link-checkout-speedup gitserver",
+			"rm -rf /srv/rpm-ostree/repo/uncompressed-objects-cache",
 			"zip -r /home/repo.zip /srv/rpm-ostree/repo"
 		]
 	}, {
 		"type": "file",
 		"direction": "download",
 		"source": "/home/repo.zip",
-		"destination": "files/repo/"
+		"destination": "files/repo.zip"
 	}]
 }
