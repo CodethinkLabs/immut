@@ -63,7 +63,8 @@
 			"mv gitserver/usr/etc gitserver/etc",
 			"ostree --repo=/srv/rpm-ostree/repo commit -b fedora-atomic/f23/x86_64/docker-gitserver --link-checkout-speedup gitserver",
 			"rm -rf /srv/rpm-ostree/repo/uncompressed-objects-cache",
-			"zip -r /home/repo.zip /srv/rpm-ostree/repo"
+			"cd /srv/rpm-ostree",
+			"zip -r /home/repo.zip ./repo"
 		]
 	}, {
 		"type": "file",
