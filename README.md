@@ -51,17 +51,17 @@ from the previous step) and run:
 
 In order to build a single image use the -only packer argument, eg:
 
-* to build only a VirtualBox image (output image file in `immut/packer/output-virtualbox`):
+*   to build only a VirtualBox image (output image file in `immut/packer/output-virtualbox`):
 
-      packer build -only virtualbox fedora-atomic-24.json
+        packer build -only virtualbox fedora-atomic-24.json
 
-* to build only a Qemu image (output image file in `immut/packer/output-qemu`):
+*   to build only a Qemu image (output image file in `immut/packer/output-qemu`):
 
-  Add `"headless": "true",` to the qemu config in fedora-atomic-24.json
-  This will be the default in the future; it is not the default yet
-  as it is harder to develop in headless mode.
+    Add `"headless": "true",` to the qemu config in fedora-atomic-24.json
+    This will be the default in the future; it is not the default yet
+    as it is harder to develop in headless mode.
 
-      packer build -only qemu fedora-atomic-24.json
+        packer build -only qemu fedora-atomic-24.json
 
 Next, to make the Qemu image testable in VirtualBox, cd into the
 output-qemu directory and convert it using:
