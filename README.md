@@ -24,32 +24,44 @@ Currently the project consists of a project atomic virtual machine image with
 SSSD running on the host. 
 
 SSSD provides authentication to running docker containers. The build depends
-on the creation of a docker image to perform updates.
+on the creation of an Ostree repository creation to perform an update of the
+Atomic host and to use for the Docker containers.
 
 We recommend that you do not build this in a virtual environment, as nested
 virtualization will be slow.
 
-To build the project, cd into the immut/packer directory and run:
+To build the Ostree repo you currently need Docker (future plan is to move
+this build to a VM so that it can be used in more OS easily). Go to the
+immut/packer directory and run:
 
-    packer build rpmostree-update.json
-	packer build  fedora-atomic-24.json
+    docker build -t ostree-builder ../docker/ostree-builder/
+    docker run --privileged -v `pwd`/files/:/data:rw ostree-builder
 
-This will output all images we currently support, in the directories: 
-immut/packer/output-virtualbox and immut/packer/output-qemu. 
+Now you have an Ostree repository in `immut/packer/files/repo` with
+all the filesystems needed to make the buld work.
+
+To build VM, cd into the immut/packer directory (if you are not already there
+from the previous step) and run:
+
+    packer build fedora-atomic-24.json
+
+> Note: This will output all images we currently support. In order to build
+> only one of them see below:
+
 
 In order to build a single image use the -only packer argument, eg:
 
-to build only a VirtualBox image:
+* to build only a VirtualBox image (output image file in `immut/packer/output-virtualbox`):
 
-    packer build -only virtualbox fedora-atomic-24.json
+      packer build -only virtualbox fedora-atomic-24.json
 
-to build only a Qemu image:
+* to build only a Qemu image (output image file in `immut/packer/output-qemu`):
 
   Add `"headless": "true",` to the qemu config in fedora-atomic-24.json
   This will be the default in the future; it is not the default yet
   as it is harder to develop in headless mode.
 
-    packer build -only qemu fedora-atomic-24.json
+      packer build -only qemu fedora-atomic-24.json
 
 Next, to make the Qemu image testable in VirtualBox, cd into the
 output-qemu directory and convert it using:
