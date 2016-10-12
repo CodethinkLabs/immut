@@ -1,9 +1,30 @@
 {
 	"builders": [{
-		"type": "docker",
-		"image": "fedora",
-		"export_path": "files/rpm-ostree-update.tar",
-		"privileged": "true"
+		"boot_command": [
+			"<tab> linux text biosdevname=0 ks=http://{{ .HTTPIP }}:{{ .HTTPPort}}/ks-fedora-24.cfg<enter><enter>"
+		],
+		"type": "virtualbox-iso",
+		"guest_os_type": "Fedora_64",
+
+		"vboxmanage": [
+			["modifyvm", "{{.Name}}", "--vram", "32"]
+		],
+
+		"disk_size" : 40000,
+
+		"iso_url": "http://mirror.datacenter.by/pub/fedoraproject.org/linux/releases/24/Server/x86_64/iso/Fedora-Server-dvd-x86_64-24-1.2.iso",
+		"iso_checksum": "1c0971d4c1a37bb06ec603ed3ded0af79e22069499443bb2d47e501c9ef42ae8",
+		"iso_checksum_type": "sha256",
+
+		"http_directory" : "files",
+		"http_port_min" : 9001,
+		"http_port_max" : 9001,
+
+		"ssh_username": "root",
+		"ssh_password": "atomic",
+		"ssh_wait_timeout": "20m",
+
+		"shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now"
 	}],
 
 	"provisioners":[{
@@ -29,7 +50,12 @@
 			"sed -i 's\/\\$releasever\/23\/g' fedora-23-updates.repo",
 			"mv /home/fedora-atomic-update-tree.json /home/working/fedora-atomic/fedora-atomic-update-tree.json",
 			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-update-tree.json",
-			"rm -rf /home/working"
+			"zip -r /home/repo.zip /srv/rpm-ostree/repo"
 		]
+	}, {
+		"type": "file",
+		"direction": "download",
+		"source": "/home/repo.zip",
+		"destination": "files/repo/"
 	}]
 }
