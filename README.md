@@ -41,7 +41,7 @@ with all the filesystems needed to make the system work.
 To build the VM, cd into the `immut/packer` directory (if you are not already
 there from the previous step) and run:
 
-    unzip files/repo.zip -d files
+    sudo unzip files/repo.zip -d files
     packer build fedora-atomic-24.json
 
 > Note: This will output all images we currently support. In order to build
