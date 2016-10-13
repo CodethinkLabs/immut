@@ -74,8 +74,20 @@ output-qemu directory and convert it using:
 Once you have an image, cd into the immut/cloud-init-iso directory and run
 the script. This will create an iso that will run the docker containers.
 
-Now, create a virtual machine, using the image you created with packer for the
-hard disk file. Attach the iso to the optical drive (and make sure it's not
+Now, create a virtual machine. If using the qemu build, do things the usual
+way and use the image you created with packer for the hard disk file. If using
+the VirtualBox build, you should instead import the ovf file to create the
+VM:
+
+In VirtualBox:
+
+  * file > import appliance
+  * select the .ovf from the immut/packer/output-virtualbox directory
+  * click 'import'
+
+That should create a VM.
+
+Attach the iso to the optical drive (and make sure it's not
 treated as a live CD).
 
 Add a VirtualBox host-only network to your VM:
@@ -84,9 +96,26 @@ Add a VirtualBox host-only network to your VM:
 
 * (add it)
 
+* click the screwdriver
+
+* go to the DCHP server tab:
+
+  * change server address to match adapter address, but with 2
+    at the end instead of 1
+
+  * change server mask to 255.255.255.0
+
+  * change lower address to match the adapter address but with 
+    110 at the end instead of 1
+
+  * change upper adress to match the adapter address but with 200
+    at the end instead of 1
+
 * right click your vm > settings > network
 
 * enable adapter 2 and attach it to a host-only adapter
+
+This will ensure the VM has a visible IPV4 address.
 
 ---
 
@@ -100,7 +129,7 @@ Once you are logged in, running `docker ps` should return some information.
 On the VM, create a new user, eg:
 
     adduser catscatscats
-    passwd morecats
+    passwd catscatscats
 
 On the VM, run `ip addr` to get its IP address. There will be a few; the
 relevant one should have a name like 'enp0s8' and look fairly standard
