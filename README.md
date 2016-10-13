@@ -30,26 +30,25 @@ Atomic host and to use for the Docker containers.
 We recommend that you do not build this in a virtual environment, as nested
 virtualization will be slow.
 
-To build the Ostree repo you currently need Docker (future plan is to move
-this build to a VM so that it can be used in more OS easily). Go to the
-immut/packer directory and run:
+First of all you need to build an Ostree repository. Go to the
+`immut/packer` directory and run:
 
-    docker build -t ostree-builder ../docker/ostree-builder/
-    docker run --privileged -v `pwd`/files/:/data:rw ostree-builder
+    packer build rpmostree-update.json
 
-Now you have an Ostree repository in `immut/packer/files/repo` with
-all the filesystems needed to make the buld work.
+Now you have an Ostree repository in compressed in `immut/packer/files/repo.zip`
+with all the filesystems needed to make the system work.
 
-To build VM, cd into the immut/packer directory (if you are not already there
-from the previous step) and run:
+To build the VM, cd into the `immut/packer` directory (if you are not already
+there from the previous step) and run:
 
+    unzip files/repo.zip -d files
     packer build fedora-atomic-24.json
 
 > Note: This will output all images we currently support. In order to build
 > only one of them see below:
 
 
-In order to build a single image use the -only packer argument, eg:
+In order to build a single image use the `-only` packer argument, eg:
 
 *   to build only a VirtualBox image (output image file in `immut/packer/output-virtualbox`):
 
