@@ -53,94 +53,125 @@
 		"ssh_wait_timeout": "20m",
 
 		"shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now"
+	}, {
+		"name": "aws",
+		"ami_name": "Atomic-host-{{timestamp}}",
+		"type": "amazon-ebs",
+		"access_key": "",
+		"secret_key": "",
+		"region": "eu-west-1",
+		"source_ami": "ami-bca639cf",
+		"instance_type": "t2.micro",
+		"ssh_username": "fedora"
 	}],
 
 	"provisioners": [{
 		"type": "file",
 		"source": "files/repo",
-		"destination": "/home/rpm-update"
+		"destination": "$HOME/rpm-update"
 	}, {
 		"type": "shell",
 		"inline": [
 			"set -x",
-			"ostree remote add test file:///home/rpm-update --no-gpg-verify",
-			"rpm-ostree rebase test:fedora-atomic/f23/x86_64/docker-host"
+			"sudo ostree remote add test file://$HOME/rpm-update --no-gpg-verify",
+			"sudo rpm-ostree rebase test:fedora-atomic/f23/x86_64/docker-host"
 		]
 	}, {
 		"type": "shell",
 		"inline": [
 			"set -x",
-			"ostree export --repo=/home/rpm-update fedora-atomic/f23/x86_64/docker-gitserver | docker import - gitserver_base",
-			"ostree export --repo=/home/rpm-update fedora-atomic/f23/x86_64/docker-haproxy | docker import - haproxy_base"
+			"sudo ostree export --repo=$HOME/rpm-update fedora-atomic/f23/x86_64/docker-gitserver | sudo docker import - gitserver_base",
+			"sudo ostree export --repo=$HOME/rpm-update fedora-atomic/f23/x86_64/docker-haproxy | sudo docker import - haproxy_base"
 		]
 	}, {
-               "type": "file",
-               "source": "../docker/git-server",
-               "destination": "/home/git-server"
+		"type": "file",
+		"source": "../docker/git-server",
+		"destination": "$HOME/git-server"
 	}, {
-               "type": "file",
-               "source": "../docker/haproxy",
-               "destination": "/home/haproxy"
+		"type": "file",
+		"source": "../docker/haproxy",
+		"destination": "$HOME/haproxy"
 	}, {
-               "type": "shell",
-               "inline": [
-                       "cd /home/haproxy",
-                       "echo foo bar > ssl.pem",
-                       "docker build -t haproxy ."
-               ]
+		"type": "shell",
+		"inline": [
+			"cd $HOME/haproxy",
+			"echo foo bar > ssl.pem",
+			"sudo docker build -t haproxy ."
+		]
 	}, {
-               "type": "shell",
-               "inline": [
-                       "cd /home/git-server",
-                       "docker build -t gitserver ."
-               ]
+		"type": "shell",
+		"inline": [
+			"cd $HOME/git-server",
+			"sudo docker build -t gitserver ."
+		]
 	}, {
-               "type": "shell",
-               "inline": [
-                       "echo Rebooting system NOW",
-                       "reboot",
-                       "echo System rebooted"
-               ]
+		"type": "shell",
+		"inline": [
+			"echo Rebooting system NOW",
+			"sudo systemctl reboot",
+			"echo System rebooted"
+		]
 	}, {
-               "type": "file",
-               "source": "files/sss_proxy",
-               "destination": "/etc/pam.d/sss_proxy"
+		"type": "file",
+		"source": "files/sss_proxy",
+		"destination": "$HOME/sss_proxy"
 	}, {
-               "type": "shell",
-               "inline": [
-                       "sed -i -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config"
-               ]
+		"type": "shell",
+		"inline": [
+			"sudo mv $HOME/sss_proxy /etc/pam.d/sss_proxy"
+		]
 	}, {
-               "type": "file",
-               "source": "files/sssd.conf",
-               "destination": "/etc/sssd/sssd.conf"
+		"type": "shell",
+		"inline": [
+			"sudo sed -i -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config"
+		]
 	}, {
-               "type": "shell",
-               "inline": [
-                       "chown root /etc/sssd/sssd.conf",
-                       "chmod 0600 /etc/sssd/sssd.conf",
-                       "systemctl enable sssd",
-                       "systemctl start sssd",
-                       "systemctl status -l sssd"
-               ]
+		"type": "file",
+		"source": "files/sssd.conf",
+		"destination": "$HOME/sssd.conf"
 	}, {
-               "type": "shell",
-               "inline": ["rm /etc/auto.master",
-                       "rm /etc/auto.misc"
-               ]
+		"type": "shell",
+		"inline": [
+			"sudo mv $HOME/sssd.conf /etc/sssd/sssd.conf"
+		]
 	}, {
-               "type": "file",
-               "source": "files/auto.master",
-               "destination": "/etc/auto.master"
+		"type": "shell",
+		"inline": [
+			"sudo chown root /etc/sssd/sssd.conf",
+			"sudo chmod 0600 /etc/sssd/sssd.conf",
+			"sudo systemctl enable sssd",
+			"sudo systemctl start sssd",
+			"sudo systemctl status -l sssd"
+		]
 	}, {
-               "type": "file",
-               "source": "files/boot-config",
-               "destination": "/var/lib/immut-boot"
+		"type": "shell",
+		"inline": [
+			"sudo rm /etc/auto.master",
+			"sudo rm /etc/auto.misc"
+		]
 	}, {
-               "type": "shell",
-               "inline": [
-                       "systemctl enable cloud-init",
-                       "chmod +x /var/lib/immut-boot/config.sh"
-                       ]
+		"type": "file",
+		"source": "files/auto.master",
+		"destination": "$HOME/auto.master"
+	}, {
+		"type": "shell",
+		"inline": [
+			"sudo mv $HOME/auto.master etc/auto.master"
+		]
+	}, {
+		"type": "file",
+		"source": "files/boot-config",
+		"destination": "$HOME/immut-boot"
+	}, {
+		"type": "shell",
+		"inline": [
+			"sudo mv $HOME/immut-boot /var/lib/immut-boot"
+		]
+	}, {
+		"type": "shell",
+		"inline": [
+			"sudo systemctl enable cloud-init",
+			"sudo chmod +x /var/lib/immut-boot/config.sh"
+		]
 	}]
 }
