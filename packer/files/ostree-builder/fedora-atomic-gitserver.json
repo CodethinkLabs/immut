@@ -13,7 +13,7 @@
 
     "install-langs": ["en_US"],
 
-    "postprocess-script": "treecompose-post.sh",
+    "postprocess-script": "treecompose-var-post.sh",
 
     "etc-group-members": ["wheel", "docker"],
 

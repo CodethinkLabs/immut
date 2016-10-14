@@ -40,6 +40,10 @@
 		"source": "files/ostree-builder/fedora-atomic-gitserver.json",
 		"destination": "/home/fedora-atomic-gitserver.json"
 	}, {
+		"type": "file",
+		"source": "files/ostree-builder/treecompose-var-post.sh",
+		"destination": "/home/treecompose-var-post.sh"
+	}, {
 		"type": "shell",
 		"inline": [
 			"dnf install -y rpm-ostree git",
@@ -55,12 +59,18 @@
 			"curl -o fedora-23-updates.repo https://git.fedorahosted.org/cgit/fedora-repos.git/plain/fedora-updates.repo?h=f23",
 			"sed -i 's\/\\$releasever\/23\/g' fedora-23-updates.repo",
 			"cp /home/*.json /home/working/fedora-atomic/",
+			"cp /home/treecompose-var-post.sh /home/working/fedora-atomic/",
+			"chmod +x /home/working/fedora-atomic/treecompose-var-post.sh",
 			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-update-tree.json",
 			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-haproxy.json",
 			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-gitserver.json",
 			"cd /home/working",
 			"ostree --repo=/srv/rpm-ostree/repo checkout -U fedora-atomic/f23/x86_64/docker-gitserver gitserver",
-			"mv gitserver/usr/etc gitserver/etc",
+			"mv gitserver/usr/etc gitserver/etc            # Put /etc in the right place",
+			"rm -r gitserver/usr/var/lib                   # Remove /usr/var/lib to avoid conflicts",
+			"rm -r `find gitserver/usr/var -type d -empty` # Remove empty folders from /usr/var",
+			"mv gitserver/usr/var/* gitserver/var/         # Move /usr/var contents to /var",
+			"rm -r gitserver/usr/var                       # Remove what's left from /usr/var",
 			"ostree --repo=/srv/rpm-ostree/repo commit -b fedora-atomic/f23/x86_64/docker-gitserver --link-checkout-speedup gitserver",
 			"rm -rf /srv/rpm-ostree/repo/uncompressed-objects-cache",
 			"cd /srv/rpm-ostree",
