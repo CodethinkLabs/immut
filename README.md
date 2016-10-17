@@ -14,9 +14,7 @@ infrastructure.
 ## Prerequisites
 
 1. Packer (https://github.com/mitchellh/packer)
-2. Docker
-3. Virtual Box and/or Qemu
-4. Kernel >= 4.6 (anything > 4 may work, but this is untested)
+2. Virtual Box and/or Qemu
 
 ## Build
 
@@ -71,8 +69,15 @@ output-qemu directory and convert it using:
 
 ## Set Up
 
-Once you have an image, cd into the immut/cloud-init-iso directory and run
-the script. This will create an iso that will run the docker containers.
+Once you have an image, cd into the `immut/cloud-init-iso` directory and run
+the script:
+
+    ./create-iso.sh
+
+This will create an iso that will include the cloud config
+configuration files `meta-data` and `user-data` in the same folder. These
+configuration file specifies what services need to run (in containers)and
+for what projects.
 
 Now, create a virtual machine. If using the qemu build, do things the usual
 way and use the image you created with packer for the hard disk file. If using
@@ -81,9 +86,9 @@ VM:
 
 In VirtualBox:
 
-  * file > import appliance
-  * select the .ovf from the immut/packer/output-virtualbox directory
-  * click 'import'
+* file > import appliance
+* select the .ovf from the `immut/packer/output-virtualbox` directory
+* click 'import'
 
 That should create a VM.
 
