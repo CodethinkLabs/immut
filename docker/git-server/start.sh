@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#Remove default apache configuration file for cgit
+rm /etc/httpd/conf.d/cgit.conf
+
 #Include gits path in cgitrc
 echo "scan-path=/data" >> /etc/cgitrc
 
