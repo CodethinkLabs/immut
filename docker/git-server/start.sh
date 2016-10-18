@@ -3,6 +3,10 @@
 #Remove default apache configuration file for cgit
 rm /etc/httpd/conf.d/cgit.conf
 
+#Create folder for CGit cache
+mkdir -p /var/cache/cgit
+chown -R apache:apache /var/cache/cgit
+
 #Include gits path in cgitrc
 echo "scan-path=/data" >> /etc/cgitrc
 
