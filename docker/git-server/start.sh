@@ -1,5 +1,9 @@
 #!/bin/bash
 
+
+#format markdown. This MUST be *before* scan-path! Line numbers will be weird
+echo "source-filter=/usr/libexec/cgit/filters/about-formatting.sh" >> /etc/cgitrc
+
 #Include gits path in cgitrc
 echo "scan-path=/data" >> /etc/cgitrc
 

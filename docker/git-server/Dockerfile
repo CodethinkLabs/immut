@@ -5,6 +5,8 @@ RUN dnf -y install httpd
 RUN dnf -y install mod_authnz_pam
 RUN dnf -y install git-core
 RUN dnf -y install cgit
+RUN dnf -y install python-pip
+RUN pip install markdown
 
 WORKDIR /git-server/
 RUN mkdir /data
