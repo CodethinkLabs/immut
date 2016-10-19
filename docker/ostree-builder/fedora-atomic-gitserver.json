@@ -46,6 +46,7 @@
                  "mod_authnz_pam",
                  "sssd-client",
                  "git-core",
-                 "cgit"]
+                 "cgit",
+                 "python-markdown"]
 
 }
