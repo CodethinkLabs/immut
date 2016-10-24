@@ -15,8 +15,8 @@ Implementation sections for Git server tests
     docker run -d --cidfile "$MATCH_1-id" "$MATCH_1"
 
     IMPLEMENTS FINALLY the container (\S+) is shut down
-    docker stop `cat "$MATCH_1-id"
-    docker rm `cat "$MATCH_1-id"
+    docker stop `cat "$MATCH_1-id"`
+    docker rm `cat "$MATCH_1-id"`
     rm "$MATCH_1-id" 
 
 
