@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Run test suite for immut
+
+set -e
+
+if [ "x$TMPDIR" = "x" ]; then
+    TMPDIR="/tmp"
+fi
+
+if command -v yarn > /dev/null; then
+    yarn --env "TMPDIR=$TMPDIR "\
+    --tempdir "$TMPDIR" -s yarns/immut.shell-lib yarns/*.yarn
+else
+    echo "WARNING: 'yarn' scenario test tool (part of 'cmdtest' " \
+	 "package) was not found." >&2
+    exit 1
+fi

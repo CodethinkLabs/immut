@@ -1,0 +1,24 @@
+Immut Git server tests
+======================
+
+    SCENARIO Running a git server container
+    GIVEN a gitserver container
+    THEN true
+    FINALLY the container gitserver is shut down
+
+
+
+Implementation sections for Git server tests
+--------------------------------------------
+
+    IMPLEMENTS GIVEN a (\S+) container
+    docker run -d --cidfile "$MATCH_1-id" "$MATCH_1"
+
+    IMPLEMENTS FINALLY the container (\S+) is shut down
+    docker stop `cat "$MATCH_1-id"
+    docker rm `cat "$MATCH_1-id"
+    rm "$MATCH_1-id" 
+
+
+    IMPLEMENTS THEN true
+    echo true
