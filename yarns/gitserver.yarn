@@ -5,6 +5,7 @@ Immut Git server tests
     GIVEN a gitserver-atomic container
     AND  user gituser with password gitpasswd exist in gitserver-atomic container
     THEN cgit image is found for user gituser pass gitpasswd in gitserver-atomic container
+    AND bar repository can be cloned for user gituser pass gitpasswd in gitserver-atomic container
     FINALLY the container gitserver-atomic is shut down
 
 
@@ -36,4 +37,8 @@ Implementation sections for Git server tests
 
     IMPLEMENTS THEN cgit image is found for user (\S+) pass (\S+) in (\S+) container
     ip="$(get_docker_ip $MATCH_3-cid)"
-    wget http://gituser:gitpasswd@$ip/cgit-data/cgit.png
+    wget http://$MATCH_1:$MATCH_2@$ip/cgit-data/cgit.png
+
+    IMPLEMENTS THEN (\S+) repository can be cloned for user (\S+) pass (\S+) in (\S+) container
+    ip="$(get_docker_ip $MATCH_4-cid)"
+    git clone http://$MATCH_2:$MATCH_3@$ip/git/$MATCH_1
