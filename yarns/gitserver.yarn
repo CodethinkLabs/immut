@@ -2,9 +2,10 @@ Immut Git server tests
 ======================
 
     SCENARIO Running a git server container
-    GIVEN a gitserver container
-    THEN true
-    FINALLY the container gitserver is shut down
+    GIVEN a gitserver-atomic container
+    AND  user gituser with password gitpasswd exist in gitserver-atomic container
+    THEN cgit image is found for user gituser pass gitpasswd in gitserver-atomic container
+    FINALLY the container gitserver-atomic is shut down
 
 
 
@@ -12,13 +13,27 @@ Implementation sections for Git server tests
 --------------------------------------------
 
     IMPLEMENTS GIVEN a (\S+) container
-    docker run -d --cidfile "$MATCH_1-id" "$MATCH_1"
+    docker run -d --cidfile "$MATCH_1-cid" "$MATCH_1"
+
 
     IMPLEMENTS FINALLY the container (\S+) is shut down
-    docker stop `cat "$MATCH_1-id"`
-    docker rm `cat "$MATCH_1-id"`
-    rm "$MATCH_1-id" 
+    set +e # Delete always the cid file
+    docker kill `cat "$MATCH_1-cid"`
+    docker rm `cat "$MATCH_1-cid"`
+    rm "$MATCH_1-cid"
 
 
-    IMPLEMENTS THEN true
-    echo true
+    IMPLEMENTS GIVEN  user (\S+) with password (\S+) exist in (\S+) container
+    set -x
+    # Authenticate using local accounts
+    run_in_docker $MATCH_3-cid "sed -e 's/sss/unix/g' -i /etc/pam.d/sss_git"
+    # Make /etc/shadow readable for all users
+    run_in_docker $MATCH_3-cid "chmod 644 /etc/shadow"
+    # Create new user and password
+    run_in_docker $MATCH_3-cid "useradd -M $MATCH_1"
+    run_in_docker $MATCH_3-cid "echo $MATCH_1:$MATCH_2 | chpasswd"
+
+
+    IMPLEMENTS THEN cgit image is found for user (\S+) pass (\S+) in (\S+) container
+    ip="$(get_docker_ip $MATCH_3-cid)"
+    wget http://gituser:gitpasswd@$ip/cgit-data/cgit.png
