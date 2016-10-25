@@ -2,12 +2,35 @@ Immut Git server tests
 ======================
 
     SCENARIO Running a git server container
-    GIVEN a gitserver-atomic container
-    AND  user gituser with password gitpasswd exist in gitserver-atomic container
-    THEN cgit image is found for user gituser pass gitpasswd in gitserver-atomic container
-    AND bar repository can be cloned for user gituser pass gitpasswd in gitserver-atomic container
-    AND cgit interface cannot be seen without credentials in gitserver-atomic container
-    FINALLY the container gitserver-atomic is shut down
+    GIVEN a gitserver container
+    AND user gituser with password gitpasswd exist
+
+    WHEN user attempts to "wget" "/cgit"
+    THEN "wget" failed
+    AND the "wget" error message includes the string "Authentication Failed"
+
+    WHEN user attempts to "wget" "/cgit-data/cgit.png"
+    THEN "wget" failed
+    AND the "wget" error message includes the string "Authentication Failed"
+
+    WHEN user attempts to "wget" "/cgit" with user "gituser" and password "gitpasswd"
+    THEN "wget" succeeded
+
+    WHEN user attempts to "wget" "/cgit-data/cgit.png" with user "gituser" and password "gitpasswd"
+    THEN "wget" succeeded
+
+    WHEN user attempts to "git clone" "/git/bar"
+    THEN "git clone" failed
+    AND the "git clone" error message includes the string "terminal prompts disabled"
+
+    WHEN user attempts to "git clone" "/git/bar" with user "fakeuser" and password "fakepass"
+    THEN "git clone" failed
+    AND the "git clone" error message includes the string "Authentication failed"
+
+    WHEN user attempts to "git clone" "/git/bar" with user "gituser" and password "gitpasswd"
+    THEN "git clone" succeeded
+
+    FINALLY the container gitserver is shut down
 
 
 
@@ -15,40 +38,53 @@ Implementation sections for Git server tests
 --------------------------------------------
 
     IMPLEMENTS GIVEN a (\S+) container
-    docker run -d --cidfile "$MATCH_1-cid" "$MATCH_1"
+    docker run -d --cidfile current.cid "$MATCH_1"
+    get_docker_ip current.cid > current.ip
 
 
     IMPLEMENTS FINALLY the container (\S+) is shut down
-    set +e # Delete always the cid file
-    docker kill `cat "$MATCH_1-cid"`
-    docker rm `cat "$MATCH_1-cid"`
-    rm "$MATCH_1-cid"
+    docker kill `cat current.cid` || true
+    docker rm `cat current.cid` || true
+    rm current.cid || true
 
 
-    IMPLEMENTS GIVEN  user (\S+) with password (\S+) exist in (\S+) container
-    set -x
+    IMPLEMENTS GIVEN  user (\S+) with password (\S+) exist
     # Authenticate using local accounts
-    run_in_docker $MATCH_3-cid "sed -e 's/sss/unix/g' -i /etc/pam.d/sss_git"
+    run_in_docker current.cid "sed -e 's/sss/unix/g' -i /etc/pam.d/sss_git"
     # Make /etc/shadow readable for all users
-    run_in_docker $MATCH_3-cid "chmod 644 /etc/shadow"
+    run_in_docker current.cid "chmod 644 /etc/shadow"
     # Create new user and password
-    run_in_docker $MATCH_3-cid "useradd -M $MATCH_1"
-    run_in_docker $MATCH_3-cid "echo $MATCH_1:$MATCH_2 | chpasswd"
+    run_in_docker current.cid "useradd -M $MATCH_1"
+    run_in_docker current.cid "echo $MATCH_1:$MATCH_2 | chpasswd"
 
 
-    IMPLEMENTS THEN cgit image is found for user (\S+) pass (\S+) in (\S+) container
-    ip="$(get_docker_ip $MATCH_3-cid)"
-    wget http://$MATCH_1:$MATCH_2@$ip/cgit-data/cgit.png
+    IMPLEMENTS WHEN user attempts to "(.+)" "(\S+)"( with user "(\S+)" and password "(\S+)")?
+    ip="$(cat current.ip)"
+    if [ "$MATCH_3" != '' ]; then
+        user_and_pass="$MATCH_4":"$MATCH_5"@
+    else
+        user_and_pass=""
+    fi
+    attempt_command "$MATCH_1" http://"$user_and_pass""$ip""$MATCH_2"
 
-    IMPLEMENTS THEN (\S+) repository can be cloned for user (\S+) pass (\S+) in (\S+) container
-    ip="$(get_docker_ip $MATCH_4-cid)"
-    git clone http://$MATCH_2:$MATCH_3@$ip/git/$MATCH_1
 
-    IMPLEMENTS THEN cgit interface cannot be seen without credentials in (\S+) container
-    ip="$(get_docker_ip $MATCH_1-cid)"
-    set +e
-    wget http://$ip/cgit 2> wget-stderr
-    exit_code=$?
-    set -e
-    if [ $exit_code = 0 ]; then exit 1; fi
-    grep "Authentication Failed" wget-stderr
+    IMPLEMENTS THEN the "(.+)" error message includes the string "(.*)"
+    cmd_filename=$(replace_spaces_in_cmd "$MATCH_1")
+    grep "$MATCH_2" "$cmd_filename-err"
+
+    IMPLEMENTS THEN "(.+)" succeeded
+    cmd_filename=$(replace_spaces_in_cmd "$MATCH_1")
+    case $(cat "$cmd_filename-exit") in
+    0)  echo "\"$MATCH_1\" succeeded!"
+        ;;
+    *)  cat "$cmd_filename-out" >&2
+        die "\"$MATCH_1\" should have succeeded, but didn't. Unexpected failure!"
+        ;;
+    esac
+
+
+    IMPLEMENTS THEN "(.+)" failed
+    cmd_filename=$(replace_spaces_in_cmd "$MATCH_1")
+    case $(cat "$cmd_filename-exit") in
+        0) die "\"$MATCH_1\" should have failed, but didn't. Unexpected success!" ;;
+    esac
