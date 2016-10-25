@@ -8,3 +8,10 @@ run_in_docker(){
     shift
     docker exec `cat "$cid_file"` sh -c "$@"
 }
+
+get_docker_ip(){
+    cid_file="$1"
+    cid=$(cat $cid_file)
+    ip="$(docker inspect  --format '{{ .NetworkSettings.IPAddress }}' $cid)"
+    echo $ip
+}
