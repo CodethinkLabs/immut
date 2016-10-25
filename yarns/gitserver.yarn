@@ -6,6 +6,7 @@ Immut Git server tests
     AND  user gituser with password gitpasswd exist in gitserver-atomic container
     THEN cgit image is found for user gituser pass gitpasswd in gitserver-atomic container
     AND bar repository can be cloned for user gituser pass gitpasswd in gitserver-atomic container
+    AND cgit interface cannot be seen without credentials in gitserver-atomic container
     FINALLY the container gitserver-atomic is shut down
 
 
@@ -42,3 +43,12 @@ Implementation sections for Git server tests
     IMPLEMENTS THEN (\S+) repository can be cloned for user (\S+) pass (\S+) in (\S+) container
     ip="$(get_docker_ip $MATCH_4-cid)"
     git clone http://$MATCH_2:$MATCH_3@$ip/git/$MATCH_1
+
+    IMPLEMENTS THEN cgit interface cannot be seen without credentials in (\S+) container
+    ip="$(get_docker_ip $MATCH_1-cid)"
+    set +e
+    wget http://$ip/cgit 2> wget-stderr
+    exit_code=$?
+    set -e
+    if [ $exit_code = 0 ]; then exit 1; fi
+    grep "Authentication Failed" wget-stderr
