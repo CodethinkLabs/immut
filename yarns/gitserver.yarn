@@ -38,28 +38,29 @@ Implementation sections for Git server tests
 --------------------------------------------
 
     IMPLEMENTS GIVEN a (\S+) container
-    docker run -d --cidfile current.cid "$MATCH_1"
-    get_docker_ip current.cid > current.ip
+    docker run -d --cidfile "$DATADIR"/current.cid "$MATCH_1"
+    get_docker_ip current.cid > "$DATADIR"/current.ip
 
 
     IMPLEMENTS FINALLY the container (\S+) is shut down
-    docker kill `cat current.cid` || true
-    docker rm `cat current.cid` || true
-    rm current.cid || true
+    docker kill `cat "$DATADIR"/current.cid` || true
+    docker rm `cat "$DATADIR"/current.cid` || true
+    rm "$DATADIR"/current.cid || true
+    rm "$DATADIR"/current.ip || true
 
 
     IMPLEMENTS GIVEN  user (\S+) with password (\S+) exist
     # Authenticate using local accounts
-    run_in_docker current.cid "sed -e 's/sss/unix/g' -i /etc/pam.d/sss_git"
+    run_in_docker "$DATADIR"/current.cid "sed -e 's/sss/unix/g' -i /etc/pam.d/sss_git"
     # Make /etc/shadow readable for all users
-    run_in_docker current.cid "chmod 644 /etc/shadow"
+    run_in_docker "$DATADIR"/current.cid "chmod 644 /etc/shadow"
     # Create new user and password
-    run_in_docker current.cid "useradd -M $MATCH_1"
-    run_in_docker current.cid "echo $MATCH_1:$MATCH_2 | chpasswd"
+    run_in_docker "$DATADIR"/current.cid "useradd -M $MATCH_1"
+    run_in_docker "$DATADIR"/current.cid "echo $MATCH_1:$MATCH_2 | chpasswd"
 
 
     IMPLEMENTS WHEN user attempts to "(.+)" "(\S+)"( with user "(\S+)" and password "(\S+)")?
-    ip="$(cat current.ip)"
+    ip="$(cat "$DATADIR"/current.ip)"
     if [ "$MATCH_3" != '' ]; then
         user_and_pass="$MATCH_4":"$MATCH_5"@
     else
@@ -70,14 +71,14 @@ Implementation sections for Git server tests
 
     IMPLEMENTS THEN the "(.+)" error message includes the string "(.*)"
     cmd_filename=$(replace_spaces_in_cmd "$MATCH_1")
-    grep "$MATCH_2" "$cmd_filename-err"
+    grep "$MATCH_2" "$DATADIR/$cmd_filename-err"
 
     IMPLEMENTS THEN "(.+)" succeeded
     cmd_filename=$(replace_spaces_in_cmd "$MATCH_1")
-    case $(cat "$cmd_filename-exit") in
+    case $(cat "$DATADIR/$cmd_filename-exit") in
     0)  echo "\"$MATCH_1\" succeeded!"
         ;;
-    *)  cat "$cmd_filename-out" >&2
+    *)  cat "$DATADIR/$cmd_filename-out" >&2
         die "\"$MATCH_1\" should have succeeded, but didn't. Unexpected failure!"
         ;;
     esac
@@ -85,6 +86,6 @@ Implementation sections for Git server tests
 
     IMPLEMENTS THEN "(.+)" failed
     cmd_filename=$(replace_spaces_in_cmd "$MATCH_1")
-    case $(cat "$cmd_filename-exit") in
+    case $(cat "$DATADIR/$cmd_filename-exit") in
         0) die "\"$MATCH_1\" should have failed, but didn't. Unexpected success!" ;;
     esac

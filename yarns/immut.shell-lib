@@ -9,7 +9,7 @@ run_in_docker(){
 
 get_docker_ip(){
     cid_file="$1"
-    cid=$(cat $cid_file)
+    cid=$(cat "$DATADIR/$cid_file")
     ip="$(docker inspect  --format '{{ .NetworkSettings.IPAddress }}' $cid)"
     echo $ip
 }
@@ -20,13 +20,14 @@ get_docker_ip(){
 run_command()
 {
     {
+        cd "$DATADIR"
         export GIT_TERMINAL_PROMPT=0
         cmd_file_name=$(replace_spaces_in_cmd "$1")
         set +e
-        "$@" 2> "$cmd_filename-err" > "$cmd_filename-out"
+        "$@" 2> "$DATADIR/$cmd_filename-err" > "$DATADIR/$cmd_filename-out"
         local exit_code="$?"
-        cat "$cmd_filename-err" >&2
-        cat "$cmd_filename-out"
+        cat "$DATADIR/$cmd_filename-err" >&2
+        cat "$DATADIR/$cmd_filename-out"
         return "$exit_code"
     }
 }
@@ -38,9 +39,9 @@ attempt_command(){
     shift
     if run_command $cmd "$@"
     then
-        echo 0 > "$cmd_filename-exit"
+        echo 0 > "$DATADIR/$cmd_filename-exit"
     else
-        echo "$?" > "$cmd_filename-exit"
+        echo "$?" > "$DATADIR/$cmd_filename-exit"
     fi
 }
 
