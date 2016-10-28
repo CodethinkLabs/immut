@@ -30,6 +30,10 @@ Immut Git server tests
     WHEN user attempts to "git clone" "/git/bar" with user "gituser" and password "gitpasswd"
     THEN "git clone" succeeded
 
+    WHEN user attempts to "wget" "/"
+    THEN "wget" failed
+    AND file "index.html" includes the string "Test Page for the Apache HTTP Server on Fedora"
+
     FINALLY the container gitserver is shut down
 
 
@@ -72,6 +76,11 @@ Implementation sections for Git server tests
     IMPLEMENTS THEN the "(.+)" error message includes the string "(.*)"
     cmd_filename=$(replace_spaces_in_cmd "$MATCH_1")
     grep "$MATCH_2" "$DATADIR/$cmd_filename-err"
+
+
+    IMPLEMENTS THEN file "(.+)" includes the string "(.*)"
+    grep "$MATCH_2" "$DATADIR/$MATCH_1"
+
 
     IMPLEMENTS THEN "(.+)" succeeded
     cmd_filename=$(replace_spaces_in_cmd "$MATCH_1")

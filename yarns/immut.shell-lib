@@ -21,11 +21,22 @@ run_command()
 {
     {
         cd "$DATADIR"
-        export GIT_TERMINAL_PROMPT=0
-        cmd_file_name=$(replace_spaces_in_cmd "$1")
+
+        # Extract cmd filename first, and shift
+        cmd_file_name="$1"
+        shift
+
+        # Set env variables for some commands
+        case "$cmd_file_name" in
+            "git-clone") export GIT_TERMINAL_PROMPT=0 ;;
+        esac
+
+        # Execute command
+        echo "$@" > "$DATADIR/$cmd_filename-cmd"
         set +e
         "$@" 2> "$DATADIR/$cmd_filename-err" > "$DATADIR/$cmd_filename-out"
         local exit_code="$?"
+        set -e
         cat "$DATADIR/$cmd_filename-err" >&2
         cat "$DATADIR/$cmd_filename-out"
         return "$exit_code"
@@ -35,7 +46,13 @@ run_command()
 
 attempt_command(){
     cmd_filename=$(replace_spaces_in_cmd "$1")
-    cmd="$1"
+
+    case "$1" in
+        "wget") cmd="$1 --content-on-error" ;;
+        *) cmd="$1" ;;
+    esac
+    cmd="$cmd_filename $cmd"
+
     shift
     if run_command $cmd "$@"
     then
