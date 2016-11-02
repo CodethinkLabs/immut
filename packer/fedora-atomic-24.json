@@ -71,7 +71,8 @@
 		"inline": [
 			"set -x",
 			"ostree export --repo=/home/rpm-update fedora-atomic/f23/x86_64/docker-gitserver | docker import - gitserver_base",
-			"ostree export --repo=/home/rpm-update fedora-atomic/f23/x86_64/docker-haproxy | docker import - haproxy_base"
+			"ostree export --repo=/home/rpm-update fedora-atomic/f23/x86_64/docker-haproxy | docker import - haproxy_base",
+			"ostree export --repo=/home/rpm-update fedora-atomic/f23/x86_64/docker-yarn-runner | docker import - yarn-runner_base"
 		]
 	}, {
                "type": "file",

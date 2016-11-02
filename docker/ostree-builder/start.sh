@@ -14,6 +14,7 @@ curl -o fedora-23-updates.repo https://git.fedorahosted.org/cgit/fedora-repos.gi
 sed -i -e 's/\$releasever/23/g' fedora-23-updates.repo
 cp /workdir/*.json /home/working/fedora-atomic/
 cp /workdir/treecompose-var-post.sh /home/working/fedora-atomic/
+rpm-ostree compose tree --repo=/data/repo /home/working/fedora-atomic/fedora-atomic-yarn-runner.json
 rpm-ostree compose tree --repo=/data/repo /home/working/fedora-atomic/fedora-atomic-update-tree.json
 rpm-ostree compose tree --repo=/data/repo /home/working/fedora-atomic/fedora-atomic-haproxy.json
 rpm-ostree compose tree --repo=/data/repo /home/working/fedora-atomic/fedora-atomic-gitserver.json

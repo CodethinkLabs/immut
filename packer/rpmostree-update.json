@@ -40,6 +40,9 @@
 		"source": "files/ostree-builder/fedora-atomic-gitserver.json",
 		"destination": "/home/fedora-atomic-gitserver.json"
 	}, {
+		"source": "files/ostree-builder/fedora-atomic-yarn-runner.json",
+		"destination": "/home/fedora-atomic-yarn-runner.json"
+	}, {
 		"type": "file",
 		"source": "files/ostree-builder/treecompose-var-post.sh",
 		"destination": "/home/treecompose-var-post.sh"
@@ -64,6 +67,7 @@
 			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-update-tree.json",
 			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-haproxy.json",
 			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-gitserver.json",
+			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-yarn-runner.json",
 			"cd /home/working",
 			"ostree --repo=/srv/rpm-ostree/repo checkout -U fedora-atomic/f23/x86_64/docker-gitserver gitserver",
 			"mv gitserver/usr/etc gitserver/etc            # Put /etc in the right place",
