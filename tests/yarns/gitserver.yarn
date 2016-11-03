@@ -1,6 +1,9 @@
 Immut Git server tests
 ======================
 
+
+Git server authentication tests
+
     SCENARIO Anonymous access to /cgit fails
     GIVEN a git server running with ip stored in gitserver_ip
     WHEN user attempts to "wget" "/cgit"
@@ -46,6 +49,23 @@ Immut Git server tests
     THEN "wget" failed
     AND file "index.html" includes the string "Test Page for the Apache HTTP Server on Fedora"
 
+Git server tests through HAProxy
+
+    SCENARIO Authenticated user access to /cgit through haproxy succeeds
+    GIVEN a haproxy server running with ip stored in haproxy_ip
+    WHEN user attempts to "wget" "/cgit" with prefix "gitserver.test" with user "testuser" and password "testpass"
+    THEN "wget" succeeded
+
+    SCENARIO Authenticated user git-clone of a repository through haproxy succeeds
+    GIVEN a haproxy server running with ip stored in haproxy_ip
+    WHEN user attempts to "git clone" "/git/bar" with prefix "gitserver.test" with user "testuser" and password "testpass"
+    THEN "git clone" succeeded
+
+    SCENARIO Anonymous access to / through haproxy returns Apache test page
+    GIVEN a haproxy server running with ip stored in haproxy_ip
+    WHEN user attempts to "wget" "/" with prefix "gitserver.test"
+    THEN "wget" failed
+    AND file "index.html" includes the string "Test Page for the Apache HTTP Server on Fedora"
 
 
 Implementation sections for Git server tests
@@ -55,15 +75,21 @@ Implementation sections for Git server tests
     IMPLEMENTS GIVEN a git server running with ip stored in gitserver_ip
     echo $gitserver_ip > "$DATADIR"/current.ip
 
+    IMPLEMENTS GIVEN a haproxy server running with ip stored in haproxy_ip
+    echo $haproxy_ip > "$DATADIR"/current.ip
 
-    IMPLEMENTS WHEN user attempts to "(.+)" "(\S+)"( with user "(\S+)" and password "(\S+)")?
-    ip="$(cat "$DATADIR"/current.ip)"
+    IMPLEMENTS WHEN user attempts to "(.+)" "(\S+)"( with prefix "(\S+)")?( with user "(\S+)" and password "(\S+)")?
+    address="$(cat "$DATADIR"/current.ip)"
     if [ "$MATCH_3" != '' ]; then
-        user_and_pass="$MATCH_4":"$MATCH_5"@
+        address="$MATCH_4.$address.xip.io"
+    fi
+
+    if [ "$MATCH_5" != '' ]; then
+        user_and_pass="$MATCH_6":"$MATCH_7"@
     else
         user_and_pass=""
     fi
-    attempt_command "$MATCH_1" http://"$user_and_pass""$ip""$MATCH_2"
+    attempt_command "$MATCH_1" "http://""$user_and_pass""$address""$MATCH_2"
 
 
     IMPLEMENTS THEN the "(.+)" error message includes the string "(.*)"
