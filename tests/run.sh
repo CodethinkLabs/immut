@@ -103,10 +103,11 @@ docker run -d -v=$HAPROXYDIR:/data/:rw \
            --cidfile "$TMPDIR/haproxy.cid" \
            haproxy
 
+haproxy_ip="$(docker_get_ip haproxy)"
+gitserver_ip="$(docker_get_ip gitserver)"
 
 
-
-read
+docker run -t -v $SCRIPTPATH:/data:ro yarn-runner_base /data/check $haproxy_ip $gitserver_ip
 
 ## Cleanup
 for i in $projects; do
@@ -115,19 +116,5 @@ for i in $projects; do
         docker_kill_container $j
     done
 done
+
 docker_kill_container haproxy
-
-exit 1
-
-
-
-if command -v yarn > /dev/null; then
-    yarn --tempdir "$TMPDIR" \
-         -s immut.shell-lib yarns/*.yarn
-else
-    echo "WARNING: 'yarn' scenario test tool (part of 'cmdtest' " \
-         "package) was not found." >&2
-    exit 1
-fi
-
-

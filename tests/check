@@ -1,11 +1,25 @@
 #!/bin/sh
 #
 # Run test suite for immut
+# This script assumes that the ip of the services are passed
+# through parameters
+
+# usage: ./check <haproxy ip> <gitserver ip>
 
 set -e
 
+haproxy_ip="$1"
+gitserver_ip="$2"
+
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+. $SCRIPTPATH/immut.shell-lib
+
+
 if [ "x$TMPDIR" == "x" ]; then
     TMPDIR="/tmp"
+    mkdir /sysroot/tmp
 fi
 
 TMPDIR="$TMPDIR/testSuite"
@@ -16,9 +30,8 @@ export TMPDIR
 
 if command -v yarn > /dev/null; then
     yarn --tempdir "$TMPDIR" \
-         -s immut.shell-lib yarns/*.yarn
-else
-    echo "WARNING: 'yarn' scenario test tool (part of 'cmdtest' " \
-	 "package) was not found." >&2
-    exit 1
+         --env "gitserver_ip=$gitserver_ip" \
+         --env "haproxy_ip=$haproxy_ip" \
+         -s "$SCRIPTPATH"/immut.shell-lib \
+         "$SCRIPTPATH"/yarns/*.yarn
 fi
