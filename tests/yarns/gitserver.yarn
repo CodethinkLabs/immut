@@ -1,6 +1,62 @@
 Immut Git server tests
 ======================
 
+gitclone, commit and push
+
+    SCENARIO Authenticated user can commit and push
+    GIVEN a git server running with ip stored in gitserver_ip
+    WHEN user attempts to "git clone" "/git/bar" with user "testuser" and password "testpass"
+    THEN "git clone" succeeded
+    WHEN user adds "file.txt" in "bar" repository
+    THEN "git add" succeeded
+    WHEN user configures name and email for git in "bar" repository
+    WHEN user commits "file.txt" in "bar" repository
+    THEN "git commit" succeeded
+    WHEN user pushes to "master" in "bar" repository
+    THEN "git clone" succeeded
+
+    IMPLEMENTS WHEN user adds "(\S+)" in "(\S+)" repository
+    file="$MATCH_1"
+    repo="$MATCH_2"
+    cat >"$DATADIR/$repo/$file" <<'EOF'
+    This file conains testing data
+    Is created automatically from yarn tests
+    EOF
+
+    attempt_command_in_folder "git add" "$DATADIR/$repo" $file
+
+
+    IMPLEMENTS WHEN user commits "(\S+)" in "(\S+)" repository
+    file="$MATCH_1"
+    repo="$MATCH_2"
+    attempt_command_in_folder "git commit" "$DATADIR/$repo" -m "Commiting file $file"
+
+    IMPLEMENTS WHEN foo
+    cmd_filename=$(replace_spaces_in_cmd "git add")
+    case $(cat "$DATADIR/$cmd_filename-exit") in
+    0)  ;;
+    *)  cat "$DATADIR/$cmd_filename-out" >&2
+        die "git add" should have succeeded, but didn't. Unexpected failure!"
+        ;;
+    esac
+
+    IMPLEMENTS WHEN user configures name and email for git in "(\S+)" repository
+    repo="$MATCH_1"
+    attempt_command_in_folder "git config" "$DATADIR/$repo" user.email "you@example.com"
+    attempt_command_in_folder "git config" "$DATADIR/$repo" user.name "Your Name"
+
+
+    IMPLEMENTS WHEN user pushes to "(\S+)" in "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    attempt_command_in_folder "git push" "$DATADIR/$repo" origin $branch
+
+git clone branch, commit and push new branch
+SCENARIO Authenticated user can branch and push
+git clone branch, commit,  and push new branch, and merge branch in master
+SCENARIO Authenticated user can merge a branch
+
+
 
 Git server authentication tests
 

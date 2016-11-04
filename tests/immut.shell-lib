@@ -20,8 +20,6 @@ get_docker_ip(){
 run_command()
 {
     {
-        cd "$DATADIR"
-
         # Extract cmd filename first, and shift
         cmd_file_name="$1"
         shift
@@ -45,7 +43,16 @@ run_command()
 
 
 attempt_command(){
+cmd="$1"
+shift
+attempt_command_in_folder "$cmd" "$DATADIR" "$@"
+
+}
+
+attempt_command_in_folder(){
+
     cmd_filename=$(replace_spaces_in_cmd "$1")
+    folder="$2"
 
     case "$1" in
         "wget") cmd="$1 --content-on-error" ;;
@@ -53,7 +60,8 @@ attempt_command(){
     esac
     cmd="$cmd_filename $cmd"
 
-    shift
+    shift 2
+    cd "$folder"
     if run_command $cmd "$@"
     then
         echo 0 > "$DATADIR/$cmd_filename-exit"

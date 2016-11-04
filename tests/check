@@ -19,7 +19,7 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 
 if [ "x$TMPDIR" == "x" ]; then
     TMPDIR="/tmp"
-    mkdir /sysroot/tmp
+    mkdir -p /sysroot/tmp
 fi
 
 TMPDIR="$TMPDIR/testSuite"
@@ -29,9 +29,11 @@ TMPDIR=$(mktemp -d -p "$TMPDIR")
 export TMPDIR
 
 if command -v yarn > /dev/null; then
-    yarn --tempdir "$TMPDIR" \
+    yarn --tempdir "$TMPDIR" --snapshot \
          --env "gitserver_ip=$gitserver_ip" \
          --env "haproxy_ip=$haproxy_ip" \
          -s "$SCRIPTPATH"/immut.shell-lib \
          "$SCRIPTPATH"/yarns/*.yarn
+else
+    echo "ERROR: "yarn" binary not found!!"
 fi
