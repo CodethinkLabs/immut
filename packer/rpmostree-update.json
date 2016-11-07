@@ -40,6 +40,7 @@
 		"source": "files/ostree-builder/fedora-atomic-gitserver.json",
 		"destination": "/home/fedora-atomic-gitserver.json"
 	}, {
+		"type": "file",
 		"source": "files/ostree-builder/fedora-atomic-yarn-runner.json",
 		"destination": "/home/fedora-atomic-yarn-runner.json"
 	}, {
@@ -76,10 +77,10 @@
 			"mv gitserver/usr/var/* gitserver/var/         # Move /usr/var contents to /var",
 			"rm -r gitserver/usr/var                       # Remove what's left from /usr/var",
 			"ostree --repo=/srv/rpm-ostree/repo commit -b fedora-atomic/f23/x86_64/docker-gitserver --link-checkout-speedup gitserver",
-			"cd /workdir",
-			"ostree --repo=/data/repo checkout -U fedora-atomic/f23/x86_64/docker-yarn-runner yarns",
+			"cd /home/working",
+			"ostree --repo=/srv/rpm-ostree/repo checkout -U fedora-atomic/f23/x86_64/docker-yarn-runner yarns",
 			"mv yarns/usr/etc yarns/etc            # Put /etc in the right place",
-			"ostree --repo=/data/repo commit -b fedora-atomic/f23/x86_64/docker-yarn-runner --link-checkout-speedup yarns",
+			"ostree --repo=/srv/rpm-ostree/repo commit -b fedora-atomic/f23/x86_64/docker-yarn-runner --link-checkout-speedup yarns",
 			"rm -rf /srv/rpm-ostree/repo/uncompressed-objects-cache",
 			"cd /srv/rpm-ostree",
 			"zip -r /home/repo.zip ./repo"
