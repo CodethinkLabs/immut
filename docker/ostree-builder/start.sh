@@ -10,7 +10,7 @@ git clone https://git.fedorahosted.org/git/fedora-atomic.git -b f24 /home/workin
 ostree --repo=/data/repo init --mode=archive-z2
 
 cd /home/working/fedora-atomic/
-curl -o fedora-24-updates.repo https://git.fedorahosted.org/cgit/fedora-repos.git/plain/fedora-updates.repo?h=f24
+curl -o fedora-24-updates.repo https://pagure.io/fedora-repos/raw/f24/f/fedora-updates.repo
 sed -i -e 's/\$releasever/24/g' fedora-24-updates.repo
 cp /workdir/*.json /home/working/fedora-atomic/
 cp /workdir/treecompose-var-post.sh /home/working/fedora-atomic/

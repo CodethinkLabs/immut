@@ -60,7 +60,7 @@
 			"cd /srv/rpm-ostree/",
 			"ostree --repo=repo init --mode=archive-z2",
 			"cd /home/working/fedora-atomic/",
-			"curl -o fedora-24-updates.repo https://git.fedorahosted.org/cgit/fedora-repos.git/plain/fedora-updates.repo?h=f24",
+			"curl -o fedora-24-updates.repo https://pagure.io/fedora-repos/raw/f24/f/fedora-updates.repo",
 			"sed -i 's\/\\$releasever\/24\/g' fedora-24-updates.repo",
 			"cp /home/*.json /home/working/fedora-atomic/",
 			"cp /home/treecompose-var-post.sh /home/working/fedora-atomic/",
