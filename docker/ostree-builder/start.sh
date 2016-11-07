@@ -31,9 +31,9 @@ ostree --repo=/data/repo commit -b fedora-atomic/f24/x86_64/docker-gitserver --l
 
 # Fixes needed for yarn runner
 cd /workdir
-ostree --repo=/data/repo checkout -U fedora-atomic/f23/x86_64/docker-yarn-runner yarns
+ostree --repo=/data/repo checkout -U fedora-atomic/f24/x86_64/docker-yarn-runner yarns
 mv yarns/usr/etc yarns/etc            # Put /etc in the right place
-ostree --repo=/data/repo commit -b fedora-atomic/f23/x86_64/docker-yarn-runner --link-checkout-speedup yarns
+ostree --repo=/data/repo commit -b fedora-atomic/f24/x86_64/docker-yarn-runner --link-checkout-speedup yarns
 
 
 rm -rf /data/repo/uncompressed-objects-cache
