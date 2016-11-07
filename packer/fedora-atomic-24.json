@@ -99,7 +99,11 @@
                "type": "shell",
                "inline": [
                        "echo Rebooting system NOW",
-                       "reboot",
+                       "reboot"
+               ]
+	}, {
+               "type": "shell",
+               "inline": [
                        "echo System rebooted"
                ]
 	}, {
