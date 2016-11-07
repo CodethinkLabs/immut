@@ -1,13 +1,13 @@
 {
-    "ref": "fedora-atomic/f23/x86_64/docker-host",
+    "ref": "fedora-atomic/f24/x86_64/docker-host",
 
-    "repos": ["fedora-23", "fedora-23-updates"],
+    "repos": ["fedora-24"],
 
     "selinux": true,
 
     "documentation": false,
 
-    "automatic_version_prefix": "23",
+    "automatic_version_prefix": "24",
 
     "initramfs-args": ["--no-hostonly", "--add", "iscsi"],
 
@@ -74,6 +74,8 @@
 		 "docker",
 		 "python-docker-py",
 		 "iscsi-initiator-utils",
+		 "glusterfs", "glusterfs-fuse",
+		 "ceph-common",
 		 "oddjob-mkhomedir",
 		 "atomic-devmode",
 		 "runc",
@@ -81,6 +83,7 @@
 		 "autofs",
 		 "sssd-common",
 		 "sssd-proxy"],
+
 
     "default_target": "multi-user.target",
 

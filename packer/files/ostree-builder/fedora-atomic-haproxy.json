@@ -1,7 +1,7 @@
 {
-    "ref": "fedora-atomic/f23/x86_64/docker-haproxy",
+    "ref": "fedora-atomic/f24/x86_64/docker-haproxy",
 
-    "repos": ["fedora-23", "fedora-23-updates"],
+    "repos": ["fedora-24", "fedora-24-updates"],
 
     "selinux": false,
 
@@ -9,7 +9,7 @@
 
     "documentation": false,
 
-    "automatic_version_prefix": "23",
+    "automatic_version_prefix": "24",
 
     "install-langs": ["en_US"],
 
