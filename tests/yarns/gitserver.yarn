@@ -1,172 +1,174 @@
-Immut Git server tests
+Immut Git client tests
 ======================
 
-gitclone, commit and push
+Configure_git_client.YARN
 
-    SCENARIO Authenticated user can commit and push
-    GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "git clone" "/git/bar" with user "testuser" and password "testpass"
-    THEN "git clone" succeeded
-    WHEN user adds "file.txt" in "bar" repository
-    THEN "git add" succeeded
-    WHEN user configures name and email for git in "bar" repository
-    WHEN user commits "file.txt" in "bar" repository
-    THEN "git commit" succeeded
-    WHEN user pushes to "master" in "bar" repository
-    THEN "git clone" succeeded
+    SCENARIO user configures git client
+    WHEN user configures git "user.name" to "User Name"
+    THEN "git config" succeeded
+    WHEN user configures git "user.email" to "user@domain.com"
+    THEN "git config" succeeded
 
-    IMPLEMENTS WHEN user adds "(\S+)" in "(\S+)" repository
+    IMPLEMENTS WHEN user configures git "(\S+)" to "(.+)"
+    var="$MATCH_1"
+    value="$MATCH_2"
+    attempt_command "git config" --global $var "$value"
+
+
+Configure_git_authentication.YARN
+
+??
+
+
+Create__master_Branch.YARN
+
+    SCENARIO user creates master git branch
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND some new text in "test" file in "foo" repository
+    WHEN user pushes all changes to "master" in "foo" repository
+    THEN "git push" succeeded
+
+    IMPLEMENTS ASSUMING gitserver is running
+    if [ "x$gitserver_ip" = "x" ]; then
+        die "\"$gitserver_ip\" variable is empty!"
+    fi
+    echo $gitserver_ip > "$DATADIR"/current.ip
+
+
+    IMPLEMENTS ASSUMING git client configured
+    execute_command "git config" --global user.email "user@domain.com"
+    execute_command "git config" --global user.name "User Name"
+
+    IMPLEMENTS GIVEN a local clone of "(\S+)" repository
+    git_ip="$(cat "$DATADIR"/current.ip)"
+    repo=$MATCH_1
+    execute_command "git clone" http://testuser:testpass@$git_ip/git/$repo
+
+    IMPLEMENTS GIVEN some new text in "(\S+)" file in "(\S+)" repository
     file="$MATCH_1"
     repo="$MATCH_2"
     echo "This content was created by the tests" >> "$DATADIR/$repo/$file"
 
-    attempt_command_in_folder "git add" "$DATADIR/$repo" $file
-
-
-    IMPLEMENTS WHEN user commits "(\S+)" in "(\S+)" repository
-    file="$MATCH_1"
+    IMPLEMENTS WHEN user pushes all changes to "(\S+)" in "(\S+)" repository
+    branch="$MATCH_1"
     repo="$MATCH_2"
-    attempt_command_in_folder "git commit" "$DATADIR/$repo" -m "Commiting file $file"
+    execute_command_in_folder "git add" "$DATADIR/$repo" .
+    execute_command_in_folder "git commit" "$DATADIR/$repo" -m "Automated commit"
+    attempt_command_in_folder "git push" "$DATADIR/$repo" origin $branch
 
-    IMPLEMENTS WHEN foo
-    cmd_filename=$(replace_spaces_in_cmd "git add")
-    case $(cat "$DATADIR/$cmd_filename-exit") in
-    0)  ;;
-    *)  cat "$DATADIR/$cmd_filename-out" >&2
-        die "git add" should have succeeded, but didn't. Unexpected failure!"
-        ;;
-    esac
 
-    IMPLEMENTS WHEN user configures name and email for git in "(\S+)" repository
-    repo="$MATCH_1"
-    attempt_command_in_folder "git config" "$DATADIR/$repo" user.email "you@example.com"
-    attempt_command_in_folder "git config" "$DATADIR/$repo" user.name "Your Name"
+Create__develop_Branch.YARN
 
+    SCENARIO user creates develop git branch
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND a local branch "develop" branched from "master" in "foo" repository
+    WHEN user pushes to "develop" in "foo" repository
+    THEN "git push" succeeded
+
+    IMPLEMENTS GIVEN a local branch "(\S+)" branched from "(\S+)" in "(\S+)" repository
+    branch="$MATCH_1"
+    base_branch="$MATCH_2"
+    repo="$MATCH_3"
+    execute_command_in_folder "git checkout" "$DATADIR/$repo" $base_branch
+    execute_command_in_folder "git checkout" "$DATADIR/$repo" -b $branch
 
     IMPLEMENTS WHEN user pushes to "(\S+)" in "(\S+)" repository
     branch="$MATCH_1"
     repo="$MATCH_2"
     attempt_command_in_folder "git push" "$DATADIR/$repo" origin $branch
 
-git clone branch, commit and push new branch
-SCENARIO Authenticated user can branch and push
-git clone branch, commit,  and push new branch, and merge branch in master
-SCENARIO Authenticated user can merge a branch
+
+Create_feature_Branch.YARN
+
+    SCENARIO user creates feature git branch
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND a local branch "feature-branch" branched from "develop" in "foo" repository
+    WHEN user pushes to "feature-branch" in "foo" repository
+    THEN "git push" succeeded
 
 
+Commit_feature_Branch.YARN
 
-Git server authentication tests
+    SCENARIO user commits to feature git branch
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND the branch "feature-branch" checked out in "foo" repository
+    AND some new text in "test" file in "foo" repository
+    WHEN user pushes all changes to "feature-branch" in "foo" repository
+    THEN "git push" succeeded
 
-    SCENARIO Anonymous access to /cgit fails
-    GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "wget" "/cgit"
-    THEN "wget" failed
-    AND the "wget" error message includes the string "Authentication Failed"
-
-    SCENARIO Anonymous access to CGit logo fails
-    GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "wget" "/cgit-data/cgit.png"
-    THEN "wget" failed
-    AND the "wget" error message includes the string "Authentication Failed"
-
-    SCENARIO Authenticated user access to /cgit succeeds
-    GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "wget" "/cgit" with user "testuser" and password "testpass"
-    THEN "wget" succeeded
-
-    SCENARIO Authenticated user access to CGit logo succeeds
-    GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "wget" "/cgit-data/cgit.png" with user "testuser" and password "testpass"
-    THEN "wget" succeeded
-
-    SCENARIO Anonymous git-clone of a repository fails
-    GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "git clone" "/git/bar"
-    THEN "git clone" failed
-    AND the "git clone" error message includes the string "terminal prompts disabled"
-
-    SCENARIO Wrong credentials git-clone of a repository fails
-    GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "git clone" "/git/bar" with user "fakeuser" and password "fakepass"
-    THEN "git clone" failed
-    AND the "git clone" error message includes the string "Authentication failed"
-
-    SCENARIO Authenticated user git-clone of a repository succeeds
-    GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "git clone" "/git/bar" with user "testuser" and password "testpass"
-    THEN "git clone" succeeded
-
-    SCENARIO Anonymous access to / returns Apache test page
-    GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "wget" "/"
-    THEN "wget" failed
-    AND file "index.html" includes the string "Test Page for the Apache HTTP Server on Fedora"
-
-Git server tests through HAProxy
-
-    SCENARIO Authenticated user access to /cgit through haproxy succeeds
-    GIVEN a haproxy server running with ip stored in haproxy_ip
-    WHEN user attempts to "wget" "/cgit" with prefix "gitserver.test" with user "testuser" and password "testpass"
-    THEN "wget" succeeded
-
-    SCENARIO Authenticated user git-clone of a repository through haproxy succeeds
-    GIVEN a haproxy server running with ip stored in haproxy_ip
-    WHEN user attempts to "git clone" "/git/bar" with prefix "gitserver.test" with user "testuser" and password "testpass"
-    THEN "git clone" succeeded
-
-    SCENARIO Anonymous access to / through haproxy returns Apache test page
-    GIVEN a haproxy server running with ip stored in haproxy_ip
-    WHEN user attempts to "wget" "/" with prefix "gitserver.test"
-    THEN "wget" failed
-    AND file "index.html" includes the string "Test Page for the Apache HTTP Server on Fedora"
+    IMPLEMENTS GIVEN the branch "(\S+)" checked out in "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    execute_command_in_folder "git checkout" "$DATADIR/$repo" $branch
 
 
-Implementation sections for Git server tests
---------------------------------------------
+Review_feature_Branch.YARN
 
 
-    IMPLEMENTS GIVEN a git server running with ip stored in gitserver_ip
-    echo $gitserver_ip > "$DATADIR"/current.ip
+    SCENARIO user can review feature branch
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND the branch "develop" checked out in "foo" repository
+    WHEN user merges "feature-branch" in "foo" repository
+    THEN "git merge" succeeded
 
-    IMPLEMENTS GIVEN a haproxy server running with ip stored in haproxy_ip
-    echo $haproxy_ip > "$DATADIR"/current.ip
-
-    IMPLEMENTS WHEN user attempts to "(.+)" "(\S+)"( with prefix "(\S+)")?( with user "(\S+)" and password "(\S+)")?
-    address="$(cat "$DATADIR"/current.ip)"
-    if [ "$MATCH_3" != '' ]; then
-        address="$MATCH_4.$address.xip.io"
-    fi
-
-    if [ "$MATCH_5" != '' ]; then
-        user_and_pass="$MATCH_6":"$MATCH_7"@
-    else
-        user_and_pass=""
-    fi
-    attempt_command "$MATCH_1" "http://""$user_and_pass""$address""$MATCH_2"
+    IMPLEMENTS WHEN user merges "(\S+)" in "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    attempt_command_in_folder "git merge" "$DATADIR/$repo" origin/$branch
 
 
-    IMPLEMENTS THEN the "(.+)" error message includes the string "(.*)"
-    cmd_filename=$(replace_spaces_in_cmd "$MATCH_1")
-    grep "$MATCH_2" "$DATADIR/$cmd_filename-err"
+Merge_feature_Branch_to_develop.YARN
+
+    SCENARIO user can merge a feature branch back to develop
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND the branch "develop" checked out in "foo" repository
+    AND the branch "feature-branch" is merged in "foo" repository
+    WHEN user pushes to "develop" in "foo" repository
+    THEN "git push" succeeded
+
+    IMPLEMENTS GIVEN the branch "(\S+)" is merged in "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    execute_command_in_folder "git merge" "$DATADIR/$repo" origin/$branch
 
 
-    IMPLEMENTS THEN file "(.+)" includes the string "(.*)"
-    grep "$MATCH_2" "$DATADIR/$MATCH_1"
+Merge_develop_to_master.YARN
+
+    SCENARIO user can merge the "develop" branch into master
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND the branch "master" checked out in "foo" repository
+    AND the branch "develop" is merged in "foo" repository
+    WHEN user pushes to "master" in "foo" repository
+    THEN "git push" succeeded
+
+TAG_release_on_master.YARN
+
+    SCENARIO user can tag a release on master branch
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND the branch "master" checked out in "foo" repository
+    AND a tag "release_01" is created in "foo" repository
+    WHEN user pushes to "release_01" in "foo" repository
+    THEN "git push" succeeded
+
+    IMPLEMENTS GIVEN a tag "(\S+)" is created in "(\S+)" repository
+    tag="$MATCH_1"
+    repo="$MATCH_2"
+    execute_command_in_folder "git tag" "$DATADIR/$repo" $tag
 
 
-    IMPLEMENTS THEN "(.+)" succeeded
-    cmd_filename=$(replace_spaces_in_cmd "$MATCH_1")
-    case $(cat "$DATADIR/$cmd_filename-exit") in
-    0)  echo "\"$MATCH_1\" succeeded!"
-        ;;
-    *)  cat "$DATADIR/$cmd_filename-out" >&2
-        die "\"$MATCH_1\" should have succeeded, but didn't. Unexpected failure!"
-        ;;
-    esac
-
-
-    IMPLEMENTS THEN "(.+)" failed
-    cmd_filename=$(replace_spaces_in_cmd "$MATCH_1")
-    case $(cat "$DATADIR/$cmd_filename-exit") in
-        0) die "\"$MATCH_1\" should have failed, but didn't. Unexpected success!" ;;
-    esac
