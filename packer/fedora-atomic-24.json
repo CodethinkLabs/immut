@@ -125,8 +125,7 @@
                        "chown root /etc/sssd/sssd.conf",
                        "chmod 0600 /etc/sssd/sssd.conf",
                        "systemctl enable sssd",
-                       "systemctl start sssd",
-                       "systemctl status -l sssd"
+                       "systemctl start sssd"
                ]
 	}, {
                "type": "shell",
