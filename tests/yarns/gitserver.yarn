@@ -18,10 +18,7 @@ gitclone, commit and push
     IMPLEMENTS WHEN user adds "(\S+)" in "(\S+)" repository
     file="$MATCH_1"
     repo="$MATCH_2"
-    cat >"$DATADIR/$repo/$file" <<'EOF'
-    This file conains testing data
-    Is created automatically from yarn tests
-    EOF
+    echo "This content was created by the tests" >> "$DATADIR/$repo/$file"
 
     attempt_command_in_folder "git add" "$DATADIR/$repo" $file
 
