@@ -43,6 +43,6 @@
 		 "cmdtest",
 		 "wget",
 		 "git",
-		 "python-markdown"]
+		 "python2-markdown"]
 
 }
