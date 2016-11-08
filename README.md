@@ -10,6 +10,7 @@ infrastructure.
 1. Automate as much of the infrastructure setup as possible.
 2. Provide auditable configuration files.
 3. Store all infrastructure definitions and configuration in git.
+4. Automate tests for the infrastructure
 
 ## Prerequisites
 
@@ -150,3 +151,18 @@ and push changes. If you browse to:
   http://gitserver.p1.$VM-IP-ADDRESS.xip.io/cgit/
 
 You should be able to see a cgit instance, containing your changes.
+
+## Test
+
+There are yarn scenario tests in the 'tests' directory. These can be run
+via the run.sh wrapper, with `sudo sh run.sh`. This will currently create
+a haproxy and gitserver container, along with a container to run the 
+yarns in. In the future, this will test from within the VM.
+
+Yarn is part of the cmdtest package. There is an overview of yarn here:
+
+http://blog.liw.fi/posts/yarn/
+
+and the source is over here:
+
+http://git.liw.fi/cgi-bin/cgit/cgit.cgi/cmdtest/tree/
