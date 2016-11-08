@@ -43,10 +43,28 @@ run_command()
 
 
 attempt_command(){
-cmd="$1"
-shift
-attempt_command_in_folder "$cmd" "$DATADIR" "$@"
+    cmd="$1"
+    shift
+    attempt_command_in_folder "$cmd" "$DATADIR" "$@"
+}
 
+execute_command(){
+    cmd="$1"
+    shift
+    execute_command_in_folder "$cmd" "$DATADIR" "$@"
+}
+
+execute_command_in_folder(){
+    cmd="$1"
+    folder="$2"
+    cmd_filename=$(replace_spaces_in_cmd "$1")
+    shift 2
+    attempt_command_in_folder "$cmd" "$folder" "$@"
+    exit=$(cat "$DATADIR/$cmd_filename-exit")
+    case "$exit" in
+        "0") ;;
+        *) die "Command \"$cmd\" failed. Unexpected failure!" ;;
+    esac
 }
 
 attempt_command_in_folder(){
