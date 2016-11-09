@@ -1,7 +1,6 @@
 #!/bin/sh
 
 set -e
-set -x
 
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
@@ -107,7 +106,13 @@ haproxy_ip="$(docker_get_ip haproxy)"
 gitserver_ip="$(docker_get_ip gitserver)"
 
 
-docker run -t -v $SCRIPTPATH:/data:ro yarn-runner_base /data/check $haproxy_ip $gitserver_ip
+set -x
+set +e
+docker run -t -v $SCRIPTPATH:/data:ro --cidfile "$TMPDIR/yarns.cid" yarn-runner_base /data/check $haproxy_ip $gitserver_ip
+set -e
+set +x
+
+docker rm $(cat "$TMPDIR/yarns.cid")
 
 ## Cleanup
 for i in $projects; do
