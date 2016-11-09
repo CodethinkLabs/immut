@@ -9,16 +9,9 @@ Configure_git_client.YARN
     WHEN user configures git "user.email" to "user@domain.com"
     THEN "git config" succeeded
 
-    IMPLEMENTS WHEN user configures git "(\S+)" to "(.+)"
-    var="$MATCH_1"
-    value="$MATCH_2"
-    attempt_command "git config" --global $var "$value"
-
-
 Configure_git_authentication.YARN
 
 ??
-
 
 Create__master_Branch.YARN
 
@@ -30,35 +23,6 @@ Create__master_Branch.YARN
     WHEN user pushes all changes to "master" in "foo" repository
     THEN "git push" succeeded
 
-    IMPLEMENTS ASSUMING gitserver is running
-    if [ "x$gitserver_ip" = "x" ]; then
-        die "\"$gitserver_ip\" variable is empty!"
-    fi
-    echo $gitserver_ip > "$DATADIR"/current.ip
-
-
-    IMPLEMENTS ASSUMING git client configured
-    execute_command "git config" --global user.email "user@domain.com"
-    execute_command "git config" --global user.name "User Name"
-
-    IMPLEMENTS GIVEN a local clone of "(\S+)" repository
-    git_ip="$(cat "$DATADIR"/current.ip)"
-    repo=$MATCH_1
-    execute_command "git clone" http://testuser:testpass@$git_ip/git/$repo
-
-    IMPLEMENTS GIVEN some new text in "(\S+)" file in "(\S+)" repository
-    file="$MATCH_1"
-    repo="$MATCH_2"
-    echo "This content was created by the tests" >> "$DATADIR/$repo/$file"
-
-    IMPLEMENTS WHEN user pushes all changes to "(\S+)" in "(\S+)" repository
-    branch="$MATCH_1"
-    repo="$MATCH_2"
-    execute_command_in_folder "git add" "$DATADIR/$repo" .
-    execute_command_in_folder "git commit" "$DATADIR/$repo" -m "Automated commit"
-    attempt_command_in_folder "git push" "$DATADIR/$repo" origin $branch
-
-
 Create__develop_Branch.YARN
 
     SCENARIO user creates develop git branch
@@ -69,19 +33,6 @@ Create__develop_Branch.YARN
     WHEN user pushes to "develop" in "foo" repository
     THEN "git push" succeeded
 
-    IMPLEMENTS GIVEN a local branch "(\S+)" branched from "(\S+)" in "(\S+)" repository
-    branch="$MATCH_1"
-    base_branch="$MATCH_2"
-    repo="$MATCH_3"
-    execute_command_in_folder "git checkout" "$DATADIR/$repo" $base_branch
-    execute_command_in_folder "git checkout" "$DATADIR/$repo" -b $branch
-
-    IMPLEMENTS WHEN user pushes to "(\S+)" in "(\S+)" repository
-    branch="$MATCH_1"
-    repo="$MATCH_2"
-    attempt_command_in_folder "git push" "$DATADIR/$repo" origin $branch
-
-
 Create_feature_Branch.YARN
 
     SCENARIO user creates feature git branch
@@ -91,7 +42,6 @@ Create_feature_Branch.YARN
     AND a local branch "feature-branch" branched from "develop" in "foo" repository
     WHEN user pushes to "feature-branch" in "foo" repository
     THEN "git push" succeeded
-
 
 Commit_feature_Branch.YARN
 
@@ -104,14 +54,7 @@ Commit_feature_Branch.YARN
     WHEN user pushes all changes to "feature-branch" in "foo" repository
     THEN "git push" succeeded
 
-    IMPLEMENTS GIVEN the branch "(\S+)" checked out in "(\S+)" repository
-    branch="$MATCH_1"
-    repo="$MATCH_2"
-    execute_command_in_folder "git checkout" "$DATADIR/$repo" $branch
-
-
 Review_feature_Branch.YARN
-
 
     SCENARIO user can review feature branch
     ASSUMING gitserver is running
@@ -120,12 +63,6 @@ Review_feature_Branch.YARN
     AND the branch "develop" checked out in "foo" repository
     WHEN user merges "feature-branch" in "foo" repository
     THEN "git merge" succeeded
-
-    IMPLEMENTS WHEN user merges "(\S+)" in "(\S+)" repository
-    branch="$MATCH_1"
-    repo="$MATCH_2"
-    attempt_command_in_folder "git merge" "$DATADIR/$repo" origin/$branch
-
 
 Merge_feature_Branch_to_develop.YARN
 
@@ -137,12 +74,6 @@ Merge_feature_Branch_to_develop.YARN
     AND the branch "feature-branch" is merged in "foo" repository
     WHEN user pushes to "develop" in "foo" repository
     THEN "git push" succeeded
-
-    IMPLEMENTS GIVEN the branch "(\S+)" is merged in "(\S+)" repository
-    branch="$MATCH_1"
-    repo="$MATCH_2"
-    execute_command_in_folder "git merge" "$DATADIR/$repo" origin/$branch
-
 
 Merge_develop_to_master.YARN
 
@@ -166,9 +97,81 @@ TAG_release_on_master.YARN
     WHEN user pushes to "release_01" in "foo" repository
     THEN "git push" succeeded
 
+
+Implementations section
+-----------------------
+
+    IMPLEMENTS WHEN user configures git "(\S+)" to "(.+)"
+    var="$MATCH_1"
+    value="$MATCH_2"
+    attempt_command "git config" --global $var "$value"
+
+
+    IMPLEMENTS ASSUMING gitserver is running
+    if [ "x$gitserver_ip" = "x" ]; then
+        die "\"$gitserver_ip\" variable is empty!"
+    fi
+    echo $gitserver_ip > "$DATADIR"/current.ip
+
+
+    IMPLEMENTS ASSUMING git client configured
+    execute_command "git config" --global user.email "user@domain.com"
+    execute_command "git config" --global user.name "User Name"
+
+
+    IMPLEMENTS GIVEN a local clone of "(\S+)" repository
+    git_ip="$(cat "$DATADIR"/current.ip)"
+    repo=$MATCH_1
+    execute_command "git clone" http://testuser:testpass@$git_ip/git/$repo
+
+
+    IMPLEMENTS GIVEN some new text in "(\S+)" file in "(\S+)" repository
+    file="$MATCH_1"
+    repo="$MATCH_2"
+    echo "This content was created by the tests" >> "$DATADIR/$repo/$file"
+
+
+    IMPLEMENTS WHEN user pushes all changes to "(\S+)" in "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    execute_command_in_folder "git add" "$DATADIR/$repo" .
+    execute_command_in_folder "git commit" "$DATADIR/$repo" -m "Automated commit"
+    attempt_command_in_folder "git push" "$DATADIR/$repo" origin $branch
+
+
+    IMPLEMENTS GIVEN a local branch "(\S+)" branched from "(\S+)" in "(\S+)" repository
+    branch="$MATCH_1"
+    base_branch="$MATCH_2"
+    repo="$MATCH_3"
+    execute_command_in_folder "git checkout" "$DATADIR/$repo" $base_branch
+    execute_command_in_folder "git checkout" "$DATADIR/$repo" -b $branch
+
+
+    IMPLEMENTS WHEN user pushes to "(\S+)" in "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    attempt_command_in_folder "git push" "$DATADIR/$repo" origin $branch
+
+
+    IMPLEMENTS GIVEN the branch "(\S+)" checked out in "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    execute_command_in_folder "git checkout" "$DATADIR/$repo" $branch
+
+
+    IMPLEMENTS WHEN user merges "(\S+)" in "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    attempt_command_in_folder "git merge" "$DATADIR/$repo" origin/$branch
+
+
+    IMPLEMENTS GIVEN the branch "(\S+)" is merged in "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    execute_command_in_folder "git merge" "$DATADIR/$repo" origin/$branch
+
+
     IMPLEMENTS GIVEN a tag "(\S+)" is created in "(\S+)" repository
     tag="$MATCH_1"
     repo="$MATCH_2"
     execute_command_in_folder "git tag" "$DATADIR/$repo" $tag
-
-
