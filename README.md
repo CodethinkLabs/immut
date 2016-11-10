@@ -154,10 +154,14 @@ You should be able to see a cgit instance, containing your changes.
 
 ## Test
 
-There are yarn scenario tests in the 'tests' directory. These can be run
-via the run.sh wrapper, with `sudo sh run.sh`. This will currently create
-a haproxy and gitserver container, along with a container to run the 
-yarns in. In the future, this will test from within the VM.
+There are yarn scenario tests in the 'tests' directory. These must be
+imported into the VM (the best option currently is to scp the directory
+containing the tests from the host to the VM). Once the tests are in
+the VM, the user can run them via the run.sh wrapper, with `./run.sh`.
+
+This will currently create a haproxy and gitserver container,
+along with a container to run the yarns in. In the future, this will
+test from within the VM.
 
 Yarn is part of the cmdtest package. There is an overview of yarn here:
 
