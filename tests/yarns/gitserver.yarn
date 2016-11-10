@@ -101,6 +101,58 @@ a tag in `master` branch after merging `develop`
     THEN "git push" succeeded
 
 
+Sometimes, bugs will appear in releases. In this cases a hotfix
+branch is created
+
+    SCENARIO user creates hotfix git branch
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND a local branch "hotfix-branch" branched from "master" in "foo" repository
+    WHEN user pushes to "hotfix-branch" in "foo" repository
+    THEN "git push" succeeded
+
+The fixes needed in the release will be commited into this
+hotfix branch
+
+    SCENARIO user commits to hotfix git branch
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND the branch "hotfix-branch" checked out in "foo" repository
+    AND some new text in "hotfix-test" file in "foo" repository
+    WHEN user pushes all changes to "hotfix-branch" in "foo" repository
+    THEN "git push" succeeded
+
+The hotfix branch will be merged into `master` and into `develop once
+it's ready
+
+    SCENARIO user can merge hotfix branch into master and develop
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND the branch "master" checked out in "foo" repository
+    AND the branch "hotfix-branch" is merged in "foo" repository
+    WHEN user pushes to "master" in "foo" repository
+    THEN "git push" succeeded
+
+    GIVEN the branch "develop" checked out in "foo" repository
+    AND the branch "hotfix-branch" is merged in "foo" repository
+    WHEN user pushes to "master" in "foo" repository
+    THEN "git push" succeeded
+
+And a new Tag will be created for the new release
+
+    SCENARIO user can tag a hotfix release on master branch
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND the branch "master" checked out in "foo" repository
+    AND a tag "release_01.1" is created in "foo" repository
+    WHEN user pushes to "release_01.1" in "foo" repository
+    THEN "git push" succeeded
+
+
 Implementations section
 -----------------------
 
