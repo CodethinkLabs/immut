@@ -15,6 +15,18 @@ Authentication tests directly to git server
     THEN "wget" failed
     AND the "wget" error message includes the string "Authentication Failed"
 
+    SCENARIO Wrong credentials access to /cgit fails
+    GIVEN a git server running with ip stored in gitserver_ip
+    WHEN user attempts to "wget" "/cgit" with user "fakeuser" and password "fakepass"
+    THEN "wget" failed
+    AND the "wget" error message includes the string "Authentication Failed"
+
+    SCENARIO Wrong credentials access to CGit logo fails
+    GIVEN a git server running with ip stored in gitserver_ip
+    WHEN user attempts to "wget" "/cgit-data/cgit.png" with user "fakeuser" and password "fakepass"
+    THEN "wget" failed
+    AND the "wget" error message includes the string "Authentication Failed"
+
     SCENARIO Authenticated user access to /cgit succeeds
     GIVEN a git server running with ip stored in gitserver_ip
     WHEN user attempts to "wget" "/cgit" with user "testuser" and password "testpass"
