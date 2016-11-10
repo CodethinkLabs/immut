@@ -1,7 +1,7 @@
 Immut Git client tests
 ======================
 
-Configure_git_client.YARN
+To use Gitflow workflow users will need to configure their git client
 
     SCENARIO user configures git client
     WHEN user configures git "user.name" to "User Name"
@@ -9,11 +9,9 @@ Configure_git_client.YARN
     WHEN user configures git "user.email" to "user@domain.com"
     THEN "git config" succeeded
 
-Configure_git_authentication.YARN
 
-??
-
-Create__master_Branch.YARN
+Gitflow workflow uses two branches. The master branch will contain
+the releases history
 
     SCENARIO user creates master git branch
     ASSUMING gitserver is running
@@ -23,7 +21,8 @@ Create__master_Branch.YARN
     WHEN user pushes all changes to "master" in "foo" repository
     THEN "git push" succeeded
 
-Create__develop_Branch.YARN
+The second branch called `develop` will be used as integration branch
+for new features
 
     SCENARIO user creates develop git branch
     ASSUMING gitserver is running
@@ -33,7 +32,7 @@ Create__develop_Branch.YARN
     WHEN user pushes to "develop" in "foo" repository
     THEN "git push" succeeded
 
-Create_feature_Branch.YARN
+Developers will create feature branches for development
 
     SCENARIO user creates feature git branch
     ASSUMING gitserver is running
@@ -43,7 +42,8 @@ Create_feature_Branch.YARN
     WHEN user pushes to "feature-branch" in "foo" repository
     THEN "git push" succeeded
 
-Commit_feature_Branch.YARN
+In these feature branches they will commmit and push their changes
+to introduce the new feature
 
     SCENARIO user commits to feature git branch
     ASSUMING gitserver is running
@@ -54,7 +54,7 @@ Commit_feature_Branch.YARN
     WHEN user pushes all changes to "feature-branch" in "foo" repository
     THEN "git push" succeeded
 
-Review_feature_Branch.YARN
+These features branches can then be reviewed
 
     SCENARIO user can review feature branch
     ASSUMING gitserver is running
@@ -64,7 +64,8 @@ Review_feature_Branch.YARN
     WHEN user merges "feature-branch" in "foo" repository
     THEN "git merge" succeeded
 
-Merge_feature_Branch_to_develop.YARN
+Once that one feature branch passes review, it can be marged
+into `develop` branch
 
     SCENARIO user can merge a feature branch back to develop
     ASSUMING gitserver is running
@@ -75,7 +76,8 @@ Merge_feature_Branch_to_develop.YARN
     WHEN user pushes to "develop" in "foo" repository
     THEN "git push" succeeded
 
-Merge_develop_to_master.YARN
+Once the release team decides to create a release they will merge
+the `develop` branch into `master`
 
     SCENARIO user can merge the "develop" branch into master
     ASSUMING gitserver is running
@@ -86,7 +88,8 @@ Merge_develop_to_master.YARN
     WHEN user pushes to "master" in "foo" repository
     THEN "git push" succeeded
 
-TAG_release_on_master.YARN
+To finish with the release, the release team will also create
+a tag in `master` branch after merging `develop`
 
     SCENARIO user can tag a release on master branch
     ASSUMING gitserver is running
