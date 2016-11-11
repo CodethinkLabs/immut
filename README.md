@@ -134,8 +134,8 @@ Once you are logged in, running `docker ps` should return some information.
 
 On the VM, create a new user, eg:
 
-    adduser catscatscats
-    passwd catscatscats
+    adduser immutuser
+    passwd immutpass
 
 On the VM, run `ip addr` to get its IP address. There will be a few; the
 relevant one should have a name like 'enp0s8' and look fairly standard
