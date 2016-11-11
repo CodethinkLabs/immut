@@ -26,6 +26,7 @@
 		"ssh_username": "root",
 		"ssh_password": "atomic",
 		"ssh_wait_timeout": "20m",
+		"guest_additions_mode": "disable",
 
 		"shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now"
 	}, {
