@@ -154,14 +154,22 @@ You should be able to see a cgit instance, containing your changes.
 
 ## Test
 
-There are yarn scenario tests in the 'tests' directory. These must be
-imported into the VM (the best option currently is to scp the directory
-containing the tests from the host to the VM). Once the tests are in
-the VM, the user can run them via the run.sh wrapper, with `./run.sh`.
+There are yarn scenario tests in the 'tests' directory. These are being
+installed in `/home/tests` inside the VM.
+
+To run them you only need to execute as root (or as an user that can
+execute docker containers):
+
+    ./home/tests/run.sh
 
 This will currently create a haproxy and gitserver container,
 along with a container to run the yarns in. In the future, this will
 test from within the VM.
+
+If wanted, a different version of the tests can be imported
+into the VM (the best option currently is to scp the directory
+containing the tests from the host to the VM). Once the tests are in
+the VM, the user can run them via the run.sh wrapper, with `./run.sh`.
 
 Yarn is part of the cmdtest package. There is an overview of yarn here:
 
