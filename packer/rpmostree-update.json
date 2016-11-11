@@ -1,7 +1,7 @@
 {
 	"builders": [{
 		"boot_command": [
-			"<tab> linux text biosdevname=0 ks=http://{{ .HTTPIP }}:{{ .HTTPPort}}/ks-fedora-24.cfg<enter><enter>"
+			"<tab> linux text biosdevname=0 ks=http://{{ .HTTPIP }}:{{ .HTTPPort}}/ks-fedora-atomic-24.cfg<enter><enter>"
 		],
 		"type": "virtualbox-iso",
 		"guest_os_type": "Fedora_64",
@@ -12,77 +12,37 @@
 
 		"disk_size" : 40000,
 
-		"iso_url": "http://mirror.datacenter.by/pub/fedoraproject.org/linux/releases/24/Server/x86_64/iso/Fedora-Server-dvd-x86_64-24-1.2.iso",
-		"iso_checksum": "1c0971d4c1a37bb06ec603ed3ded0af79e22069499443bb2d47e501c9ef42ae8",
+		"iso_url": "http://mirror.datacenter.by/pub/fedoraproject.org/alt/atomic/stable/Fedora-Atomic-24-20160820.0/Atomic/x86_64/iso/Fedora-Atomic-dvd-x86_64-24-20160820.0.iso",
+		"iso_checksum": "9adbbde1a888545bf785f802ad07986ab841a32c01c37b1d5ca4b638d8dfb248",
 		"iso_checksum_type": "sha256",
 
 		"http_directory" : "files",
 		"http_port_min" : 9001,
 		"http_port_max" : 9001,
 
+		"ssh_pty" : "true",
 		"ssh_username": "root",
 		"ssh_password": "atomic",
 		"ssh_wait_timeout": "20m",
+		"output_directory": "ostree-build-temp",
+		"guest_additions_mode": "disable",
 
 		"shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now"
 	}],
 
 	"provisioners":[{
 		"type": "file",
-		"source": "files/ostree-builder/fedora-atomic-update-tree.json",
-		"destination": "/home/fedora-atomic-update-tree.json"
-	}, {
-		"type": "file",
-		"source": "files/ostree-builder/fedora-atomic-haproxy.json",
-		"destination": "/home/fedora-atomic-haproxy.json"
-	}, {
-		"type": "file",
-		"source": "files/ostree-builder/fedora-atomic-gitserver.json",
-		"destination": "/home/fedora-atomic-gitserver.json"
-	}, {
-		"type": "file",
-		"source": "files/ostree-builder/fedora-atomic-yarn-runner.json",
-		"destination": "/home/fedora-atomic-yarn-runner.json"
-	}, {
-		"type": "file",
-		"source": "files/ostree-builder/treecompose-var-post.sh",
-		"destination": "/home/treecompose-var-post.sh"
+		"source": "../docker/ostree-builder",
+		"destination": "/home/ostree-builder"
 	}, {
 		"type": "shell",
 		"inline": [
-			"dnf install -y rpm-ostree git",
-			"dnf clean all",
-			"mkdir -p /home/working",
-			"cd /home/working",
-			"git clone https://github.com/CentOS/sig-atomic-buildscripts",
-			"git clone https://git.fedorahosted.org/git/fedora-atomic.git -b f24",
-			"mkdir -p /srv/rpm-ostree/repo",
-			"cd /srv/rpm-ostree/",
-			"ostree --repo=repo init --mode=archive-z2",
-			"cd /home/working/fedora-atomic/",
-			"curl -o fedora-24-updates.repo https://pagure.io/fedora-repos/raw/f24/f/fedora-updates.repo",
-			"sed -i 's\/\\$releasever\/24\/g' fedora-24-updates.repo",
-			"cp /home/*.json /home/working/fedora-atomic/",
-			"cp /home/treecompose-var-post.sh /home/working/fedora-atomic/",
-			"chmod +x /home/working/fedora-atomic/treecompose-var-post.sh",
-			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-update-tree.json",
-			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-haproxy.json",
-			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-gitserver.json",
-			"rpm-ostree compose tree --repo=/srv/rpm-ostree/repo /home/working/fedora-atomic/fedora-atomic-yarn-runner.json",
-			"cd /home/working",
-			"ostree --repo=/srv/rpm-ostree/repo checkout -U fedora-atomic/f24/x86_64/docker-gitserver gitserver",
-			"mv gitserver/usr/etc gitserver/etc            # Put /etc in the right place",
-			"rm -r gitserver/usr/var/lib                   # Remove /usr/var/lib to avoid conflicts",
-			"rm -r `find gitserver/usr/var -type d -empty` # Remove empty folders from /usr/var",
-			"mv gitserver/usr/var/* gitserver/var/         # Move /usr/var contents to /var",
-			"rm -r gitserver/usr/var                       # Remove what's left from /usr/var",
-			"ostree --repo=/srv/rpm-ostree/repo commit -b fedora-atomic/f24/x86_64/docker-gitserver --link-checkout-speedup gitserver",
-			"cd /home/working",
-			"ostree --repo=/srv/rpm-ostree/repo checkout -U fedora-atomic/f24/x86_64/docker-yarn-runner yarns",
-			"mv yarns/usr/etc yarns/etc            # Put /etc in the right place",
-			"ostree --repo=/srv/rpm-ostree/repo commit -b fedora-atomic/f24/x86_64/docker-yarn-runner --link-checkout-speedup yarns",
-			"rm -rf /srv/rpm-ostree/repo/uncompressed-objects-cache",
-			"cd /srv/rpm-ostree",
+			"mkdir -p /home/ostree-output",
+			"cd /home/ostree-builder",
+			"docker build -t ostree-builder .",
+		        "exit 1",
+			"docker run --privileged -v /home/ostree-output/:/data:rw ostree-builder",
+			"cd /home/ostree-output",
 			"zip -r /home/repo.zip ./repo"
 		]
 	}, {
