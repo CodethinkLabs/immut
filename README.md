@@ -161,11 +161,10 @@ To run them, you must be logged into the VM as root, or as another
 user that can execute docker containers. Then you can run the
 following:
 
-    ./home/tests/run.sh
+    /home/tests/run.sh
 
 This will currently create a haproxy and gitserver container,
-along with a container to run the yarns in, and run the yarsn.
-In the future, this will test from within the VM.
+along with a container to run the yarns in, and run the yarns.
 
 If the user desires, they can import a different version of the tests
 into the VM (the best option currently is to scp the directory
