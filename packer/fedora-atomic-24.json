@@ -83,6 +83,10 @@
                "source": "../docker/haproxy",
                "destination": "/home/haproxy"
 	}, {
+               "type": "file",
+               "source": "../tests",
+               "destination": "/home/tests"
+       }, {
                "type": "shell",
                "inline": [
                        "cd /home/haproxy",
