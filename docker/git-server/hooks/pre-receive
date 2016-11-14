@@ -1,0 +1,30 @@
+#!/usr/bin/python3
+
+# Based on Atlassian tutorial sample script over here:
+# https://www.atlassian.com/git/tutorials/git-hooks/server-side-hooks
+
+import sys
+import fileinput
+
+commit_info = ""
+
+# Read in each ref that the user is trying to update
+for line in fileinput.input():
+    commit_info = line
+
+commit_info = commit_info.split()
+
+# There are 3 things taken from stdin
+old_sha = commit_info[0]
+new_sha = commit_info[1]
+branch_name = commit_info[2]
+
+# names of branch-names we want to blacklist. If a whitelist makes more sense,
+# we should just switch things around so it goes
+# 'permitted_branches ... if permitted_branch not in branch_name'
+
+forbidden_branches = ['master', 'release']
+for forbidden_branch in forbidden_branches:
+    if forbidden_branch in branch_name:
+        print("PUSHING TO '%s' BRANCH IS NOT PERMITTED!" % branch_name)
+        sys.exit(1) #abort push
