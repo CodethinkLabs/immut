@@ -1,0 +1,56 @@
+#!/usr/bin/python3
+
+import os
+import re
+import sys
+
+import logging
+import logging.handlers
+
+# Create logger to log to syslog
+syslogger = logging.getLogger('SysLogger')
+syslogger.setLevel(logging.DEBUG)
+handler = logging.handlers.SysLogHandler(address='/dev/log', facility="local1")
+formatter = logging.Formatter('GIT-SERVER (hooks): %(message)s')
+handler.setFormatter(formatter)
+syslogger.addHandler(handler)
+
+# Define zero variable, to match an empty sha
+zero = "0000000000000000000000000000000000000000"
+
+# Get user doing the action from environment
+user = os.environ['REMOTE_USER']
+
+# Get name of the repo being used
+repo = os.path.basename(os.getcwd())
+
+# Get information passed to the update hook
+ref_name = sys.argv[1]  # refs/heads/master
+old_sha = sys.argv[2]   # 12aa37ee58379c29186200f1fd92db689f53a24d
+new_sha = sys.argv[3]   # b7eddb0077cae69a884c6ddc69cb18a030f0f27f
+
+# Function to report errors to syslog in a nice way
+def report_error(error_string):
+    syslogger.critical(error_string)
+    print('')
+    print('Reporting error:')
+    print('')
+    print('    ' + error_string)
+    print('')
+
+if ref_name.startswith('refs/heads/'):
+    # User is trying to push to a branch.
+
+    # Get branch_name by removing 'refs/heads/' from ref_name
+    branch_name = ref_name[11:]
+
+    # Allow pushing to 'develop' and 'master' for now
+    permitted_branches = ['master', 'develop']
+    if branch_name not in permitted_branches:
+        # If user is creating a new branch, ban branches that
+        # don't start with "scenario"
+        if (old_sha == zero) and (not branch_name.startswith('scenario')):
+            print("CREATING BRANCH WITH NAME '%s' IS NOT PERMITTED!" % branch_name)
+            error = "create-branch-hook - User: \"%s\", Repo: \"%s\", Branch: \"%s\"" % (user, repo, branch_name)
+            report_error(error)
+            sys.exit(1) # Abort push
