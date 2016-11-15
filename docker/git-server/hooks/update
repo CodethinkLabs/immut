@@ -3,6 +3,7 @@
 import os
 import re
 import sys
+import subprocess
 
 import logging
 import logging.handlers
@@ -38,6 +39,13 @@ def report_error(error_string):
     print('    ' + error_string)
     print('')
 
+# Function to find out if commit is present in a branch
+def commit_in_branch(commit, branch):
+    cmd = ['git', 'name-rev', '--refs='+branch, '--no-undefined', commit]
+    FNULL = open(os.devnull, 'w')
+    retcode = subprocess.call(cmd, stdout=FNULL, stderr=FNULL)
+    return retcode == 0
+
 if ref_name.startswith('refs/heads/'):
     # User is trying to push to a branch.
 
@@ -54,3 +62,13 @@ if ref_name.startswith('refs/heads/'):
             error = "create-branch-hook - User: \"%s\", Repo: \"%s\", Branch: \"%s\"" % (user, repo, branch_name)
             report_error(error)
             sys.exit(1) # Abort push
+
+if ref_name.startswith('refs/tags/'):
+    # User is trying to push a tag
+    tag_name = ref_name[10:]
+    if not commit_in_branch(new_sha, "master"):
+        # Ban tags that are not tagging a commit in 'master'
+        print("TAGGING COMMITS NOT PRESENT IN 'master' IS NOT PERMITTED!")
+        error = "create-tag-not-in-master - User: \"%s\", Repo: \"%s\", Tag: \"%s\"" % (user, repo, tag_name)
+        report_error(error)
+        sys.exit(1) # Abort push
