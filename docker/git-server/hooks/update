@@ -74,6 +74,7 @@ if ref_name.startswith('refs/heads/'):
             error = "create-branch-hook - User: \"%s\", Repo: \"%s\", Branch: \"%s\"" % (user, repo, branch_name)
             report_error(error)
             sys.exit(1) # Abort push
+
     else: 
         author_email = get_author_email(new_sha)
 
