@@ -80,18 +80,9 @@ if ref_name.startswith('refs/heads/'):
         # we change to a bytes literal so the concatenation will work; I'M SORRY
         author_name = author_split[1] + b'.' + author_split[2]
         author_name = str(author_name)[1:]# change to string and remove first 'b' character that previously signified bytes literal
-        print(author_name) #debugging
+        author_name = str(author_name)[1:] #removes first quotation mark
+        author_name = str(author_name)[:-1] #removes last quotation mark
 
-        #for now we don't use this
-        author_email = author_split[3]
-        # email is surrounded by <> tags. I am lazy so remove 1st and last char
-        author_email = author_email[1:] #removes first character
-        author_email = author_email[:-1] #removes last character
-
-        print(user) #debugging
-
-        #we currently don't use this either
-        user_email = 'foo@bar.com' #user should be an object with a name and email, and same for author...
 
         if user == author_name:
             print("YOU MAY NOT MERGE YOUR OWN PATCH!")
