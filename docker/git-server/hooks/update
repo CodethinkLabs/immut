@@ -46,6 +46,62 @@ def commit_in_branch(commit, branch):
     retcode = subprocess.call(cmd, stdout=FNULL, stderr=FNULL)
     return retcode == 0
 
+# Function to find last tag
+def last_tag(commit):
+    cmd = ['git', 'describe', '--abbrev=0', '--tags', commit]
+    FNULL = open(os.devnull, 'w')
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=FNULL)
+    stdout, stderr = p.communicate()
+    return stdout.decode('ascii').strip() or None
+
+# Function to get the revision type. Useful to differentiate between
+# annotated and unannotated tags
+def get_rev_type(sha):
+    cmd = ['git', 'cat-file', '-t', sha]
+    FNULL = open(os.devnull, 'w')
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=FNULL)
+    stdout, stderr = p.communicate()
+    # It can return: commit, tag, delete
+    return stdout.decode('ascii').strip()
+
+# Function to get the commit sha that an annotated tag is pointing to
+def get_commit_annotated_tag(sha):
+    cmd = ['git', 'rev-list', '-1', sha]
+    FNULL = open(os.devnull, 'w')
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=FNULL)
+    stdout, stderr = p.communicate()
+    return stdout.decode('ascii').strip()
+
+# Function to get the tagger mail address from an annotated tag
+# FIXME: make more robust; it can easily fail
+def get_tagger_tag(sha):
+    cmd = ['git', 'cat-file', 'tag', sha]
+    FNULL = open(os.devnull, 'w')
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=FNULL)
+    stdout, stderr = p.communicate()
+    result = re.search('<(.*)>', stdout.decode('ascii'))
+    return result.group(1)
+
+# Function to check if the tagger was a commiter between
+# two different tags
+def commiter_between_tags(tagger, new_tag_commit, old_tag):
+    # If old_tag is not None, look at the log until that tag.
+    # Otherwise, look at the entire log
+    if old_tag:
+        cmd = ['git', 'log', '--format="%ce"', 'refs/tags/' + old_tag, new_tag_commit]
+    else:
+        cmd = ['git', 'log', '--format="%ce"', new_tag_commit]
+    FNULL = open(os.devnull, 'w')
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=FNULL)
+    stdout, stderr = p.communicate()
+    email_list = stdout.decode('ascii').splitlines()
+
+    # Check if the tagger email is present in the commits history
+    for mail in email_list:
+        if tagger == mail[1:-1]:
+            return True
+    return False
+
 if ref_name.startswith('refs/heads/'):
     # User is trying to push to a branch.
 
@@ -66,9 +122,30 @@ if ref_name.startswith('refs/heads/'):
 if ref_name.startswith('refs/tags/'):
     # User is trying to push a tag
     tag_name = ref_name[10:]
-    if not commit_in_branch(new_sha, "master"):
+    rev_type = get_rev_type(new_sha)
+
+    if rev_type == "commit":
+        # User is trying to push an unannotated tag. We don't allow
+        # this because we want git to have information about who is
+        # creating the tags. This is only possible with annotated tags.
+        print("TAGGING UNANNOTATED TAGS IS NOT PERMITTED!")
+        error = "create-tag-unannotated - User: \"%s\", Repo: \"%s\", Tag: \"%s\"" % (user, repo, tag_name)
+        report_error(error)
+        sys.exit(1) # Abort push
+
+    commit_tagged = get_commit_annotated_tag(new_sha)
+    if not commit_in_branch(commit_tagged, "master"):
         # Ban tags that are not tagging a commit in 'master'
         print("TAGGING COMMITS NOT PRESENT IN 'master' IS NOT PERMITTED!")
         error = "create-tag-not-in-master - User: \"%s\", Repo: \"%s\", Tag: \"%s\"" % (user, repo, tag_name)
         report_error(error)
         sys.exit(1) # Abort push
+    else:
+        tagger = get_tagger_tag(new_sha)
+        last_tag_found = last_tag(commit_tagged)
+        if commiter_between_tags(tagger, commit_tagged, last_tag_found):
+            # User is tagging a release where he was also a commiter
+            print("TAGGING WHEN COMMITER SINCE LAST TAG IS NOT PERMITTED!")
+            error = "create-tag-when-commiter - User: \"%s\", Repo: \"%s\", Tag: \"%s\"" % (user, repo, tag_name)
+            report_error(error)
+            sys.exit(1) # Abort push
