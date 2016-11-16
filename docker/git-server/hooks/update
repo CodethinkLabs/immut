@@ -66,7 +66,7 @@ if ref_name.startswith('refs/heads/'):
     else: #for merging
         #currently copied almost verbatim from stackoverflow; I don't even know
         # what 'pr' is meant to be short for ('process', maybe?)
-        pr = subprocess.Popen(['/usr/bin/git', 'show'],
+        pr = subprocess.Popen(['/usr/bin/git', 'show', new_sha],
             cwd=os.getcwd(),#not sure if this will work; was hardcoding on my system
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -76,6 +76,10 @@ if ref_name.startswith('refs/heads/'):
         author = out[1]
         author_split = author.split()
         author_email = author_split[3]
+        # email is surrounded by <> tags. I am lazy so remove 1st and last char
+        author_email = author_email[1:] #removes first character
+        author_email = author_email[:-1] #removes last character
+
         user_email = 'foo@bar.com' #user should be an object with a name and email, and same for author...
         if user_email == author_email:
             print("YOU MAY NOT MERGE YOUR OWN PATCH!")
