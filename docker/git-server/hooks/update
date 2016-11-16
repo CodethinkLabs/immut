@@ -67,7 +67,7 @@ if ref_name.startswith('refs/heads/'):
         #currently copied almost verbatim from stackoverflow; I don't even know
         # what 'pr' is meant to be short for ('process', maybe?)
         pr = subprocess.Popen(['/usr/bin/git', 'show', new_sha],
-            cwd=os.getcwd(),#not sure if this will work; was hardcoding on my system
+            cwd=os.getcwd(),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=False)
