@@ -46,6 +46,7 @@ def commit_in_branch(commit, branch):
     retcode = subprocess.call(cmd, stdout=FNULL, stderr=FNULL)
     return retcode == 0
 
+
 if ref_name.startswith('refs/heads/'):
     # User is trying to push to a branch.
 
@@ -62,6 +63,25 @@ if ref_name.startswith('refs/heads/'):
             error = "create-branch-hook - User: \"%s\", Repo: \"%s\", Branch: \"%s\"" % (user, repo, branch_name)
             report_error(error)
             sys.exit(1) # Abort push
+    else: #for merging
+        #currently copied almost verbatim from stackoverflow; I don't even know
+        # what 'pr' is meant to be short for ('process', maybe?)
+        pr = subprocess.Popen(['/usr/bin/git', 'show'],
+            cwd=os.getcwd(),#not sure if this will work; was hardcoding on my system
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False)
+        (out, error) = pr.communicate()
+        out = out.splitlines()
+        author = out[1]
+        author_split = author.split()
+        author_email = author_split[3]
+        user_email = 'foo@bar.com' #user should be an object with a name and email, and same for author...
+        if user_email == author_email:
+            print("YOU MAY NOT MERGE YOUR OWN PATCH!")
+            error = "User %s tried to merge a commit they had authored." %s
+            report_error(error)
+            sys.exit(1)
 
 if ref_name.startswith('refs/tags/'):
     # User is trying to push a tag
