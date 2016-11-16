@@ -58,7 +58,6 @@ def get_author_email(commit):
     author_email = out.decode('ascii')[1:] #remove opening "
     return author_email
 
-
 if ref_name.startswith('refs/heads/'):
     # User is trying to push to a branch.
 
