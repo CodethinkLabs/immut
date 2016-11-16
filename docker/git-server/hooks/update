@@ -77,14 +77,21 @@ if ref_name.startswith('refs/heads/'):
 
         #tidy up author data
         author_split = author.split()
-        # we change to a bytes literal so the concatenation will work; I'M SORRY
-        author_name = author_split[1] + b'.' + author_split[2]
-        author_name = str(author_name)[1:]# change to string and remove first 'b' character that previously signified bytes literal
-        author_name = str(author_name)[1:] #removes first quotation mark
-        author_name = str(author_name)[:-1] #removes last quotation mark
+
+        #get author email
+        author_email = author_split[3]
+        formatted_author_email = str(author_email)[3:] #removes opening <
+
+        #remove everything after '@'
+        formatted_author_email = formatted_author_email.split('@')
+
+        #take first thing in array, the username
+        formatted_author_email = formatted_author_email[0]
+
+        committer = formatted_author_email
 
 
-        if user == author_name:
+        if user == committer:
             print("YOU MAY NOT MERGE YOUR OWN PATCH!")
             error = "User %s tried to merge a commit they had authored." %s
             report_error(error)
