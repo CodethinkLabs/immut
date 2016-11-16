@@ -66,13 +66,13 @@ if ref_name.startswith('refs/heads/'):
     else: #for merging
         #currently copied almost verbatim from stackoverflow; I don't even know
         # what 'pr' is meant to be short for ('process', maybe?)
-        pr = subprocess.Popen(['/usr/bin/git', 'log', '-1', '--format="%ce"'],
+        pr = subprocess.Popen(['/usr/bin/git', 'log', '-1', '--format="%ce"', new_sha],
             cwd=os.getcwd(),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=False)
         (out, error) = pr.communicate()
-        author_email = str(out)[3:]#remove b'"
+        author_email = out.decode('ascii')[1:] #remove opening "
 
         #remove everything after '@'
         formatted_author_email = author_email.split('@')
