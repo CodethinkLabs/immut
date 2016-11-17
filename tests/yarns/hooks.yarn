@@ -43,7 +43,6 @@ Implementation section
     execute_command "git config" --global user.email "user@domain.com"
     execute_command "git config" --global user.name "User Name"
 
-
     IMPLEMENTS GIVEN a local clone of "(\S+)" repository
     git_ip="$(cat "$DATADIR"/current.ip)"
     repo=$MATCH_1
