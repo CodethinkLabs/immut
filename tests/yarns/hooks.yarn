@@ -1,0 +1,14 @@
+Immut git hooks tests
+=====================
+
+A user may only push commits to branches named 'master', 'develop' or 'scenario/*'
+
+SCENARIO user pushes commit to a forbidden branch
+
+A user may only merge code that they did not write themselves
+
+SCENARIO user merges commit that they authored
+
+A user may not tag a release if they have committed code toward it
+
+SCENARIO user tags a release towards which they have committed code
