@@ -6,7 +6,6 @@ A user may only push commits to branches named 'master', 'develop' or 'scenario/
     SCENARIO user pushes commit to a forbidden branch
     ASSUMING gitserver is running
     AND git client configured
-    AND gitserver configured #to use git update hook, TODO
     GIVEN a local clone of "foo" repository
     AND some new text in "test" file in "foo" repository
     WHEN user pushes all changes to "forbidden_branch" in "foo" repository
@@ -18,7 +17,6 @@ A user may only merge code that they did not write themselves
     SCENARIO user merges commit that they authored
     ASSUMING gitserver is running
     AND git client configured
-    AND gitserver configured #to use git update hook, TODO
     GIVEN a local clone of "foo" repository
     AND some new text in "test" file in "foo" repository
     WHEN user pushes all changes to "develop" in "foo" repository
@@ -31,7 +29,6 @@ A user may not tag a release if they have committed code toward it
     SCENARIO user tags a release towards which they have committed code
     ASSUMING gitserver is running
     AND git client configured
-    AND gitserver configured #to use git update hook, TODO
     #TODO
 
 Implementation section
@@ -47,9 +44,6 @@ Implementation section
     execute_command "git config" --global user.email "user@domain.com"
     execute_command "git config" --global user.name "User Name"
 
-TODO: if 'update hook' in hooks dir of repo
-    IMPLEMENTS ASSUMING gitserver configured
-    
 
     IMPLEMENTS GIVEN a local clone of "(\S+)" repository
     git_ip="$(cat "$DATADIR"/current.ip)"
