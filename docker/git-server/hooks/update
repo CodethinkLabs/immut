@@ -47,16 +47,14 @@ def commit_in_branch(commit, branch):
     return retcode == 0
 
 # Function to get author info for latest commit
-
 def get_author_email(commit):
-    #currently copied almost verbatim from stackoverflow; I don't even know
-    # what 'pr' is meant to be short for ('process', maybe?)
-    pr = subprocess.Popen(['/usr/bin/git', 'log', '-1', '--format="%ce"', commit],
+    # runs 'git log -1 --format="%ce" $sha1' from cwd, returns result
+    process = subprocess.Popen(['/usr/bin/git', 'log', '-1', '--format="%ce"', commit],
     cwd=os.getcwd(),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=False)
-    (out, error) = pr.communicate()
+    (out, error) = process.communicate()
     author_email = out.decode('ascii')[1:] #remove opening "
     return author_email
 
@@ -83,11 +81,10 @@ if ref_name.startswith('refs/heads/'):
         #remove everything after '@'
         formatted_author_email = author_email.split('@')
 
-        #take first thing in array, the username
+        #take first thing in array: the username
         formatted_author_email = formatted_author_email[0]
 
         committer = formatted_author_email
-        print(user, committer)
 
         if user == committer:
             print("YOU MAY NOT MERGE YOUR OWN PATCH!")
