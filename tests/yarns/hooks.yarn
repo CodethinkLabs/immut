@@ -62,3 +62,14 @@ Implementation section
     execute_command_in_folder "git commit" "$DATADIR/$repo" -m "Automated commit"
     attempt_command_in_folder "git push" "$DATADIR/$repo" origin $branch
 
+A user may only push commits to branches named 'master', 'develop' or 'scenario/*'
+
+SCENARIO user pushes commit to a forbidden branch
+
+A user may only merge code that they did not write themselves
+
+SCENARIO user merges commit that they authored
+
+A user may not tag a release if they have committed code toward it
+
+SCENARIO user tags a release towards which they have committed code
