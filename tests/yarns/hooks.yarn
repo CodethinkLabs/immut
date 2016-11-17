@@ -1,0 +1,68 @@
+Immut git hooks tests
+=====================
+
+A user may only push commits to branches named 'master', 'develop' or 'scenario/*'. this test currently just tests against one thing that doesn't match those patterns, so it's rickety; if it fails, there could be other reasons why it fails.We may want to specify a few different branch names to try.
+
+    SCENARIO user pushes commit to a forbidden branch
+    ASSUMING gitserver is running
+    AND git client configured
+    AND gitserver configured #to use git update hook, TODO
+    GIVEN a local clone of "foo" repository
+    AND some new text in "test" file in "foo" repository
+    WHEN user pushes all changes to "forbidden_branch" in "foo" repository
+    THEN "git push" failed
+
+A user may only merge code that they did not write themselves
+
+    SCENARIO user merges commit that they authored
+    ASSUMING gitserver is running
+    AND git client configured
+    AND gitserver configured #to use git update hook, TODO
+    GIVEN a local clone of "foo" repository
+    AND some new text in "test" file in "foo" repository
+    WHEN user pushes all changes to "develop" in "foo" repository
+    AND user is last commit author #TODO
+    THEN "git push" failed
+
+
+A user may not tag a release if they have committed code toward it
+
+    SCENARIO user tags a release towards which they have committed code
+    ASSUMING gitserver is running
+    AND git client configured
+    AND gitserver configured #to use git update hook, TODO
+    #TODO
+
+Implementation section
+======================
+
+    IMPLEMENTS ASSUMING gitserver is running
+    if [ "x$gitserver_ip" = "x" ]; then
+        die "\"$gitserver_ip\" variable is empty!"
+    fi
+    echo $gitserver_ip > "$DATADIR"/current.ip
+
+    IMPLEMENTS ASSUMING git client configured
+    execute_command "git config" --global user.email "user@domain.com"
+    execute_command "git config" --global user.name "User Name"
+
+TODO: if 'update hook' in hooks dir of repo
+    IMPLEMENTS ASSUMING gitserver configured
+    
+
+    IMPLEMENTS GIVEN a local clone of "(\S+)" repository
+    git_ip="$(cat "$DATADIR"/current.ip)"
+    repo=$MATCH_1
+    execute_command "git clone" http://testuser:testpass@$git_ip/git/$repo
+
+    IMPLEMENTS GIVEN some new text in "(\S+)" file in "(\S+)" repository
+    file="$MATCH_1"
+    repo="$MATCH_2"
+    echo "This content was created by the tests" >> "$DATADIR/$repo/$file"
+
+    IMPLEMENTS WHEN user pushes all changes to "(\S+)" in "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    execute_command_in_folder "git add" "$DATADIR/$repo" .
+    execute_command_in_folder "git commit" "$DATADIR/$repo" -m "Automated commit"
+    attempt_command_in_folder "git push" "$DATADIR/$repo" origin $branch
