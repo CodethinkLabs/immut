@@ -122,13 +122,3 @@ Common implementations for yarn tests
     case $(cat "$DATADIR/$cmd_filename-exit") in
         0) die "\"$MATCH_1\" should have failed, but didn't. Unexpected success!" ;;
     esac
-
-    IMPLEMENTS THEN "(.+)" Failed
-    cmd_filename=$(replace_spaces_in_cmd "$MATCH_1")
-    case $(cat "$DATADIR/$cmd_filename-exit") in
-    1)  echo "\"$MATCH_1\" failed!"
-        ;;
-    *)  cat "$DATADIR/$cmd_filename-out" >&2
-        die "\"$MATCH_1\" should have failed, but didn't. Unexpected failure-failure!"
-        ;;
-    esac
