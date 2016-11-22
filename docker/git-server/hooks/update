@@ -22,6 +22,8 @@ zero = "0000000000000000000000000000000000000000"
 # Get user doing the action from environment
 user = os.environ['REMOTE_USER']
 
+print(os.environ)
+
 # Get name of the repo being used
 repo = os.path.basename(os.getcwd())
 
