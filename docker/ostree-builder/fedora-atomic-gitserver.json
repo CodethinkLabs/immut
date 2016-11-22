@@ -45,6 +45,7 @@
                  "httpd-filesystem",
                  "mod_authnz_pam",
                  "sssd-client",
+                 "mod_lookup_identity",
                  "git-core",
                  "cgit"]
 
