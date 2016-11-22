@@ -12,6 +12,11 @@ ostree --repo=/data/repo init --mode=archive-z2
 cd /home/working/fedora-atomic/
 curl -o fedora-24-updates.repo https://pagure.io/fedora-repos/raw/f24/f/fedora-updates.repo
 sed -i -e 's/\$releasever/24/g' fedora-24-updates.repo
+
+sed -i -e 's#http://download.fedoraproject.org/pub#https://mirrors.codethink.co.uk#g' fedora-24.repo
+sed -i -e '1,/^#baseurl/s/^#baseurl/baseurl/' fedora-24.repo
+sed -i -e '1,/^metalink/s/^metalink/#metalink/' fedora-24.repo
+
 cp /workdir/*.json /home/working/fedora-atomic/
 cp /workdir/treecompose-var-post.sh /home/working/fedora-atomic/
 rpm-ostree compose tree --repo=/data/repo /home/working/fedora-atomic/fedora-atomic-yarn-runner.json
