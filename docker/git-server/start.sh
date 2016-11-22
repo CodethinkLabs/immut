@@ -18,7 +18,8 @@ if ! [ "$(ls -A /data)" ]; then
     gits="foo bar baz"
     for reponame in $gits; do
 	git init --bare /data/$reponame
-        cp /data/$reponame/hooks/post-update.sample /data/$reponame/hooks/post-update
+	cp /home/hooks/* /data/$reponame/hooks
+	cp /data/$reponame/hooks/post-update.sample /data/$reponame/hooks/post-update
     done
 fi
 
