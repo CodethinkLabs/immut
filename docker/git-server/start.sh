@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Make it check sss before altfiles
+sed -i -e 's/altfiles sss/sss altfiles/' /etc/nsswitch.conf
+
 #Remove default apache configuration file for cgit
 rm /etc/httpd/conf.d/cgit.conf
 
