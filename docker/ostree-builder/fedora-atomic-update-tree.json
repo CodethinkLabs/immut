@@ -82,6 +82,7 @@
 		 "consul",
 		 "autofs",
 		 "sssd-common",
+		 "sssd-dbus",
 		 "sssd-proxy"],
 
 
