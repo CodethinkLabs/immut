@@ -10,7 +10,7 @@ projects=$1
 services=$2
 
 # Stop and remove docker instances and networks
-docker stop $(docker ps -a -q) || true
+docker kill $(docker ps -a -q) || true
 docker rm $(docker ps -a -q) || true
 docker network rm $(docker network ls -q) || true
 
