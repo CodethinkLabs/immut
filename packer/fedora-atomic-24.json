@@ -121,6 +121,11 @@
                        "sed -i -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config"
                ]
 	}, {
+               "type": "shell",
+               "inline": [
+                       "useradd -r apache"
+               ]
+	}, {
                "type": "file",
                "source": "files/sssd.conf",
                "destination": "/etc/sssd/sssd.conf"
