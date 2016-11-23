@@ -55,6 +55,7 @@ for i in $projects; do
                    --ip 172.101.0.$ip \
                    -v=/var/lib/immut/$i/$j:/data:rw \
                    -v=/var/lib/sss/pipes/:/var/lib/sss/pipes/:rw \
+                   -v=/run/dbus/system_bus_socket:/run/dbus/system_bus_socket:rw \
                    $j # Service name has to match docker image name
 
         # Update haproxy with IP
