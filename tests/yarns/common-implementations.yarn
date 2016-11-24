@@ -41,6 +41,22 @@ Common implementations for yarn tests
     repo="$MATCH_2"
     echo "This content was created by the tests" >> "$DATADIR/$repo/$file"
 
+    IMPLEMENTS GIVEN multiple lines of new text in "(\S+)" file in "(\S+)" repository
+    file="$MATCH_1"
+    repo="$MATCH_2"
+    echo "This content was created by the tests" >> "$DATADIR/$repo/$file \n cat \n dog \n fish"
+
+    IMPLEMENTS GIVEN multiple lines_2 of new text in "(\S+)" file in "(\S+)" repository
+    file="$MATCH_1"
+    repo="$MATCH_2"
+    echo "This content was created by the tests" >> "$DATADIR/$repo/$file \n cat \n frog \n fish"
+
+    IMPLEMENTS GIVEN multiple lines_3 of new text in "(\S+)" file in "(\S+)" repository
+    file="$MATCH_1"
+    repo="$MATCH_2"
+    echo "This content was created by the tests" >> "$DATADIR/$repo/$file \n cat \n dog \n bear"
+
+
 
     IMPLEMENTS WHEN user pushes all changes to "(\S+)" in "(\S+)" repository
     branch="$MATCH_1"
@@ -49,6 +65,11 @@ Common implementations for yarn tests
     execute_command_in_folder "git commit" "$DATADIR/$repo" -m "Automated commit"
     attempt_command_in_folder "git push" "$DATADIR/$repo" origin $branch
 
+    IMPLEMENTS GIVEN user commits all changes to "(\S+)" in "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    execute_command_in_folder "git add" "$DATADIR/$repo" .
+    execute_command_in_folder "git commit" "$DATADIR/$repo" -m "Automated commit"
 
     IMPLEMENTS GIVEN a local branch "(\S+)" branched from "(\S+)" in "(\S+)" repository
     branch="$MATCH_1"
@@ -75,6 +96,17 @@ Common implementations for yarn tests
     repo="$MATCH_2"
     attempt_command_in_folder "git merge" "$DATADIR/$repo" origin/$branch
 
+    IMPLEMENTS WHEN user merges "(\S+)" and "(\S+)" in "(\S+)" repository
+    branch_1="$MATCH_1"
+    branch_2="$MATCH_2"
+    repo="$MATCH_3"
+    attempt_command_in_folder "git merge" "$DATADIR/$repo" $branch_1 $branch_2
+
+    IMPLEMENTS WHEN new commits in "(\S+)" are cherry-picked into "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    attempt_command_in_folder "git cherry-pick" "$DATADIR/$repo" $branch
+
 
     IMPLEMENTS GIVEN the branch "(\S+)" is merged in "(\S+)" repository
     branch="$MATCH_1"
@@ -86,6 +118,13 @@ Common implementations for yarn tests
     tag="$MATCH_1"
     repo="$MATCH_2"
     execute_command_in_folder "git tag" "$DATADIR/$repo" $tag
+
+    IMPLEMENTS WHEN user runs "git blame" on "(\S+)" in "(\S+)" in "(\S+)" repository
+    file="$MATCH_1"
+    branch="$MATCH_2"
+    repo="$MATCH_3"
+    attempt_command_in_folder "git blame" "$DATADIR/$repo" "$branch" "$file"
+
 
     IMPLEMENTS GIVEN a git server running with ip stored in gitserver_ip
     echo $gitserver_ip > "$DATADIR"/current.ip

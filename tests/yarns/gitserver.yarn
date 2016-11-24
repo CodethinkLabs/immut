@@ -54,7 +54,7 @@ to introduce the new feature
     WHEN user pushes all changes to "feature-branch" in "foo" repository
     THEN "git push" succeeded
 
-These features branches can then be reviewed
+These feature branches can then be reviewed
 
     SCENARIO user can review feature branch
     ASSUMING gitserver is running
@@ -151,3 +151,59 @@ And a new Tag will be created for the new release
     AND a tag "release_01.1" is created in "foo" repository
     WHEN user pushes to "release_01.1" in "foo" repository
     THEN "git push" succeeded
+
+Sometimes a user might need to cherry pick (I'm not sure they would with
+git flow workflow, since a change should be on its own branch).
+This currently creates commits and then cherry picks them to another
+branch in the same step, since this wouldn't happen 'in the wild'.
+
+    SCENARIO user can cherry-pick a change
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND a local branch "hotfix-branch" branched from "master" in "foo" repository
+    AND the branch "hotfix-branch" checked out in "foo" repository
+    AND some new text in "hotfix-test" file in "foo" repository
+    AND user commits all changes to "hotfix-branch" in "foo" repository
+    GIVEN the branch "master" checked out in "foo" repository
+    WHEN new commits in "hotfix-branch" are cherry-picked into "foo" repository
+    THEN "git cherry-pick" succeeded
+    
+
+A user may want more details about a specific file to find out who changed some
+lines of code, and why, so that they know who to ask for further information.
+Git calls this 'blame'. This scenario currently just checks the command works,
+so the user creates the commit and then checks it themselves, but this should
+change so that they are 'blaming' a commit they did not create (it also checks
+against master at the moment).
+
+    SCENARIO user can `git blame`
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND the branch "master" checked out in "foo" repository
+    AND some new text in "blame-test" file in "foo" repository
+    AND user commits all changes to "master" in "foo" repository
+    WHEN user runs "git blame" on "blame-test" in "master" in "foo" repository
+    THEN "git blame" succeeded
+
+3-way merge
+
+    SCENARIO a three-way merge works when different branches change only different things in the same file
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND the branch "master" checked out in "foo" repository
+    AND multiple lines of new text in "3-way-merge-test" file in "foo" repository
+    AND user commits all changes to "master" in "foo" repository
+    AND a local branch "merge1-branch" branched from "master" in "foo" repository
+    AND the branch "merge1-branch" checked out in "foo" repository
+    AND multiple lines_2 of new text in "3-way-merge-test" file in "foo" repository
+    AND user commits all changes to "merge1-branch" in "foo" repository
+    AND a local branch "merge2-branch" branched from "master" in "foo" repository
+    AND the branch "merge2-branch" checked out in "foo" repository
+    AND multiple lines_3 of new text in "3-way-merge-test" file in "foo" repository
+    AND user commits all changes to "merge2-branch" in "foo" repository
+    AND the branch "master" checked out in "foo" repository
+    WHEN user merges "merge2-branch" and "merge1-branch" in "foo" repository
+    THEN "git merge" succeeded
