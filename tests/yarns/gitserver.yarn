@@ -208,6 +208,22 @@ against master at the moment).
     WHEN user merges "merge2-branch" and "merge1-branch" in "foo" repository
     THEN "git merge" succeeded
 
+Force push -- my testing setup doesn't yet include the git hooks, so I
+can't check this fails. So for now it checks it succeeds, so we know
+we're testing the right thing and it's not failing for an unrelated reason
+This currently fails and I don't know why yet.
+
+    SCENARIO user can force push
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND a local branch "force-branch" branched from "master" in "foo" repository
+    AND the branch "force-branch" checked out in "foo" repository
+    AND some new text in "blame-test" file in "foo" repository
+    AND user commits all changes to "force-branch" in "foo" repository
+    WHEN user force pushes changes to "master" in "foo" repository
+    THEN "git push -f" succeeded
+
 Bisect
     
     SCENARIO user can bisect

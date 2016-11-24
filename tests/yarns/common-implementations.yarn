@@ -125,6 +125,10 @@ Common implementations for yarn tests
     repo="$MATCH_3"
     attempt_command_in_folder "git blame" "$DATADIR/$repo" "$branch" "$file"
 
+    IMPLEMENTS WHEN user force pushes changes to "(\S+)" in "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    attempt_command_in_folder "git push -f" "$DATADIR/$repo" origin "$branch" 
 
     IMPLEMENTS WHEN user bisects in "(\S+)" in "(\S+)" repository against tag "(\S+)" and tag "(\S+)"
     branch="$MATCH_1"
