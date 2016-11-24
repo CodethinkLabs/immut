@@ -126,6 +126,16 @@ Common implementations for yarn tests
     attempt_command_in_folder "git blame" "$DATADIR/$repo" "$branch" "$file"
 
 
+    IMPLEMENTS WHEN user bisects in "(\S+)" in "(\S+)" repository against tag "(\S+)" and tag "(\S+)"
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    tag_1="$MATCH_3"
+    tag_2="$MATCH_4"
+    execute_command_in_folder "git bisect start" "$DATADIR/$repo" $branch
+    execute_command_in_folder "git bisect bad" "$DATADIR/$repo" $tag_1
+    execute_command_in_folder "git bisect good" "$DATADIR/$repo" $tag_2
+    attempt_command_in_folder "git bisect reset" "$DATADIR/$repo" $branch
+
     IMPLEMENTS GIVEN a git server running with ip stored in gitserver_ip
     echo $gitserver_ip > "$DATADIR"/current.ip
 

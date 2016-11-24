@@ -207,3 +207,22 @@ against master at the moment).
     AND the branch "master" checked out in "foo" repository
     WHEN user merges "merge2-branch" and "merge1-branch" in "foo" repository
     THEN "git merge" succeeded
+
+Bisect
+    
+    SCENARIO user can bisect
+    ASSUMING gitserver is running
+    AND git client configured
+    GIVEN a local clone of "foo" repository
+    AND a local branch "scenario-debug" branched from "master" in "foo" repository
+    AND the branch "scenario-debug" checked out in "foo" repository
+    AND some new text in "bisect-test" file in "foo" repository
+    AND user commits all changes to "scenario-debug" in "foo" repository
+    AND a tag "release_bisect" is created in "foo" repository
+    AND some new text in "bisect-test2" file in "foo" repository
+    AND user commits all changes to "scenario-debug" in "foo" repository
+    AND some new text in "bisect-test3" file in "foo" repository
+    AND user commits all changes to "scenario-debug" in "foo" repository
+    AND a tag "bad_bisect" is created in "foo" repository
+    WHEN user bisects in "scenario-debug" in "foo" repository against tag "bad_bisect" and tag "release_bisect"
+    THEN "git bisect good" succeeded
