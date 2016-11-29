@@ -41,6 +41,11 @@ Common implementations for yarn tests
     repo="$MATCH_2"
     echo "This content was created by the tests" >> "$DATADIR/$repo/$file"
 
+    IMPLEMENTS GIVEN some new alt_text in "(\S+)" file in "(\S+)" repository
+    file="$MATCH_1"
+    repo="$MATCH_2"
+    echo "This content was also created by the tests" >> "$DATADIR/$repo/$file"
+
     IMPLEMENTS GIVEN multiple lines of new text in "(\S+)" file in "(\S+)" repository
     file="$MATCH_1"
     repo="$MATCH_2"
@@ -71,12 +76,26 @@ Common implementations for yarn tests
     execute_command_in_folder "git add" "$DATADIR/$repo" .
     execute_command_in_folder "git commit" "$DATADIR/$repo" -m "Automated commit"
 
+    IMPLEMENTS WHEN user commits all changes to "(\S+)" in "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    execute_command_in_folder "git add" "$DATADIR/$repo" .
+    attempt_command_in_folder "git commit" "$DATADIR/$repo" -m "Automated commit"
+
+
     IMPLEMENTS GIVEN a local branch "(\S+)" branched from "(\S+)" in "(\S+)" repository
     branch="$MATCH_1"
     base_branch="$MATCH_2"
     repo="$MATCH_3"
     execute_command_in_folder "git checkout" "$DATADIR/$repo" $base_branch
     execute_command_in_folder "git checkout" "$DATADIR/$repo" -b $branch
+
+    IMPLEMENTS WHEN user creates a local branch "(\S+)" branched from "(\S+)" in "(\S+)" repository
+    branch="$MATCH_1"
+    base_branch="$MATCH_2"
+    repo="$MATCH_3"
+    execute_command_in_folder "git checkout" "$DATADIR/$repo" $base_branch
+    attempt_command_in_folder "git checkout" "$DATADIR/$repo" -b $branch
 
 
     IMPLEMENTS WHEN user pushes to "(\S+)" in "(\S+)" repository
@@ -89,6 +108,11 @@ Common implementations for yarn tests
     branch="$MATCH_1"
     repo="$MATCH_2"
     execute_command_in_folder "git checkout" "$DATADIR/$repo" $branch
+
+    IMPLEMENTS WHEN user checks out branch "(\S+)" in "(\S+)" repository
+    branch="$MATCH_1"
+    repo="$MATCH_2"
+    attempt_command_in_folder "git checkout" "$DATADIR/$repo" $branch
 
 
     IMPLEMENTS WHEN user merges "(\S+)" in "(\S+)" repository
@@ -125,10 +149,17 @@ Common implementations for yarn tests
     repo="$MATCH_3"
     attempt_command_in_folder "git blame" "$DATADIR/$repo" "$branch" "$file"
 
-    IMPLEMENTS WHEN user force pushes changes to "(\S+)" in "(\S+)" repository
-    branch="$MATCH_1"
-    repo="$MATCH_2"
-    attempt_command_in_folder "git push -f" "$DATADIR/$repo" origin "$branch" 
+    IMPLEMENTS GIVEN user pushes changes from "(\S+)" to "(\S+)" in "(\S+)" repository
+    start_branch="$MATCH_1"
+    receiving_branch="$MATCH_2"
+    repo="$MATCH_3"
+    execute_command_in_folder "git push" "$DATADIR/$repo" origin "$start_branch":"$receiving_branch"
+
+    IMPLEMENTS WHEN user force pushes changes from "(\S+)" to "(\S+)" in "(\S+)" repository
+    start_branch="$MATCH_1"
+    receiving_branch="$MATCH_2"
+    repo="$MATCH_3"
+    attempt_command_in_folder "git push -f" "$DATADIR/$repo" origin "$start_branch":"$receiving_branch"
 
     IMPLEMENTS WHEN user bisects in "(\S+)" in "(\S+)" repository against tag "(\S+)" and tag "(\S+)"
     branch="$MATCH_1"
