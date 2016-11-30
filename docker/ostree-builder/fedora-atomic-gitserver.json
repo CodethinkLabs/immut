@@ -48,6 +48,7 @@
                  "mod_authnz_pam",
                  "sssd-client",
                  "mod_lookup_identity",
+                 "mod_authnz_external",
                  "git-core",
                  "cgit"]
 
