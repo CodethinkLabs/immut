@@ -43,6 +43,8 @@
 		 "audit",
                  "httpd",
                  "httpd-filesystem",
+                 "python3-pygments",
+                 "python2-markdown",
                  "mod_authnz_pam",
                  "sssd-client",
                  "mod_lookup_identity",

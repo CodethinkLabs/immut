@@ -10,6 +10,15 @@ rm /etc/httpd/conf.d/cgit.conf
 mkdir -p /var/cache/cgit
 chown -R apache:apache /var/cache/cgit
 
+#syntax highlighting. This MUST be *before* scan-path!
+echo "source-filter=/usr/libexec/cgit/filters/syntax-highlighting.py" >> /etc/cgitrc
+
+#add an 'about' tab and format the contents
+echo "about-filter=/usr/libexec/cgit/filters/about-formatting.sh" >> /etc/cgitrc
+
+#currently will only work for a file called 'README.md'; can add more options
+echo "readme=:README.md" >> /etc/cgitrc
+
 #Include gits path in cgitrc
 echo "scan-path=/data" >> /etc/cgitrc
 
