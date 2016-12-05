@@ -12,7 +12,7 @@ Common implementations for yarn tests
         ;;
     esac
 
-    IMPLEMENTS WHEN user configures git "(\S+)" to "(.+)"
+    IMPLEMENTS WHEN developer configures git "(\S+)" to "(.+)"
     var="$MATCH_1"
     value="$MATCH_2"
     attempt_command "git config" --global $var "$value"
@@ -63,20 +63,20 @@ Common implementations for yarn tests
 
 
 
-    IMPLEMENTS WHEN user pushes all changes to "(\S+)" in "(\S+)" repository
+    IMPLEMENTS WHEN developer pushes all changes to "(\S+)" in "(\S+)" repository
     branch="$MATCH_1"
     repo="$MATCH_2"
     execute_command_in_folder "git add" "$DATADIR/$repo" .
     execute_command_in_folder "git commit" "$DATADIR/$repo" -m "Automated commit"
     attempt_command_in_folder "git push" "$DATADIR/$repo" origin $branch
 
-    IMPLEMENTS GIVEN user commits all changes to "(\S+)" in "(\S+)" repository
+    IMPLEMENTS GIVEN developer commits all changes to "(\S+)" in "(\S+)" repository
     branch="$MATCH_1"
     repo="$MATCH_2"
     execute_command_in_folder "git add" "$DATADIR/$repo" .
     execute_command_in_folder "git commit" "$DATADIR/$repo" -m "Automated commit"
 
-    IMPLEMENTS WHEN user commits all changes to "(\S+)" in "(\S+)" repository
+    IMPLEMENTS WHEN developer commits all changes to "(\S+)" in "(\S+)" repository
     branch="$MATCH_1"
     repo="$MATCH_2"
     execute_command_in_folder "git add" "$DATADIR/$repo" .
@@ -90,7 +90,7 @@ Common implementations for yarn tests
     execute_command_in_folder "git checkout" "$DATADIR/$repo" $base_branch
     execute_command_in_folder "git checkout" "$DATADIR/$repo" -b $branch
 
-    IMPLEMENTS WHEN user creates a local branch "(\S+)" branched from "(\S+)" in "(\S+)" repository
+    IMPLEMENTS WHEN developer creates a local branch "(\S+)" branched from "(\S+)" in "(\S+)" repository
     branch="$MATCH_1"
     base_branch="$MATCH_2"
     repo="$MATCH_3"
@@ -98,7 +98,7 @@ Common implementations for yarn tests
     attempt_command_in_folder "git checkout" "$DATADIR/$repo" -b $branch
 
 
-    IMPLEMENTS WHEN user pushes to "(\S+)" in "(\S+)" repository
+    IMPLEMENTS WHEN developer pushes to "(\S+)" in "(\S+)" repository
     branch="$MATCH_1"
     repo="$MATCH_2"
     attempt_command_in_folder "git push" "$DATADIR/$repo" origin $branch
@@ -109,18 +109,18 @@ Common implementations for yarn tests
     repo="$MATCH_2"
     execute_command_in_folder "git checkout" "$DATADIR/$repo" $branch
 
-    IMPLEMENTS WHEN user checks out branch "(\S+)" in "(\S+)" repository
+    IMPLEMENTS WHEN developer checks out branch "(\S+)" in "(\S+)" repository
     branch="$MATCH_1"
     repo="$MATCH_2"
     attempt_command_in_folder "git checkout" "$DATADIR/$repo" $branch
 
 
-    IMPLEMENTS WHEN user merges "(\S+)" in "(\S+)" repository
+    IMPLEMENTS WHEN developer merges "(\S+)" in "(\S+)" repository
     branch="$MATCH_1"
     repo="$MATCH_2"
     attempt_command_in_folder "git merge" "$DATADIR/$repo" origin/$branch
 
-    IMPLEMENTS WHEN user merges "(\S+)" and "(\S+)" in "(\S+)" repository
+    IMPLEMENTS WHEN developer merges "(\S+)" and "(\S+)" in "(\S+)" repository
     branch_1="$MATCH_1"
     branch_2="$MATCH_2"
     repo="$MATCH_3"
@@ -143,25 +143,25 @@ Common implementations for yarn tests
     repo="$MATCH_2"
     execute_command_in_folder "git tag" "$DATADIR/$repo" $tag
 
-    IMPLEMENTS WHEN user runs "git blame" on "(\S+)" in "(\S+)" in "(\S+)" repository
+    IMPLEMENTS WHEN developer runs "git blame" on "(\S+)" in "(\S+)" in "(\S+)" repository
     file="$MATCH_1"
     branch="$MATCH_2"
     repo="$MATCH_3"
     attempt_command_in_folder "git blame" "$DATADIR/$repo" "$branch" "$file"
 
-    IMPLEMENTS GIVEN user pushes changes from "(\S+)" to "(\S+)" in "(\S+)" repository
+    IMPLEMENTS GIVEN developer pushes changes from "(\S+)" to "(\S+)" in "(\S+)" repository
     start_branch="$MATCH_1"
     receiving_branch="$MATCH_2"
     repo="$MATCH_3"
     execute_command_in_folder "git push" "$DATADIR/$repo" origin "$start_branch":"$receiving_branch"
 
-    IMPLEMENTS WHEN user force pushes changes from "(\S+)" to "(\S+)" in "(\S+)" repository
+    IMPLEMENTS WHEN developer force pushes changes from "(\S+)" to "(\S+)" in "(\S+)" repository
     start_branch="$MATCH_1"
     receiving_branch="$MATCH_2"
     repo="$MATCH_3"
     attempt_command_in_folder "git push -f" "$DATADIR/$repo" origin "$start_branch":"$receiving_branch"
 
-    IMPLEMENTS WHEN user bisects in "(\S+)" in "(\S+)" repository against tag "(\S+)" and tag "(\S+)"
+    IMPLEMENTS WHEN developer bisects in "(\S+)" in "(\S+)" repository against tag "(\S+)" and tag "(\S+)"
     branch="$MATCH_1"
     repo="$MATCH_2"
     tag_1="$MATCH_3"
@@ -179,7 +179,7 @@ Common implementations for yarn tests
     echo $haproxy_ip > "$DATADIR"/current.ip
 
 
-    IMPLEMENTS WHEN user attempts to "(.+)" "(\S+)"( with prefix "(\S+)")?( with user "(\S+)" and password "(\S+)")?
+    IMPLEMENTS WHEN developer attempts to "(.+)" "(\S+)"( with prefix "(\S+)")?( with user "(\S+)" and password "(\S+)")?
     address="$(cat "$DATADIR"/current.ip)"
     if [ "$MATCH_3" != '' ]; then
         address="$MATCH_4.$address.xip.io"

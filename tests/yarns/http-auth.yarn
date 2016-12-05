@@ -5,75 +5,75 @@ Authentication tests directly to git server
 
     SCENARIO Anonymous access to /cgit fails
     GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "wget" "/cgit"
+    WHEN developer attempts to "wget" "/cgit"
     THEN "wget" failed
     AND the "wget" error message includes the string "Authentication Failed"
 
     SCENARIO Anonymous access to CGit logo fails
     GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "wget" "/cgit-data/cgit.png"
+    WHEN developer attempts to "wget" "/cgit-data/cgit.png"
     THEN "wget" failed
     AND the "wget" error message includes the string "Authentication Failed"
 
     SCENARIO Wrong credentials access to /cgit fails
     GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "wget" "/cgit" with user "fakeuser" and password "fakepass"
+    WHEN developer attempts to "wget" "/cgit" with user "fakeuser" and password "fakepass"
     THEN "wget" failed
     AND the "wget" error message includes the string "Authentication Failed"
 
     SCENARIO Wrong credentials access to CGit logo fails
     GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "wget" "/cgit-data/cgit.png" with user "fakeuser" and password "fakepass"
+    WHEN developer attempts to "wget" "/cgit-data/cgit.png" with user "fakeuser" and password "fakepass"
     THEN "wget" failed
     AND the "wget" error message includes the string "Authentication Failed"
 
-    SCENARIO Authenticated user access to /cgit succeeds
+    SCENARIO Authenticated developer access to /cgit succeeds
     GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "wget" "/cgit" with user "testuser" and password "testpass"
+    WHEN developer attempts to "wget" "/cgit" with user "testuser" and password "testpass"
     THEN "wget" succeeded
 
-    SCENARIO Authenticated user access to CGit logo succeeds
+    SCENARIO Authenticated developer access to CGit logo succeeds
     GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "wget" "/cgit-data/cgit.png" with user "testuser" and password "testpass"
+    WHEN developer attempts to "wget" "/cgit-data/cgit.png" with user "testuser" and password "testpass"
     THEN "wget" succeeded
 
     SCENARIO Anonymous git-clone of a repository fails
     GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "git clone" "/git/bar"
+    WHEN developer attempts to "git clone" "/git/bar"
     THEN "git clone" failed
     AND the "git clone" error message includes the string "terminal prompts disabled"
 
     SCENARIO Wrong credentials git-clone of a repository fails
     GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "git clone" "/git/bar" with user "fakeuser" and password "fakepass"
+    WHEN developer attempts to "git clone" "/git/bar" with user "fakeuser" and password "fakepass"
     THEN "git clone" failed
     AND the "git clone" error message includes the string "Authentication failed"
 
-    SCENARIO Authenticated user git-clone of a repository succeeds
+    SCENARIO Authenticated developer git-clone of a repository succeeds
     GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "git clone" "/git/bar" with user "testuser" and password "testpass"
+    WHEN developer attempts to "git clone" "/git/bar" with user "testuser" and password "testpass"
     THEN "git clone" succeeded
 
     SCENARIO Anonymous access to / returns Apache test page
     GIVEN a git server running with ip stored in gitserver_ip
-    WHEN user attempts to "wget" "/"
+    WHEN developer attempts to "wget" "/"
     THEN "wget" failed
     AND file "index.html" includes the string "Test Page for the Apache HTTP Server on Fedora"
 
 Authentication tests through HAProxy
 
-    SCENARIO Authenticated user access to /cgit through haproxy succeeds
+    SCENARIO Authenticated developer access to /cgit through haproxy succeeds
     GIVEN a haproxy server running with ip stored in haproxy_ip
-    WHEN user attempts to "wget" "/cgit" with prefix "gitserver.test" with user "testuser" and password "testpass"
+    WHEN developer attempts to "wget" "/cgit" with prefix "gitserver.test" with user "testuser" and password "testpass"
     THEN "wget" succeeded
 
-    SCENARIO Authenticated user git-clone of a repository through haproxy succeeds
+    SCENARIO Authenticated developer git-clone of a repository through haproxy succeeds
     GIVEN a haproxy server running with ip stored in haproxy_ip
-    WHEN user attempts to "git clone" "/git/bar" with prefix "gitserver.test" with user "testuser" and password "testpass"
+    WHEN developer attempts to "git clone" "/git/bar" with prefix "gitserver.test" with user "testuser" and password "testpass"
     THEN "git clone" succeeded
 
     SCENARIO Anonymous access to / through haproxy returns Apache test page
     GIVEN a haproxy server running with ip stored in haproxy_ip
-    WHEN user attempts to "wget" "/" with prefix "gitserver.test"
+    WHEN developer attempts to "wget" "/" with prefix "gitserver.test"
     THEN "wget" failed
     AND file "index.html" includes the string "Test Page for the Apache HTTP Server on Fedora"

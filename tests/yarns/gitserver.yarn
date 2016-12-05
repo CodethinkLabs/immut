@@ -1,19 +1,19 @@
 Immut Git client tests
 ======================
 
-To use git and git flow, a user must configure their git client so that
-git knows who the user is. This information can then be placed in
+To use git and git flow, a developer must configure their git client so that
+git knows who the developer is. This information can then be placed in
 future commit messages.
 
-    SCENARIO user configures git client
-    WHEN user configures git "user.name" to "User Name"
+    SCENARIO developer configures git client
+    WHEN developer configures git "user.name" to "User Name"
     THEN "git config" succeeded
-    WHEN user configures git "user.email" to "user@domain.com"
+    WHEN developer configures git "user.email" to "developer@domain.com"
     THEN "git config" succeeded
 
 
 The git flow workflow uses two branches, 'master' and 'develop'.
-These will be created automatically; 'user' here refers to the
+These will be created automatically; 'developer' here refers to the
 person first setting up the repo.
 
     SCENARIO admin creates master git branch
@@ -21,7 +21,7 @@ person first setting up the repo.
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND some new text in "test" file in "foo" repository
-    WHEN user pushes all changes to "master" in "foo" repository
+    WHEN developer pushes all changes to "master" in "foo" repository
     THEN "git push" succeeded
 
 The second branch called `develop` is used as the integration
@@ -33,7 +33,7 @@ when the repo is set up.
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "develop" branched from "master" in "foo" repository
-    WHEN user pushes to "develop" in "foo" repository
+    WHEN developer pushes to "develop" in "foo" repository
     THEN "git push" succeeded
 
 The 'master' branch only contains numbered releases and the
@@ -41,11 +41,11 @@ occasional hotfix; developers do not push other changes to master
 directly. Instead, they base their changes on the 'develop'
 branch.
 
-    SCENARIO user creates develop git branch
+    SCENARIO developer creates develop git branch
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
-    WHEN user checks out branch "develop" in "foo" repository
+    WHEN developer checks out branch "develop" in "foo" repository
     THEN "git checkout" succeeded
 
 
@@ -57,85 +57,85 @@ First, they create the feature branch. (NB: this command is currently
 `git checkout`, not `git branch`, as we use `git checkout -b` to
 create branches)
 
-    SCENARIO user creates feature git branch
+    SCENARIO developer creates feature git branch
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
-    WHEN user creates a local branch "feature-branch" branched from "develop" in "foo" repository
+    WHEN developer creates a local branch "feature-branch" branched from "develop" in "foo" repository
     THEN "git checkout" succeeded
 
 Next, they make changes, and then commit these to their
 local feature branches.
 
-    SCENARIO user commits to feature git branch
+    SCENARIO developer commits to feature git branch
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "feature-branch" branched from "develop" in "foo" repository
     AND the branch "feature-branch" checked out in "foo" repository
     AND some new text in "test" file in "foo" repository
-    WHEN user commits all changes to "feature-branch" in "foo" repository
+    WHEN developer commits all changes to "feature-branch" in "foo" repository
     THEN "git commit" succeeded
 
 
 Then, they push their local feature branches upstream for review
 
-    SCENARIO user pushes to feature git branch
+    SCENARIO developer pushes to feature git branch
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "feature-branch" branched from "develop" in "foo" repository
     AND the branch "feature-branch" checked out in "foo" repository
     AND some new text in "test" file in "foo" repository
-    WHEN user pushes all changes to "feature-branch" in "foo" repository
+    WHEN developer pushes all changes to "feature-branch" in "foo" repository
     THEN "git push" succeeded
 
 These feature branches can then be reviewed. If reviewers are happy, these
 branches will be merged back into 'develop'. 
 
-    SCENARIO user can review feature branch
+    SCENARIO developer can review feature branch
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "develop" checked out in "foo" repository
-    WHEN user merges "feature-branch" in "foo" repository
+    WHEN developer merges "feature-branch" in "foo" repository
     THEN "git merge" succeeded
 
 Once a feature branch passes review, the person who merged
 pushes the new develop branch containing the change back upstream.
 The specifics of this depend on the review framework used.
 
-    SCENARIO user can merge a feature branch back to develop
+    SCENARIO developer can merge a feature branch back to develop
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "develop" checked out in "foo" repository
     AND the branch "feature-branch" is merged in "foo" repository
-    WHEN user pushes to "develop" in "foo" repository
+    WHEN developer pushes to "develop" in "foo" repository
     THEN "git push" succeeded
 
 Once the release team decides to create a release, they merge
 the `develop` branch into `master`
 
-    SCENARIO user can merge the "develop" branch into master
+    SCENARIO developer can merge the "develop" branch into master
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
     AND the branch "develop" is merged in "foo" repository
-    WHEN user pushes to "master" in "foo" repository
+    WHEN developer pushes to "master" in "foo" repository
     THEN "git push" succeeded
 
 To complete the release, after merging the `develop` branch into `master`,
 the release team creates a tag in the `master` branch
 
-    SCENARIO user can tag a release on master branch
+    SCENARIO developer can tag a release on master branch
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
     AND a tag "release_01" is created in "foo" repository
-    WHEN user pushes to "release_01" in "foo" repository
+    WHEN developer pushes to "release_01" in "foo" repository
     THEN "git push" succeeded
 
 
@@ -143,105 +143,105 @@ Sometimes, bugs will appear in releases. In these cases, a developer
 branches a local 'hotfix' branch from 'master', and commits changes
 to that local 'hotfix' branch.
 
-    SCENARIO user creates and commits to hotfix git branch
+    SCENARIO developer creates and commits to hotfix git branch
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "hotfix-branch" branched from "master" in "foo" repository
     AND some new text in "hotfix-test" file in "foo" repository
-    WHEN user commits all changes to "hotfix-branch" in "foo" repository
+    WHEN developer commits all changes to "hotfix-branch" in "foo" repository
     THEN "git commit" succeeded
 
 The fixes needed in the release are then pushed upstream from
 the local hotfix branch to the remote.
 
-    SCENARIO user pushes hotfix branch upstream
+    SCENARIO developer pushes hotfix branch upstream
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "hotfix-branch" branched from "master" in "foo" repository
     AND the branch "hotfix-branch" checked out in "foo" repository
     AND some new text in "hotfix-test" file in "foo" repository
-    WHEN user pushes all changes to "hotfix-branch" in "foo" repository
+    WHEN developer pushes all changes to "hotfix-branch" in "foo" repository
     THEN "git push" succeeded
 
 The hotfix branch can then be cloned and reviewed. If it looks good,
 the reviewer merges it locally to master and develop.
 
-    SCENARIO user can review hotfix branch
+    SCENARIO developer can review hotfix branch
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
-    WHEN user merges "hotfix-branch" in "foo" repository
+    WHEN developer merges "hotfix-branch" in "foo" repository
     THEN "git merge" succeeded
 
     GIVEN the branch "develop" checked out in "foo" repository
-    WHEN user merges "hotfix-branch" in "foo" repository
+    WHEN developer merges "hotfix-branch" in "foo" repository
     THEN "git merge" succeeded
 
 
 The reviewer then pushes the changes to `master` and into `develop` on
 the remote once it's ready.
 
-    SCENARIO user can merge hotfix branch into master and develop
+    SCENARIO developer can merge hotfix branch into master and develop
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
     AND the branch "hotfix-branch" is merged in "foo" repository
-    WHEN user pushes to "master" in "foo" repository
+    WHEN developer pushes to "master" in "foo" repository
     THEN "git push" succeeded
 
     GIVEN the branch "develop" checked out in "foo" repository
     AND the branch "hotfix-branch" is merged in "foo" repository
-    WHEN user pushes to "develop" in "foo" repository
+    WHEN developer pushes to "develop" in "foo" repository
     THEN "git push" succeeded
 
 Then, the release team affixes a new Tag to the new release
 
-    SCENARIO user can tag a hotfix release on master branch
+    SCENARIO developer can tag a hotfix release on master branch
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
     AND a tag "release_01.1" is created in "foo" repository
-    WHEN user pushes to "release_01.1" in "foo" repository
+    WHEN developer pushes to "release_01.1" in "foo" repository
     THEN "git push" succeeded
 
-Sometimes a user might need to cherry pick (I'm not sure they would with
+Sometimes a developer might need to cherry pick (I'm not sure they would with
 git flow workflow, since a change should be on its own branch).
 This currently creates commits and then cherry picks them to another
 branch in the same step, since this wouldn't happen 'in the wild'.
 
-    SCENARIO user can cherry-pick a change
+    SCENARIO developer can cherry-pick a change
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "hotfix-branch" branched from "master" in "foo" repository
     AND the branch "hotfix-branch" checked out in "foo" repository
     AND some new text in "hotfix-test" file in "foo" repository
-    AND user commits all changes to "hotfix-branch" in "foo" repository
+    AND developer commits all changes to "hotfix-branch" in "foo" repository
     GIVEN the branch "master" checked out in "foo" repository
     WHEN new commits in "hotfix-branch" are cherry-picked into "foo" repository
     THEN "git cherry-pick" succeeded
     
 
-A user may want more details about a specific file to find out who changed some
+A developer may want more details about a specific file to find out who changed some
 lines of code, and why, so that they know who to ask for further information.
 Git calls this 'blame'. This scenario currently just checks the command works,
-so the user creates the commit and then checks it themselves, but this should
+so the developer creates the commit and then checks it themselves, but this should
 change so that they are 'blaming' a commit they did not create (it also checks
 against master at the moment).
 
-    SCENARIO user can `git blame`
+    SCENARIO developer can `git blame`
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
     AND some new text in "blame-test" file in "foo" repository
-    AND user commits all changes to "master" in "foo" repository
-    WHEN user runs "git blame" on "blame-test" in "master" in "foo" repository
+    AND developer commits all changes to "master" in "foo" repository
+    WHEN developer runs "git blame" on "blame-test" in "master" in "foo" repository
     THEN "git blame" succeeded
 
 A three-way merge allows a version-control system to ascertain the 'common
@@ -254,24 +254,24 @@ and should be overwritten.
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
     AND multiple lines of new text in "3-way-merge-test" file in "foo" repository
-    AND user commits all changes to "master" in "foo" repository
+    AND developer commits all changes to "master" in "foo" repository
     AND a local branch "merge1-branch" branched from "master" in "foo" repository
     AND the branch "merge1-branch" checked out in "foo" repository
     AND multiple lines_2 of new text in "3-way-merge-test" file in "foo" repository
-    AND user commits all changes to "merge1-branch" in "foo" repository
+    AND developer commits all changes to "merge1-branch" in "foo" repository
     AND a local branch "merge2-branch" branched from "master" in "foo" repository
     AND the branch "merge2-branch" checked out in "foo" repository
     AND multiple lines_3 of new text in "3-way-merge-test" file in "foo" repository
-    AND user commits all changes to "merge2-branch" in "foo" repository
+    AND developer commits all changes to "merge2-branch" in "foo" repository
     AND the branch "master" checked out in "foo" repository
-    WHEN user merges "merge2-branch" and "merge1-branch" in "foo" repository
+    WHEN developer merges "merge2-branch" and "merge1-branch" in "foo" repository
     THEN "git merge" succeeded
 
 Force push -- in future, this test should check that this fails.
 For now, we check it succeeds, so we know
 we're testing the right thing and it's not failing for an unrelated reason
 
-    SCENARIO user can force push
+    SCENARIO developer can force push
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
@@ -279,31 +279,31 @@ we're testing the right thing and it's not failing for an unrelated reason
     AND a local branch "changed-branch" branched from "master" in "foo" repository
     AND the branch "changed-branch" checked out in "foo" repository
     AND some new text in "force-test" file in "foo" repository
-    AND user commits all changes to "changed-branch" in "foo" repository
-    AND user pushes changes from "changed-branch" to "master" in "foo" repository
+    AND developer commits all changes to "changed-branch" in "foo" repository
+    AND developer pushes changes from "changed-branch" to "master" in "foo" repository
 
     AND the branch "force-branch" checked out in "foo" repository
     AND some new alt_text in "force-test" file in "foo" repository
-    AND user commits all changes to "force-branch" in "foo" repository
-    WHEN user force pushes changes from "force-branch" to "master" in "foo" repository
+    AND developer commits all changes to "force-branch" in "foo" repository
+    WHEN developer force pushes changes from "force-branch" to "master" in "foo" repository
     THEN "git push -f" succeeded
 
-A user may wish to bisect a series of commits to find the one which introduced
+A developer may wish to bisect a series of commits to find the one which introduced
 some behaviour.
     
-    SCENARIO user can bisect
+    SCENARIO developer can bisect
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "scenario-debug" branched from "master" in "foo" repository
     AND the branch "scenario-debug" checked out in "foo" repository
     AND some new text in "bisect-test" file in "foo" repository
-    AND user commits all changes to "scenario-debug" in "foo" repository
+    AND developer commits all changes to "scenario-debug" in "foo" repository
     AND a tag "release_bisect" is created in "foo" repository
     AND some new text in "bisect-test2" file in "foo" repository
-    AND user commits all changes to "scenario-debug" in "foo" repository
+    AND developer commits all changes to "scenario-debug" in "foo" repository
     AND some new text in "bisect-test3" file in "foo" repository
-    AND user commits all changes to "scenario-debug" in "foo" repository
+    AND developer commits all changes to "scenario-debug" in "foo" repository
     AND a tag "bad_bisect" is created in "foo" repository
-    WHEN user bisects in "scenario-debug" in "foo" repository against tag "bad_bisect" and tag "release_bisect"
+    WHEN developer bisects in "scenario-debug" in "foo" repository against tag "bad_bisect" and tag "release_bisect"
     THEN "git bisect reset" succeeded
