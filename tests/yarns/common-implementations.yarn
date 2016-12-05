@@ -98,9 +98,9 @@ Common implementations for yarn tests
     attempt_command_in_folder "git checkout" "$DATADIR/$repo" -b $branch
 
 
-    IMPLEMENTS WHEN developer pushes to "(\S+)" in "(\S+)" repository
-    branch="$MATCH_1"
-    repo="$MATCH_2"
+    IMPLEMENTS WHEN (\S+) pushes to "(\S+)" in "(\S+)" repository
+    branch="$MATCH_2"
+    repo="$MATCH_3"
     attempt_command_in_folder "git push" "$DATADIR/$repo" origin $branch
 
 
@@ -115,9 +115,9 @@ Common implementations for yarn tests
     attempt_command_in_folder "git checkout" "$DATADIR/$repo" $branch
 
 
-    IMPLEMENTS WHEN developer merges "(\S+)" in "(\S+)" repository
-    branch="$MATCH_1"
-    repo="$MATCH_2"
+    IMPLEMENTS WHEN (\S+) merges "(\S+)" in "(\S+)" repository
+    branch="$MATCH_2"
+    repo="$MATCH_3"
     attempt_command_in_folder "git merge" "$DATADIR/$repo" origin/$branch
 
     IMPLEMENTS WHEN developer merges "(\S+)" and "(\S+)" in "(\S+)" repository

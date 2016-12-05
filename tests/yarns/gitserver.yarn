@@ -93,49 +93,49 @@ Then, they push their local feature branches upstream for review
 These feature branches can then be reviewed. If reviewers are happy, these
 branches will be merged back into 'develop'. 
 
-    SCENARIO developer can review feature branch
+    SCENARIO reviewer can review feature branch
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "develop" checked out in "foo" repository
-    WHEN developer merges "feature-branch" in "foo" repository
+    WHEN reviewer merges "feature-branch" in "foo" repository
     THEN "git merge" succeeded
 
 Once a feature branch passes review, the person who merged
 pushes the new develop branch containing the change back upstream.
 The specifics of this depend on the review framework used.
 
-    SCENARIO developer can merge a feature branch back to develop
+    SCENARIO reviewer can merge a feature branch back to develop
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "develop" checked out in "foo" repository
     AND the branch "feature-branch" is merged in "foo" repository
-    WHEN developer pushes to "develop" in "foo" repository
+    WHEN reviewer pushes to "develop" in "foo" repository
     THEN "git push" succeeded
 
 Once the release team decides to create a release, they merge
 the `develop` branch into `master`
 
-    SCENARIO developer can merge the "develop" branch into master
+    SCENARIO product owner can merge the "develop" branch into master
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
     AND the branch "develop" is merged in "foo" repository
-    WHEN developer pushes to "master" in "foo" repository
+    WHEN owner pushes to "master" in "foo" repository
     THEN "git push" succeeded
 
 To complete the release, after merging the `develop` branch into `master`,
 the release team creates a tag in the `master` branch
 
-    SCENARIO developer can tag a release on master branch
+    SCENARIO product owner can tag a release on master branch
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
     AND a tag "release_01" is created in "foo" repository
-    WHEN developer pushes to "release_01" in "foo" repository
+    WHEN owner pushes to "release_01" in "foo" repository
     THEN "git push" succeeded
 
 
@@ -168,45 +168,45 @@ the local hotfix branch to the remote.
 The hotfix branch can then be cloned and reviewed. If it looks good,
 the reviewer merges it locally to master and develop.
 
-    SCENARIO developer can review hotfix branch
+    SCENARIO reviewer can review hotfix branch
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
-    WHEN developer merges "hotfix-branch" in "foo" repository
+    WHEN reviewer merges "hotfix-branch" in "foo" repository
     THEN "git merge" succeeded
 
     GIVEN the branch "develop" checked out in "foo" repository
-    WHEN developer merges "hotfix-branch" in "foo" repository
+    WHEN reviewer merges "hotfix-branch" in "foo" repository
     THEN "git merge" succeeded
 
 
 The reviewer then pushes the changes to `master` and into `develop` on
 the remote once it's ready.
 
-    SCENARIO developer can merge hotfix branch into master and develop
+    SCENARIO reviewer can merge hotfix branch into master and develop
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
     AND the branch "hotfix-branch" is merged in "foo" repository
-    WHEN developer pushes to "master" in "foo" repository
+    WHEN reviewer pushes to "master" in "foo" repository
     THEN "git push" succeeded
 
     GIVEN the branch "develop" checked out in "foo" repository
     AND the branch "hotfix-branch" is merged in "foo" repository
-    WHEN developer pushes to "develop" in "foo" repository
+    WHEN reviewer pushes to "develop" in "foo" repository
     THEN "git push" succeeded
 
 Then, the release team affixes a new Tag to the new release
 
-    SCENARIO developer can tag a hotfix release on master branch
+    SCENARIO product owner can tag a hotfix release on master branch
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
     AND a tag "release_01.1" is created in "foo" repository
-    WHEN developer pushes to "release_01.1" in "foo" repository
+    WHEN owner pushes to "release_01.1" in "foo" repository
     THEN "git push" succeeded
 
 Sometimes a developer might need to cherry pick (I'm not sure they would with
