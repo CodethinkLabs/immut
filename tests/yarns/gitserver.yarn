@@ -209,20 +209,25 @@ Then, the release team affixes a new Tag to the new release
     WHEN owner pushes to "release_01.1" in "foo" repository
     THEN "git push" succeeded
 
-Sometimes a developer might need to cherry pick (I'm not sure they would with
-git flow workflow, since a change should be on its own branch).
-This currently creates commits and then cherry picks them to another
-branch in the same step, since this wouldn't happen 'in the wild'.
+Sometimes a developer might need to take a single commit from another
+feature-branch-in-progress and include it in their branch. In these
+cases, they will use git cherry-pick to include the change.
 
     SCENARIO developer can cherry-pick a change
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "hotfix-branch" branched from "master" in "foo" repository
+    AND a local branch "old-feature-branch" branched from "master" in "foo" repository
+    AND the branch "old-feature-branch" checked out in "foo" repository
+    AND some new text in "cherrypick-test" file in "foo" repository
+    AND developer commits all changes to "old-feature-branch" in "foo" repository
+
     AND the branch "hotfix-branch" checked out in "foo" repository
-    AND some new text in "hotfix-test" file in "foo" repository
+    AND some new text in "cherrypick-other-test" file in "foo" repository
     AND developer commits all changes to "hotfix-branch" in "foo" repository
-    GIVEN the branch "master" checked out in "foo" repository
+
+    GIVEN the branch "old-feature-branch" checked out in "foo" repository
     WHEN new commits in "hotfix-branch" are cherry-picked into "foo" repository
     THEN "git cherry-pick" succeeded
     
@@ -231,22 +236,29 @@ A developer may want more details about a specific file to find out who changed 
 lines of code, and why, so that they know who to ask for further information.
 Git calls this 'blame'. This scenario currently just checks the command works,
 so the developer creates the commit and then checks it themselves, but this should
-change so that they are 'blaming' a commit they did not create (it also checks
-against master at the moment).
+change in the future so that they are 'blaming' a commit they did not create.
 
     SCENARIO developer can `git blame`
     ASSUMING gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
-    AND the branch "master" checked out in "foo" repository
+    AND a local branch "blametest-branch" branched from "develop" in "foo" repository
+    AND the branch "blametest-branch" checked out in "foo" repository
     AND some new text in "blame-test" file in "foo" repository
-    AND developer commits all changes to "master" in "foo" repository
-    WHEN developer runs "git blame" on "blame-test" in "master" in "foo" repository
+    AND developer commits all changes to "blametest-branch" in "foo" repository
+    WHEN developer runs "git blame" on "blame-test" in "blametest-branch" in "foo" repository
     THEN "git blame" succeeded
 
 A three-way merge allows a version-control system to ascertain the 'common
 ancestor' of a line, to tell which lines are changed and which are old
-and should be overwritten.
+and should be overwritten. This is useful when two different branches have
+changes in different places that both need to be applied, as the new
+changes can be applied from both branches automatically. In cases where
+branch one, branch two and the common ancestor all have a change in
+the same place, the developer would need to manually resolve the merge
+conflict, choosing the preferred change. This scenario checks that the
+automatic merge will work in cases where the changes are in different
+places in the same file.
 
     SCENARIO a three-way merge works when different branches change only different things in the same file
     ASSUMING gitserver is running
@@ -267,9 +279,11 @@ and should be overwritten.
     WHEN developer merges "merge2-branch" and "merge1-branch" in "foo" repository
     THEN "git merge" succeeded
 
-Force push -- in future, this test should check that this fails.
-For now, we check it succeeds, so we know
-we're testing the right thing and it's not failing for an unrelated reason
+A 'force push' allows a developer to push changes to a branch even if the branches
+histories conflict, overwriting the history in the branch to which changes are
+pushed. In the future, with force push disabled, this test should check
+that `git push -f` fails. For now, the test checks it succeeds, to check the
+force push itself is tested, and that the test is not failing for an unrelated reason
 
     SCENARIO developer can force push
     ASSUMING gitserver is running
@@ -289,7 +303,16 @@ we're testing the right thing and it's not failing for an unrelated reason
     THEN "git push -f" succeeded
 
 A developer may wish to bisect a series of commits to find the one which introduced
-some behaviour.
+some behaviour. They mark the last known working commit as 'good', the most recent
+broken commit as 'bad', and then bisect this range until they can find the commit
+which introduces the broken behaviour. This test checks that, for a range of three
+commits, the user can mark the oldest 'good', the newest 'bad', and that git `bisect`
+will return the middle commit.
+
+This test locally applies tags to track 'good' and 'bad' commits,
+though this is not part of the git flow workflow; in practice, a developer would 
+list commits by commit ID (the test uses tags as the test cannot predict the commit
+IDs).
     
     SCENARIO developer can bisect
     ASSUMING gitserver is running
