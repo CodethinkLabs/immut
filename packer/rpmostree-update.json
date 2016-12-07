@@ -40,7 +40,6 @@
 			"mkdir -p /home/ostree-output",
 			"cd /home/ostree-builder",
 			"docker build -t ostree-builder .",
-		        "exit 1",
 			"docker run --privileged -v /home/ostree-output/:/data:rw ostree-builder",
 			"cd /home/ostree-output",
 			"zip -r /home/repo.zip ./repo"
