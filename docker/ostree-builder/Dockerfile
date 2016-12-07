@@ -1,6 +1,6 @@
 FROM fedora:24
 
-RUN dnf -y install rpm-ostree git nc
+RUN dnf -y install rpm-ostree git nc zip
 RUN mkdir /data
 
 WORKDIR /workdir
