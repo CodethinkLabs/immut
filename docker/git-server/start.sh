@@ -20,7 +20,7 @@ echo "about-filter=/usr/libexec/cgit/filters/about-formatting.sh" >> /etc/cgitrc
 echo "readme=:README.md" >> /etc/cgitrc
 
 #Include gits path in cgitrc
-echo "scan-path=/data" >> /etc/cgitrc
+echo "scan-path=/data/gitserver" >> /etc/cgitrc
 
 #Create example repositories if /data is empty
 if ! [ "$(ls -A /data)" ]; then

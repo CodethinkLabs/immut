@@ -28,6 +28,8 @@ mkdir -p "$HAPROXYDIR"
 cp "$SCRIPTPATH"/haproxy.cfg "$HAPROXYCONF"
 
 for i in $projects; do
+    mkdir -p /var/data/"$i"/public_html
+    echo "public_html" -rw,soft :/var/data/"$i"/public_html >> /etc/auto.master.d/auto."$i"
     for j in $services; do
         # Create autofs configuration file
         mkdir -p /var/data/"$i"/"$j"
@@ -53,7 +55,8 @@ for i in $projects; do
         # Launch container
         docker run -d -v=/dev/log:/dev/log --net immut-net \
                    --ip 172.101.0.$ip \
-                   -v=/var/lib/immut/$i/$j:/data:rw \
+                   -v=/var/lib/immut/$i/$j:/data/$j:rw \
+                   -v=/var/lib/immut/$i/public_html:/data/public_html:rw \
                    -v=/var/lib/sss/pipes/:/var/lib/sss/pipes/:rw \
                    -v=/run/dbus/system_bus_socket:/run/dbus/system_bus_socket:rw \
                    $j # Service name has to match docker image name
