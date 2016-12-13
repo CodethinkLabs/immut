@@ -55,6 +55,7 @@ for i in $projects; do
         # Launch container
         docker run -d -v=/dev/log:/dev/log --net immut-net \
                    --ip 172.101.0.$ip \
+                   -e "PROJECT_NAME=$i" \
                    -v=/var/lib/immut/$i/$j:/data/$j:rw \
                    -v=/var/lib/immut/$i/public_html:/data/public_html:rw \
                    -v=/var/lib/sss/pipes/:/var/lib/sss/pipes/:rw \

@@ -3,6 +3,11 @@
 # Make it check sss before altfiles
 sed -i -e 's/altfiles sss/sss altfiles/' /etc/nsswitch.conf
 
+# Configure access rules in git-server.conf
+if [ "x$PROJECT_NAME" != "x" ]; then
+    sed -i -e "s/Require valid-user/Require unix-group $PROJECT_NAME/" /etc/httpd/conf.d/git-server.conf
+fi
+
 #Remove default apache configuration file for cgit
 rm /etc/httpd/conf.d/cgit.conf
 
