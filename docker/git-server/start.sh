@@ -28,11 +28,11 @@ echo "readme=:README.md" >> /etc/cgitrc
 echo "scan-path=/data/gitserver" >> /etc/cgitrc
 
 #Create example repositories if /data is empty
-if ! [ "$(ls -A /data)" ]; then
+if ! [ "$(ls -A /data/gitserver)" ]; then
     gits="foo bar baz"
     for reponame in $gits; do
-	git init --bare /data/$reponame
-        cp /data/$reponame/hooks/post-update.sample /data/$reponame/hooks/post-update
+        git init --bare /data/gitserver/$reponame
+        cp /data/gitserver/$reponame/hooks/post-update.sample /data/gitserver/$reponame/hooks/post-update
     done
 fi
 
