@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#There is a chance $PROJECT_NAME may not work here
+
+#check push is to master, not just any branch
+while read oldrev newrev ref
+
+do
+    if [[ $ref =~ .*/master$ ]];
+    then
+    mkdir /data/gitserver/extracted
+
+    git clone /data/gitserver/$PROJECT_NAME /data/gitserver/extracted
+
+    # We avoid using $project/docs/* as the source dir directly, as
+    # $project/docs/* will not contain the config to work with sphinx,
+    # unless we put a docs framework in each repo when we first make them.
+    # We don't do that at the moment.
+
+    #wipe source folder and replace with our clean config
+    rm -r /data/source
+    cp -r /data/sphinx-config /data/source
+
+    #add the new docs
+    cp /data/gitserver/extracted/docs/* /data/source
+
+    #wipe the old build folder
+    rm -r /data/build/*
+
+    sphinx-build -b html /data/source /data/build
+
+    # This is so our build and source dirs are at the same level
+    # so the command is slightly easier; we could just make public_html
+    # the build dir instead.
+
+    rm -r /data/public_html/*
+    cp -r /data/build/* /data/public_html
+
+    rm -r /data/gitserver/extracted
+    fi
+done
