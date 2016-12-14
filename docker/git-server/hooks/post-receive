@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#TODO: replace 'p1' with project name
+
+mkdir /data/gitserver/extracted
+
+git clone /data/gitserver/p1 /data/gitserver/extracted
+
+# We avoid using $project/docs/* as the source dir directly, as
+# $project/docs/* will not contain the config to work with sphinx,
+# unless we put a docs framework in each repo when we first make them.
+# We don't do that at the moment.
+
+cp /data/gitserver/extracted/docs/* /data/source
+
+sphinx-build -b html /data/source /data/build
+
+# This is so our build and source dirs are at the same level
+# so the command is slightly easier; we could just make public_html
+# the build dir instead.
+
+cp -r /data/build/* /data/public_html
+
+rm -r /data/gitserver/extracted
