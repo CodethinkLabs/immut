@@ -44,6 +44,16 @@ else
     fi
 fi
 
+# Create docs directory structure (sphinx requires an author name and
+# version number, so we repeat the project name and use '1' by default for now)
+sphinx-quickstart -q --sep --project=PROJECT_NAME --author=PROJECT_NAME -v=1 /data
+
+# we want to keep our config pristine so we can delete docs, so we copy it
+
+mkdir /data/sphinx-config
+
+cp -r /data/source/* /data/sphinx-config
+
 #fix ownership of git repos
 chown -R apache:apache /data
 
