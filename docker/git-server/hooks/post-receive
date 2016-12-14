@@ -2,23 +2,31 @@
 
 #TODO: replace 'p1' with project name
 
-mkdir /data/gitserver/extracted
+#check push is to master, not just any branch
+while read oldrev newrev ref
 
-git clone /data/gitserver/p1 /data/gitserver/extracted
+do
+    if [[ $ref =~ .*/master$ ]];
+    then
+    mkdir /data/gitserver/extracted
 
-# We avoid using $project/docs/* as the source dir directly, as
-# $project/docs/* will not contain the config to work with sphinx,
-# unless we put a docs framework in each repo when we first make them.
-# We don't do that at the moment.
+    git clone /data/gitserver/p1 /data/gitserver/extracted
 
-cp /data/gitserver/extracted/docs/* /data/source
+    # We avoid using $project/docs/* as the source dir directly, as
+    # $project/docs/* will not contain the config to work with sphinx,
+    # unless we put a docs framework in each repo when we first make them.
+    # We don't do that at the moment.
 
-sphinx-build -b html /data/source /data/build
+    cp -r /data/gitserver/extracted/docs/* /data/source
 
-# This is so our build and source dirs are at the same level
-# so the command is slightly easier; we could just make public_html
-# the build dir instead.
+    sphinx-build -b html /data/source /data/build
 
-cp -r /data/build/* /data/public_html
+    # This is so our build and source dirs are at the same level
+    # so the command is slightly easier; we could just make public_html
+    # the build dir instead.
 
-rm -r /data/gitserver/extracted
+    cp -r /data/build/* /data/public_html
+
+    rm -r /data/gitserver/extracted
+    fi
+done
