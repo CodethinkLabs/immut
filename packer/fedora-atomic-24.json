@@ -54,6 +54,16 @@
 		"ssh_wait_timeout": "20m",
 
 		"shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now"
+       }, {
+               "name": "aws",
+               "ami_name": "Atomic-host-{{timestamp}}",
+               "type": "amazon-ebs",
+               "access_key": "",
+               "secret_key": "",
+               "region": "eu-west-1",
+               "source_ami": "ami-861842f5",
+               "instance_type": "t2.micro",
+               "ssh_username": "root"
 	}],
 
 	"provisioners": [{
