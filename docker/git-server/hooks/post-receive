@@ -17,7 +17,15 @@ do
     # unless we put a docs framework in each repo when we first make them.
     # We don't do that at the moment.
 
-    cp -r /data/gitserver/extracted/docs/* /data/source
+    #wipe source folder and replace with our clean config
+    rm -r /data/source
+    cp -r /data/sphinx-config /data/source
+
+    #add the new docs
+    cp /data/gitserver/extracted/docs/* /data/source
+
+    #wipe the old build folder
+    rm -r /data/build/*
 
     sphinx-build -b html /data/source /data/build
 
@@ -25,6 +33,7 @@ do
     # so the command is slightly easier; we could just make public_html
     # the build dir instead.
 
+    rm -r /data/public_html/*
     cp -r /data/build/* /data/public_html
 
     rm -r /data/gitserver/extracted
