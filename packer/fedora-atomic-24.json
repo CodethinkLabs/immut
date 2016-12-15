@@ -195,5 +195,11 @@
                        "sudo systemctl enable cloud-init",
                        "sudo chmod +x /var/lib/immut-boot/config.sh"
                ]
+	}, {
+               "type": "shell",
+               "inline": [
+                       "sudo systemctl stop docker",
+                       "sudo rm -rf /var/lib/docker/network"
+               ]
 	}]
 }
