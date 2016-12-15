@@ -127,7 +127,7 @@ This will ensure the VM has a visible IPV4 address.
 
 ## Run
 
-Start the VM! Use the Fedora 23 default, with login username 'root' with
+Start the VM! Use the Fedora 24 default, with login username 'root' with
 password 'atomic'.
 
 Once you are logged in, running `docker ps` should return some information.
