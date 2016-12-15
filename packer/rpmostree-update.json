@@ -41,7 +41,7 @@
 			"cd /home/ostree-builder",
 			"docker build -t ostree-builder .",
 			"docker run --privileged -v /home/ostree-output/:/data:rw ostree-builder",
-			"docker run --privileged -v /home/ostree-output/:/data:rw ostree-builder sh -c 'cd /data; zip -r /data/repo.zip ./repo'"
+                        "docker run --privileged -v /home/ostree-output/:/data:rw ostree-builder sh -c 'cd /data; zip -r /home/repo.zip ./repo; rm -r /data/repo; mv /home/repo.zip /data/repo.zip'"
 		]
 	}, {
 		"type": "file",

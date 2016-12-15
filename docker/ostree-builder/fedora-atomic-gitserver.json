@@ -45,7 +45,7 @@
                  "httpd-filesystem",
                  "python3-pygments",
                  "python2-markdown",
-                 "python-sphinx",
+                 "python3-sphinx",
                  "mod_authnz_pam",
                  "sssd-client",
                  "mod_lookup_identity",
