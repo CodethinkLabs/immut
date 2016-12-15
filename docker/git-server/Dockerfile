@@ -8,6 +8,10 @@ COPY sss_git /etc/pam.d/sss_git
 # Create Apache server for Git and CGit
 COPY git-server.conf /etc/httpd/conf.d/git-server.conf
 
+# Include post-receive hook
+COPY hooks/post-receive post-receive
+
+
 # Make pwauth pam conf use sss
 RUN ln -sf /etc/pam.d/sss_git /etc/pam.d/pwauth
 # Make pwauth runnable by everyone - TODO, only apache user?

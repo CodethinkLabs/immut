@@ -28,12 +28,18 @@ echo "readme=:README.md" >> /etc/cgitrc
 echo "scan-path=/data/gitserver" >> /etc/cgitrc
 
 if [ "x$PROJECT_NAME" != "x" ]; then
+
+    cp /git-server/post-receive /data/gitserver/$PROJECT_NAME/hooks/post-receive
+
     #Create project repo is PROJECT_NAME is defined
     if [ ! -d "/data/gitserver/$PROJECT_NAME" ]; then
         git init --bare /data/gitserver/$PROJECT_NAME
         cp /data/gitserver/$PROJECT_NAME/hooks/post-update.sample /data/gitserver/$PROJECT_NAME/hooks/post-update
     fi
 else
+
+    cp /git-server/post-receive /data/gitserver/$reponame/hooks/post-receive
+
     #Create example repositories if /data is empty
     if ! [ "$(ls -A /data/gitserver)" ]; then
 	gits="foo bar baz"
