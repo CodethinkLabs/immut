@@ -49,6 +49,9 @@ systemctl start autofs
 ip=3
 for i in $projects; do
     echo $i i
+    # Create user/group/home-folder for project
+    adduser $i || true
+
     for j in $services; do
         echo $j j
         echo "$i"_"$j" i j
