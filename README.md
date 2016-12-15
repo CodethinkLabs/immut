@@ -137,6 +137,14 @@ On the VM, create a new user, eg:
     adduser immutuser
     passwd immutuser (then set a password)
 
+Create a project group (for the example project):
+    
+    groupadd p1
+
+Add your new user to the new group:
+
+    usermod -a -G p1 immutuser
+
 On the VM, run `ip addr` to get its IP address. There will be a few; the
 relevant one should have a name like 'enp0s8' and look fairly standard
 (ie: start with 192.168...)
