@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#There is a chance $PROJECT_NAME may not work here
-
 #check push is to master, not just any branch
 while read oldrev newrev ref
 
@@ -10,7 +8,7 @@ do
     then
     mkdir /data/gitserver/extracted
 
-    git clone /data/gitserver/$PROJECT_NAME /data/gitserver/extracted
+    git clone $PWD /data/gitserver/extracted
 
     # We avoid using $project/docs/* as the source dir directly, as
     # $project/docs/* will not contain the config to work with sphinx,
