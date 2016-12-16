@@ -105,6 +105,7 @@
        }, {
                "type": "shell",
                "inline": [
+                       "set -x",
                        "cd $HOME/haproxy",
                        "echo foo bar | sudo tee ssl.pem",
                        "sudo docker build -t haproxy ."
@@ -112,6 +113,7 @@
 	}, {
                "type": "shell",
                "inline": [
+                       "set -x",
                        "cd $HOME/git-server",
                        "sudo docker build -t gitserver ."
                ]
@@ -133,17 +135,20 @@
 	}, {
                "type": "shell",
                "inline": [
+                       "set -x",
                        "sudo mv $HOME/sss_proxy /etc/pam.d/sss_proxy",
                        "sudo chown root:root /etc/pam.d/sss_proxy"
                ]
 	}, {
                "type": "shell",
                "inline": [
+                       "set -x",
                        "sudo sed -i -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config"
                ]
 	}, {
                "type": "shell",
                "inline": [
+                       "set -x",
                        "sudo useradd -r apache"
                ]
 	}, {
@@ -153,12 +158,14 @@
 	}, {
                "type": "shell",
                "inline": [
+                       "set -x",
                        "sudo mv $HOME/sssd.conf /etc/sssd/sssd.conf",
                        "sudo chown -R root:root /etc/sssd/sssd.conf"
                ]
 	}, {
                "type": "shell",
                "inline": [
+                       "set -x",
                        "sudo chmod 0600 /etc/sssd/sssd.conf",
                        "sudo systemctl enable sssd",
                        "sudo systemctl start sssd"
@@ -166,6 +173,7 @@
 	}, {
                "type": "shell",
                "inline": [
+                       "set -x",
                        "sudo rm /etc/auto.master",
                        "sudo rm /etc/auto.misc"
                ]
@@ -176,6 +184,7 @@
 	}, {
                "type": "shell",
                "inline": [
+                       "set -x",
                        "sudo mv $HOME/auto.master /etc/auto.master",
                        "sudo chown -R root:root /etc/auto.master"
                ]
@@ -186,18 +195,21 @@
 	}, {
                "type": "shell",
                "inline": [
+                       "set -x",
                        "sudo mv $HOME/immut-boot /var/lib/immut-boot",
                        "sudo chown -R root:root /var/lib/immut-boot"
                ]
 	}, {
                "type": "shell",
                "inline": [
+                       "set -x",
                        "sudo systemctl enable cloud-init",
                        "sudo chmod +x /var/lib/immut-boot/config.sh"
                ]
 	}, {
                "type": "shell",
                "inline": [
+                       "set -x",
                        "sudo systemctl stop docker",
                        "sudo rm -rf /var/lib/docker/network"
                ]
