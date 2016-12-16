@@ -143,7 +143,8 @@
                "type": "shell",
                "inline": [
                        "set -x",
-                       "sudo sed -i -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config"
+                       "sudo sed -i -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config",
+                       "echo 0 | sudo tee /sys/fs/selinux/enforce"
                ]
 	}, {
                "type": "shell",
