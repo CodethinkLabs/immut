@@ -1,0 +1,152 @@
+---
+# This apt_key may not be right
+- apt_key:
+    url: https://jenkins-ci.org/debian/jenkins-ci.org.key
+    state: present
+- apt_repository:
+    repo: deb http://pkg.jenkins-ci.org/debian binary/
+    state: present
+- name: Install jenkins and curl, needed to configure jenkins
+  apt:
+    name: "{{ item }}"
+    state: installed
+    update-cache: yes
+    force: yes
+  with_items:
+  - jenkins
+  - curl
+  - python3-pip
+
+- name: Install packages needed for jobs
+  pip:
+    name: "{{ item }}"
+  with_items:
+  - jenkins-job-builder
+    #- ansible
+    #- pylint
+    #- coverage
+
+- name: Install jenkins plugins
+  get_url:
+    url: http://updates.jenkins-ci.org/download/plugins/{{item.name}}/{{item.version}}/{{item.name}}.hpi
+    dest: /var/lib/jenkins/plugins/{{ item }}.hpi
+    owner: jenkins
+    group: jenkins
+  with_items:
+  - { name: 'matrix-auth', version: '1.4' }
+  - { name: 'pam-auth', version: '1.3' }
+  - { name: 'icon-shim', version: '2.0.3' }
+
+- name: Generate random password for 'jenkins' user in /root/jkpass
+  shell: openssl rand -base64 32 | tee /root/jkpass
+  register: plain
+
+- name: Encrypt the password
+  shell: python -c 'import crypt; print crypt.crypt("{{ plain.stdout }}", "guest")'
+  register: crypted
+
+- name: Add user 'jenkins' to shadow group, and modify password
+  user:
+    name: jenkins
+    shell: /bin/bash
+    groups: shadow,sudo
+    append: yes
+    password: "{{ crypted.stdout }}"
+  notify:
+  - restart jenkins
+
+- name: Disable Jenkins setup wizard
+  lineinfile:
+    dest: /etc/default/jenkins
+    state: present
+    regexp: '^JENKINS_ARGS'
+    line: 'JENKINS_ARGS="--webroot=/var/cache/$NAME/war --httpPort=$HTTP_PORT -Djenkins.install.runSetupWizard=false"'
+
+- name: Configure Jenkins (auth etc)
+  copy:
+    src: config.xml
+    dest: /var/lib/jenkins/config.xml
+    owner: jenkins
+    group: jenkins
+  notify:
+  - restart jenkins
+
+- service:
+    name: jenkins
+    state: restarted
+
+
+- name: Download jenkins client
+  get_url:
+    url: http://ci.jenkins-ci.org/jnlpJars/jenkins-cli.jar
+    dest: /var/lib/jenkins/jenkins-cli.jar
+    owner: jenkins
+    group: jenkins
+
+#- name: Install jobs
+#  copy:
+#    src: jobs/
+#    dest: /var/lib/jenkins/jobs
+#    owner: jenkins
+#    group: jenkins
+#  notify:
+#  - restart jenkins
+
+
+- name: Create Jenkins updates folder.
+  file:
+    path: /var/lib/jenkins/updates
+    owner: jenkins
+    group: jenkins
+    mode: 0755
+    state: directory
+
+- name: Update Jenkins plugin data.
+  shell: >
+    curl -L https://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > /var/lib/jenkins/updates/default.json
+  args:
+    creates: /var/lib/jenkins/updates/default.json
+
+- name: Permissions for default.json updates info.
+  file:
+    path: /var/lib/jenkins/updates/default.json
+    owner: jenkins
+    group: jenkins
+    mode: 0755
+
+#- name: Wait for Jenkins to start up before proceeding.
+#  shell: "curl -D - --silent --max-time 5 http://localhost:8080/cli/"
+#  register: result
+#  until: (result.stdout.find("403 Forbidden") != -1) or (result.stdout.find("200 OK") != -1) and (result.stdout.find("Please wait while") == -1)
+#  retries: 10
+#  delay: 1
+#  changed_when: false
+
+- name: Wait for Jenkins to be available
+  shell: java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ who-am-i --username jenkins --password-file /root/jkpass || java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ who-am-i
+  register: result
+  until: result.rc == 0
+  retries: 10
+  delay: 1
+  changed_when: false
+
+- name: Install Jenkins plugins.
+  shell: >
+    java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ install-plugin {{ item }} --username jenkins --password-file /root/jkpass || java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ install-plugin {{ item }}
+  args:
+    creates: /var/lib/jenkins/plugins/{{ item }}.jpi
+  retries: 4
+  delay: 1
+  register: result
+  until: result.rc == 0
+  with_items:
+  - git
+  - embeddable-build-status
+  - greenballs
+  - github
+  notify: restart jenkins
+
+- name: Remove jenkins password
+  user:
+    name: jenkins
+    password: ""

@@ -1,0 +1,5 @@
+- hosts: IMMUT_CI
+  remote_user: ubuntu
+  roles:
+  - { role: users, become: yes }
+  - { role: jenkins, become: yes }
