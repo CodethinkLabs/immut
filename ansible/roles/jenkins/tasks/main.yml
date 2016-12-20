@@ -29,7 +29,7 @@
 - name: Install jenkins plugins
   get_url:
     url: http://updates.jenkins-ci.org/download/plugins/{{item.name}}/{{item.version}}/{{item.name}}.hpi
-    dest: /var/lib/jenkins/plugins/{{ item }}.hpi
+    dest: /var/lib/jenkins/plugins/{{ item.name }}.hpi
     owner: jenkins
     group: jenkins
   with_items:
@@ -83,15 +83,6 @@
     owner: jenkins
     group: jenkins
 
-#- name: Install jobs
-#  copy:
-#    src: jobs/
-#    dest: /var/lib/jenkins/jobs
-#    owner: jenkins
-#    group: jenkins
-#  notify:
-#  - restart jenkins
-
 
 - name: Create Jenkins updates folder.
   file:
@@ -144,9 +135,42 @@
   - embeddable-build-status
   - greenballs
   - github
+  - ghprb
+  - credentials-binding
   notify: restart jenkins
 
 - name: Remove jenkins password
   user:
     name: jenkins
     password: ""
+
+
+########
+
+
+- name: Configure github-pull-request plugin
+  copy:
+    src: org.jenkinsci.plugins.ghprb.GhprbTrigger.xml
+    dest: /var/lib/jenkins/org.jenkinsci.plugins.ghprb.GhprbTrigger.xml
+    owner: jenkins
+    group: jenkins
+  notify:
+  - restart jenkins
+
+- name: Configure credentials
+  template:
+    src: credentials.xml
+    dest: /var/lib/jenkins/credentials.xml
+    owner: jenkins
+    group: jenkins
+  notify:
+  - restart jenkins
+
+- name: Install jobs
+  copy:
+    src: jobs/
+    dest: /var/lib/jenkins/jobs
+    owner: jenkins
+    group: jenkins
+  notify:
+  - restart jenkins
