@@ -1,4 +1,7 @@
 ---
+- set_fact:
+    jenkins_home: /srv/jenkins
+
 # This apt_key may not be right
 - apt_key:
     url: https://jenkins-ci.org/debian/jenkins-ci.org.key
@@ -26,10 +29,21 @@
     #- pylint
     #- coverage
 
+- name: Set the Jenkins home directory
+  lineinfile:
+    dest: /etc/default/jenkins
+    regexp: '^JENKINS_HOME=.*'
+    line: 'JENKINS_HOME={{ jenkins_home }}'
+
+- name: Move jenkins home to new location
+  command: mv /var/lib/jenkins {{ jenkins_home }}
+  args:
+    creates: "{{ jenkins_home }}"
+
 - name: Install jenkins plugins
   get_url:
     url: http://updates.jenkins-ci.org/download/plugins/{{item.name}}/{{item.version}}/{{item.name}}.hpi
-    dest: /var/lib/jenkins/plugins/{{ item.name }}.hpi
+    dest: "{{ jenkins_home }}/plugins/{{ item.name }}.hpi"
     owner: jenkins
     group: jenkins
   with_items:
@@ -65,7 +79,7 @@
 - name: Configure Jenkins (auth etc)
   copy:
     src: config.xml
-    dest: /var/lib/jenkins/config.xml
+    dest: "{{ jenkins_home }}/config.xml"
     owner: jenkins
     group: jenkins
   notify:
@@ -79,14 +93,14 @@
 - name: Download jenkins client
   get_url:
     url: http://ci.jenkins-ci.org/jnlpJars/jenkins-cli.jar
-    dest: /var/lib/jenkins/jenkins-cli.jar
+    dest: "{{ jenkins_home }}/jenkins-cli.jar"
     owner: jenkins
     group: jenkins
 
 
 - name: Create Jenkins updates folder.
   file:
-    path: /var/lib/jenkins/updates
+    path: "{{ jenkins_home }}/updates"
     owner: jenkins
     group: jenkins
     mode: 0755
@@ -94,13 +108,13 @@
 
 - name: Update Jenkins plugin data.
   shell: >
-    curl -L https://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > /var/lib/jenkins/updates/default.json
+    curl -L https://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > {{ jenkins_home }}/updates/default.json
   args:
-    creates: /var/lib/jenkins/updates/default.json
+    "creates: {{ jenkins_home }}/updates/default.json"
 
 - name: Permissions for default.json updates info.
   file:
-    path: /var/lib/jenkins/updates/default.json
+    path: "{{ jenkins_home }}/updates/default.json"
     owner: jenkins
     group: jenkins
     mode: 0755
@@ -114,7 +128,7 @@
 #  changed_when: false
 
 - name: Wait for Jenkins to be available
-  shell: java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ who-am-i --username jenkins --password-file /root/jkpass || java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ who-am-i
+  shell: java -jar {{ jenkins_home }}/jenkins-cli.jar -s http://localhost:8080/ who-am-i --username jenkins --password-file /root/jkpass || java -jar {{ jenkins_home }}/jenkins-cli.jar -s http://localhost:8080/ who-am-i
   register: result
   until: result.rc == 0
   retries: 10
@@ -123,9 +137,9 @@
 
 - name: Install Jenkins plugins.
   shell: >
-    java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ install-plugin {{ item }} --username jenkins --password-file /root/jkpass || java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ install-plugin {{ item }}
+    java -jar {{ jenkins_home }}/jenkins-cli.jar -s http://localhost:8080/ install-plugin {{ item }} --username jenkins --password-file /root/jkpass || java -jar {{ jenkins_home }}/jenkins-cli.jar -s http://localhost:8080/ install-plugin {{ item }}
   args:
-    creates: /var/lib/jenkins/plugins/{{ item }}.jpi
+    creates: "{{ jenkins_home }}/plugins/{{ item }}.jpi"
   retries: 4
   delay: 1
   register: result
@@ -152,7 +166,7 @@
 - name: Configure github-pull-request plugin
   copy:
     src: org.jenkinsci.plugins.ghprb.GhprbTrigger.xml
-    dest: /var/lib/jenkins/org.jenkinsci.plugins.ghprb.GhprbTrigger.xml
+    dest: "{{ jenkins_home }}/org.jenkinsci.plugins.ghprb.GhprbTrigger.xml"
     owner: jenkins
     group: jenkins
   notify:
@@ -161,7 +175,7 @@
 - name: Configure credentials
   template:
     src: credentials.xml
-    dest: /var/lib/jenkins/credentials.xml
+    dest: "{{ jenkins_home }}/credentials.xml"
     owner: jenkins
     group: jenkins
   notify:
@@ -170,7 +184,7 @@
 - name: Install jobs
   copy:
     src: jobs/
-    dest: /var/lib/jenkins/jobs
+    dest: "{{ jenkins_home }}/jobs"
     owner: jenkins
     group: jenkins
   notify:
