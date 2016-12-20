@@ -137,6 +137,7 @@
   - github
   - ghprb
   - credentials-binding
+  - ansicolor
   notify: restart jenkins
 
 - name: Remove jenkins password

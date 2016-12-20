@@ -102,6 +102,9 @@ packer build -only aws -var &quot;aws_access_key=$AWS_ACCESS_KEY&quot; -var &quo
     </org.jenkinsci.plugins.github.status.GitHubCommitStatusSetter>
   </publishers>
   <buildWrappers>
+    <hudson.plugins.ansicolor.AnsiColorBuildWrapper plugin="ansicolor@0.4.3">
+      <colorMapName>xterm</colorMapName>
+    </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
     <org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper plugin="credentials-binding@1.10">
       <bindings>
         <org.jenkinsci.plugins.credentialsbinding.impl.UsernamePasswordMultiBinding>
