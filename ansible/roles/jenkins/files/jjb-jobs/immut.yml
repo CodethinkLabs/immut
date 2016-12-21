@@ -25,6 +25,7 @@
       - shell: |
                cd packer
                rm -rf ostree-build-temp
+               rm -rf files/repo
                rm -rf files/repo.zip
                packer build -only=qemu rpmostree-update.json
                unzip files/repo.zip -d files
