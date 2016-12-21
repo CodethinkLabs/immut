@@ -1,0 +1,51 @@
+- job-template:
+    name: '{name}-{packer_backend}'
+
+    properties:
+      - github:
+          url: https://github.com/CodethinkLabs/immut/
+
+    scm:
+      - git:
+          url: https://github.com/CodethinkLabs/immut
+          refspec: +refs/pull/*:refs/remotes/origin/pr/*
+          branches:
+            - ${{sha1}}
+          credentials-id: ct-labs-bot
+
+    triggers:
+      - github-pull-request:
+          org-list:
+            - CodethinkLabs
+          trigger-phrase: 'retest this please'
+          allow-whitelist-orgs-as-admins: true
+          auth-id: '1510cb35-7822-412e-9cc5-4399a7a072b7'
+
+    builders:
+      - shell: |
+               cd packer
+               rm -rf ostree-build-temp
+               packer build -only=qemu rpmostree-update.json
+               unzip files/repo.zip -d files
+               packer build -only {packer_backend} -var "aws_access_key=$AWS_ACCESS_KEY" -var "aws_secret_key=$AWS_SECRET_KEY" fedora-atomic-24.json
+
+    wrappers:
+     - credentials-binding:
+         - username-password-separated:
+            credential-id: aws-credentials
+            username: AWS_ACCESS_KEY
+            password: AWS_SECRET_KEY
+     - ansicolor:
+         colormap: xterm
+    publishers:
+     - github-notifier
+
+- project:
+   name: immut
+   packer_backend:
+    - aws
+    - qemu
+       
+
+   jobs:
+    - '{name}-{packer_backend}'
