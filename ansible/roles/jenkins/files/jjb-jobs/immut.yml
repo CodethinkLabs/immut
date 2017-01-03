@@ -20,6 +20,7 @@
           trigger-phrase: 'retest this please'
           allow-whitelist-orgs-as-admins: true
           auth-id: '1510cb35-7822-412e-9cc5-4399a7a072b7'
+          cron: 'H/5 * * * *'
 
     builders:
       - shell: |
