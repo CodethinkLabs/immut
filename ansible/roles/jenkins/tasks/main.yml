@@ -146,14 +146,7 @@
   - ansicolor
   notify: restart jenkins
 
-- name: Remove jenkins password
-  user:
-    name: jenkins
-    password: ""
-
-
-########
-
+# Jobs configuration
 
 - name: Configure github-pull-request plugin
   copy:
@@ -173,11 +166,21 @@
   notify:
   - restart jenkins
 
-- name: Install jobs
+- name: Install job templates
   copy:
-    src: jobs/
-    dest: "{{ jenkins_home }}/jobs"
+    src: jjb-jobs
+    dest: "{{ jenkins_home }}"
     owner: jenkins
     group: jenkins
+
+- name: Update jobs using Jenkins Job Builder
+  shell: jenkins-jobs --conf {{ jenkins_home}}/jjb-jobs/jenkins_jobs.ini --user jenkins --password $(cat /root/jkpass) update  {{ jenkins_home }}/jjb-jobs/
   notify:
   - restart jenkins
+
+# Cleanups
+
+- name: Remove jenkins password
+  user:
+    name: jenkins
+    password: ""
