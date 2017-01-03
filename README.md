@@ -1,5 +1,7 @@
 # Immut
 
+[![Build Status](http://52.209.28.64:8080/buildStatus/icon?job=immut-aws)](http://52.209.28.64:8080/job/immut-aws/)
+
 ## Overview
 
 This project is a work in progress automating the creation of immutable
