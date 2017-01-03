@@ -1,19 +1,22 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <project>
   <actions/>
-  <description></description>
+  <description>&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
   <keepDependencies>false</keepDependencies>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <concurrentBuild>false</concurrentBuild>
+  <canRoam>true</canRoam>
   <properties>
-    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.25.0">
+    <com.coravy.hudson.plugins.github.GithubProjectProperty>
       <projectUrl>https://github.com/CodethinkLabs/immut/</projectUrl>
-      <displayName></displayName>
     </com.coravy.hudson.plugins.github.GithubProjectProperty>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@3.0.1">
+  <scm class="hudson.plugins.git.GitSCM">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <name>pr</name>
+        <name>origin</name>
         <refspec>+refs/pull/*:refs/remotes/origin/pr/*</refspec>
         <url>https://github.com/CodethinkLabs/immut</url>
         <credentialsId>ct-labs-bot</credentialsId>
@@ -24,96 +27,72 @@
         <name>${sha1}</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
+    <excludedUsers/>
+    <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/>
+    <disableSubmodules>false</disableSubmodules>
+    <recursiveSubmodules>false</recursiveSubmodules>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <authorOrCommitter>false</authorOrCommitter>
+    <wipeOutWorkspace>true</wipeOutWorkspace>
+    <pruneBranches>false</pruneBranches>
+    <remotePoll>false</remotePoll>
+    <gitTool>Default</gitTool>
     <submoduleCfg class="list"/>
-    <extensions/>
+    <relativeTargetDir/>
+    <reference/>
+    <gitConfigName/>
+    <gitConfigEmail/>
+    <skipTag>false</skipTag>
+    <scmName/>
+    <useShallowClone>false</useShallowClone>
+    <ignoreNotifyCommit>false</ignoreNotifyCommit>
+    <extensions>
+      <hudson.plugins.git.extensions.impl.WipeWorkspace/>
+    </extensions>
   </scm>
-  <canRoam>true</canRoam>
-  <disabled>false</disabled>
-  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
-  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers>
-    <org.jenkinsci.plugins.ghprb.GhprbTrigger plugin="ghprb@1.33.4">
-      <spec>H/5 * * * *</spec>
-      <latestVersion>3</latestVersion>
-      <configVersion>3</configVersion>
-      <adminlist></adminlist>
+  <triggers class="vector">
+    <org.jenkinsci.plugins.ghprb.GhprbTrigger>
+      <spec/>
+      <adminlist/>
       <allowMembersOfWhitelistedOrgsAsAdmin>true</allowMembersOfWhitelistedOrgsAsAdmin>
+      <whitelist/>
       <orgslist>CodethinkLabs</orgslist>
-      <cron>H/5 * * * *</cron>
-      <buildDescTemplate></buildDescTemplate>
+      <cron/>
+      <triggerPhrase>retest this please</triggerPhrase>
       <onlyTriggerPhrase>false</onlyTriggerPhrase>
       <useGitHubHooks>false</useGitHubHooks>
       <permitAll>false</permitAll>
-      <whitelist></whitelist>
       <autoCloseFailedPullRequests>false</autoCloseFailedPullRequests>
-      <displayBuildErrorsOnDownstreamBuilds>false</displayBuildErrorsOnDownstreamBuilds>
-      <whiteListTargetBranches>
-        <org.jenkinsci.plugins.ghprb.GhprbBranch>
-          <branch></branch>
-        </org.jenkinsci.plugins.ghprb.GhprbBranch>
-      </whiteListTargetBranches>
-      <blackListTargetBranches>
-        <org.jenkinsci.plugins.ghprb.GhprbBranch>
-          <branch></branch>
-        </org.jenkinsci.plugins.ghprb.GhprbBranch>
-      </blackListTargetBranches>
       <gitHubAuthId>1510cb35-7822-412e-9cc5-4399a7a072b7</gitHubAuthId>
-      <triggerPhrase></triggerPhrase>
-      <skipBuildPhrase>.*\[skip\W+ci\].*</skipBuildPhrase>
-      <extensions>
-        <org.jenkinsci.plugins.ghprb.extensions.status.GhprbSimpleStatus>
-          <commitStatusContext></commitStatusContext>
-          <triggeredStatus></triggeredStatus>
-          <startedStatus></startedStatus>
-          <statusUrl></statusUrl>
-          <addTestResults>false</addTestResults>
-        </org.jenkinsci.plugins.ghprb.extensions.status.GhprbSimpleStatus>
-      </extensions>
     </org.jenkinsci.plugins.ghprb.GhprbTrigger>
   </triggers>
-  <concurrentBuild>false</concurrentBuild>
   <builders>
-    <com.cloudbees.jenkins.GitHubSetCommitStatusBuilder plugin="github@1.25.0">
-      <statusMessage>
-        <content></content>
-      </statusMessage>
-      <contextSource class="org.jenkinsci.plugins.github.status.sources.DefaultCommitContextSource"/>
-    </com.cloudbees.jenkins.GitHubSetCommitStatusBuilder>
     <hudson.tasks.Shell>
-      <command>
-cd packer
+      <command>cd packer
 rm -rf ostree-build-temp
 rm -rf files/repo
 rm -rf files/repo.zip
 packer build -only=qemu rpmostree-update.json
 unzip files/repo.zip -d files
 packer build -only aws -var &quot;aws_access_key=$AWS_ACCESS_KEY&quot; -var &quot;aws_secret_key=$AWS_SECRET_KEY&quot; fedora-atomic-24.json
-      </command>
+</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
-    <org.jenkinsci.plugins.github.status.GitHubCommitStatusSetter plugin="github@1.25.0">
-      <commitShaSource class="org.jenkinsci.plugins.github.status.sources.BuildDataRevisionShaSource"/>
-      <reposSource class="org.jenkinsci.plugins.github.status.sources.AnyDefinedRepositorySource"/>
-      <contextSource class="org.jenkinsci.plugins.github.status.sources.DefaultCommitContextSource"/>
-      <statusResultSource class="org.jenkinsci.plugins.github.status.sources.ConditionalStatusResultSource"/>
-      <statusBackrefSource class="org.jenkinsci.plugins.github.status.sources.BuildRefBackrefSource"/>
-      <errorHandlers/>
-    </org.jenkinsci.plugins.github.status.GitHubCommitStatusSetter>
+    <com.cloudbees.jenkins.GitHubCommitNotifier/>
   </publishers>
   <buildWrappers>
-    <hudson.plugins.ansicolor.AnsiColorBuildWrapper plugin="ansicolor@0.4.3">
-      <colorMapName>xterm</colorMapName>
-    </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
-    <org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper plugin="credentials-binding@1.10">
+    <org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper>
       <bindings>
         <org.jenkinsci.plugins.credentialsbinding.impl.UsernamePasswordMultiBinding>
-          <credentialsId>aws-credentials</credentialsId>
           <usernameVariable>AWS_ACCESS_KEY</usernameVariable>
           <passwordVariable>AWS_SECRET_KEY</passwordVariable>
+          <credentialsId>aws-credentials</credentialsId>
         </org.jenkinsci.plugins.credentialsbinding.impl.UsernamePasswordMultiBinding>
       </bindings>
     </org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper>
+    <hudson.plugins.ansicolor.AnsiColorBuildWrapper>
+      <colorMapName>xterm</colorMapName>
+    </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
   </buildWrappers>
 </project>
