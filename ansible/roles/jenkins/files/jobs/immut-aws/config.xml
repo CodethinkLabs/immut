@@ -52,7 +52,7 @@
   </scm>
   <triggers class="vector">
     <org.jenkinsci.plugins.ghprb.GhprbTrigger>
-      <spec/>
+      <spec>H/5 * * * *</spec>
       <adminlist/>
       <allowMembersOfWhitelistedOrgsAsAdmin>true</allowMembersOfWhitelistedOrgsAsAdmin>
       <whitelist/>
