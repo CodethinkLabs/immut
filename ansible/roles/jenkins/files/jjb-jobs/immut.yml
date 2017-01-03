@@ -47,8 +47,7 @@
    name: immut
    packer_backend:
     - aws
-    - qemu
-       
+    #- qemu
 
    jobs:
     - '{name}-{packer_backend}'
