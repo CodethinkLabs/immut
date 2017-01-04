@@ -1,0 +1,191 @@
+---
+- set_fact:
+    jenkins_home: /srv/jenkins
+
+# This apt_key may not be right
+- apt_key:
+    url: https://jenkins-ci.org/debian/jenkins-ci.org.key
+    state: present
+- apt_repository:
+    repo: deb http://pkg.jenkins-ci.org/debian binary/
+    state: present
+- name: Install jenkins and curl, needed to configure jenkins
+  apt:
+    name: "{{ item }}"
+    state: installed
+    update-cache: yes
+    force: yes
+  with_items:
+  - jenkins
+  - curl
+  - python3-pip
+
+- name: Install packages needed for jobs
+  pip:
+    name: "{{ item }}"
+  with_items:
+  - jenkins-job-builder
+    #- ansible
+    #- pylint
+    #- coverage
+
+- name: Set the Jenkins home directory
+  lineinfile:
+    dest: /etc/default/jenkins
+    regexp: '^JENKINS_HOME=.*'
+    line: 'JENKINS_HOME={{ jenkins_home }}'
+
+- name: Move jenkins home to new location
+  command: mv /var/lib/jenkins {{ jenkins_home }}
+  args:
+    creates: "{{ jenkins_home }}"
+
+- name: Install jenkins plugins
+  get_url:
+    url: http://updates.jenkins-ci.org/download/plugins/{{item.name}}/{{item.version}}/{{item.name}}.hpi
+    dest: "{{ jenkins_home }}/plugins/{{ item.name }}.hpi"
+    owner: jenkins
+    group: jenkins
+  with_items:
+  - { name: 'matrix-auth', version: '1.4' }
+  - { name: 'pam-auth', version: '1.3' }
+  - { name: 'icon-shim', version: '2.0.3' }
+
+- name: Generate random password for 'jenkins' user in /root/jkpass
+  shell: openssl rand -base64 32 | tee /root/jkpass
+  register: plain
+
+- name: Encrypt the password
+  shell: python -c 'import crypt; print crypt.crypt("{{ plain.stdout }}", "guest")'
+  register: crypted
+
+- name: Add user 'jenkins' to shadow group, and modify password
+  user:
+    name: jenkins
+    shell: /bin/bash
+    groups: shadow,sudo
+    append: yes
+    password: "{{ crypted.stdout }}"
+  notify:
+  - restart jenkins
+
+- name: Disable Jenkins setup wizard
+  lineinfile:
+    dest: /etc/default/jenkins
+    state: present
+    regexp: '^JENKINS_ARGS'
+    line: 'JENKINS_ARGS="--webroot=/var/cache/$NAME/war --httpPort=$HTTP_PORT -Djenkins.install.runSetupWizard=false"'
+
+- name: Configure Jenkins (auth etc)
+  copy:
+    src: config.xml
+    dest: "{{ jenkins_home }}/config.xml"
+    owner: jenkins
+    group: jenkins
+  notify:
+  - restart jenkins
+
+- service:
+    name: jenkins
+    state: restarted
+
+
+- name: Download jenkins client
+  get_url:
+    url: http://ci.jenkins-ci.org/jnlpJars/jenkins-cli.jar
+    dest: "{{ jenkins_home }}/jenkins-cli.jar"
+    owner: jenkins
+    group: jenkins
+
+
+- name: Create Jenkins updates folder.
+  file:
+    path: "{{ jenkins_home }}/updates"
+    owner: jenkins
+    group: jenkins
+    mode: 0755
+    state: directory
+
+- name: Update Jenkins plugin data.
+  shell: >
+    curl -L https://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > {{ jenkins_home }}/updates/default.json
+  args:
+    "creates: {{ jenkins_home }}/updates/default.json"
+
+- name: Permissions for default.json updates info.
+  file:
+    path: "{{ jenkins_home }}/updates/default.json"
+    owner: jenkins
+    group: jenkins
+    mode: 0755
+
+#- name: Wait for Jenkins to start up before proceeding.
+#  shell: "curl -D - --silent --max-time 5 http://localhost:8080/cli/"
+#  register: result
+#  until: (result.stdout.find("403 Forbidden") != -1) or (result.stdout.find("200 OK") != -1) and (result.stdout.find("Please wait while") == -1)
+#  retries: 10
+#  delay: 1
+#  changed_when: false
+
+- name: Wait for Jenkins to be available
+  shell: java -jar {{ jenkins_home }}/jenkins-cli.jar -s http://localhost:8080/ who-am-i --username jenkins --password-file /root/jkpass || java -jar {{ jenkins_home }}/jenkins-cli.jar -s http://localhost:8080/ who-am-i
+  register: result
+  until: result.rc == 0
+  retries: 10
+  delay: 1
+  changed_when: false
+
+- name: Install Jenkins plugins.
+  shell: >
+    java -jar {{ jenkins_home }}/jenkins-cli.jar -s http://localhost:8080/ install-plugin {{ item }} --username jenkins --password-file /root/jkpass || java -jar {{ jenkins_home }}/jenkins-cli.jar -s http://localhost:8080/ install-plugin {{ item }}
+  args:
+    creates: "{{ jenkins_home }}/plugins/{{ item }}.jpi"
+  retries: 4
+  delay: 1
+  register: result
+  until: result.rc == 0
+  with_items:
+  - git
+  - embeddable-build-status
+  - greenballs
+  - github
+  - ghprb
+  - credentials-binding
+  - ansicolor
+  notify: restart jenkins
+
+- name: Remove jenkins password
+  user:
+    name: jenkins
+    password: ""
+
+
+########
+
+
+- name: Configure github-pull-request plugin
+  copy:
+    src: org.jenkinsci.plugins.ghprb.GhprbTrigger.xml
+    dest: "{{ jenkins_home }}/org.jenkinsci.plugins.ghprb.GhprbTrigger.xml"
+    owner: jenkins
+    group: jenkins
+  notify:
+  - restart jenkins
+
+- name: Configure credentials
+  template:
+    src: credentials.xml
+    dest: "{{ jenkins_home }}/credentials.xml"
+    owner: jenkins
+    group: jenkins
+  notify:
+  - restart jenkins
+
+- name: Install jobs
+  copy:
+    src: jobs/
+    dest: "{{ jenkins_home }}/jobs"
+    owner: jenkins
+    group: jenkins
+  notify:
+  - restart jenkins

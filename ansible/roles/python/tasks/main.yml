@@ -1,0 +1,4 @@
+- name: apt-get update 
+  raw: sudo apt-get update -qq 
+- name: Install python 2.7 
+  raw: sudo apt-get install -qq python2.7 

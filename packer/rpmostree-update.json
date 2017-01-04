@@ -50,7 +50,7 @@
 		"ssh_pty" : "true",
 		"ssh_username": "root",
 		"ssh_password": "atomic",
-		"ssh_wait_timeout": "20m",
+		"ssh_wait_timeout": "30m",
 		"output_directory": "ostree-build-temp",
 		"headless": "true",
 
