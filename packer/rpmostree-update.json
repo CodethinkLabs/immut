@@ -65,6 +65,11 @@
 	}, {
 		"type": "shell",
 		"inline": [
+			"until docker ps; do sleep 1; done"
+		]
+	}, {
+		"type": "shell",
+		"inline": [
 			"mkdir -p /home/ostree-output",
 			"cd /home/ostree-builder",
 			"docker build -t ostree-builder .",
