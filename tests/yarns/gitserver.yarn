@@ -17,7 +17,7 @@ These will be created automatically; 'developer' here refers to the
 person first setting up the repo.
 
     SCENARIO admin creates master git branch
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND some new text in "test" file in "foo" repository
@@ -29,7 +29,7 @@ branch for new features. This will also be created automatically
 when the repo is set up.
 
     SCENARIO admin creates develop git branch
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "develop" branched from "master" in "foo" repository
@@ -42,7 +42,7 @@ directly. Instead, they base their changes on the 'develop'
 branch.
 
     SCENARIO developer creates develop git branch
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     WHEN developer checks out branch "develop" in "foo" repository
@@ -58,7 +58,7 @@ First, they create the feature branch. (NB: this command is currently
 create branches)
 
     SCENARIO developer creates feature git branch
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     WHEN developer creates a local branch "feature-branch" branched from "develop" in "foo" repository
@@ -68,7 +68,7 @@ Next, they make changes, and then commit these to their
 local feature branches.
 
     SCENARIO developer commits to feature git branch
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "feature-branch" branched from "develop" in "foo" repository
@@ -81,7 +81,7 @@ local feature branches.
 Then, they push their local feature branches upstream for review
 
     SCENARIO developer pushes to feature git branch
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "feature-branch" branched from "develop" in "foo" repository
@@ -94,7 +94,7 @@ These feature branches can then be reviewed. If reviewers are happy, these
 branches will be merged back into 'develop'. 
 
     SCENARIO reviewer can review feature branch
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "develop" checked out in "foo" repository
@@ -106,7 +106,7 @@ pushes the new develop branch containing the change back upstream.
 The specifics of this depend on the review framework used.
 
     SCENARIO reviewer can merge a feature branch back to develop
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "develop" checked out in "foo" repository
@@ -118,7 +118,7 @@ Once the release team decides to create a release, they merge
 the `develop` branch into `master`
 
     SCENARIO product owner can merge the "develop" branch into master
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
@@ -130,7 +130,7 @@ To complete the release, after merging the `develop` branch into `master`,
 the release team creates a tag in the `master` branch
 
     SCENARIO product owner can tag a release on master branch
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
@@ -144,7 +144,7 @@ branches a local 'hotfix' branch from 'master', and commits changes
 to that local 'hotfix' branch.
 
     SCENARIO developer creates and commits to hotfix git branch
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "hotfix-branch" branched from "master" in "foo" repository
@@ -156,7 +156,7 @@ The fixes needed in the release are then pushed upstream from
 the local hotfix branch to the remote.
 
     SCENARIO developer pushes hotfix branch upstream
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "hotfix-branch" branched from "master" in "foo" repository
@@ -169,7 +169,7 @@ The hotfix branch can then be cloned and reviewed. If it looks good,
 the reviewer merges it locally to master and develop.
 
     SCENARIO reviewer can review hotfix branch
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
@@ -185,7 +185,7 @@ The reviewer then pushes the changes to `master` and into `develop` on
 the remote once it's ready.
 
     SCENARIO reviewer can merge hotfix branch into master and develop
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
@@ -201,7 +201,7 @@ the remote once it's ready.
 Then, the release team affixes a new Tag to the new release
 
     SCENARIO product owner can tag a hotfix release on master branch
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
@@ -214,7 +214,7 @@ feature-branch-in-progress and include it in their branch. In these
 cases, they will use git cherry-pick to include the change.
 
     SCENARIO developer can cherry-pick a change
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "hotfix-branch" branched from "master" in "foo" repository
@@ -239,7 +239,7 @@ so the developer creates the commit and then checks it themselves, but this shou
 change in the future so that they are 'blaming' a commit they did not create.
 
     SCENARIO developer can `git blame`
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "blametest-branch" branched from "develop" in "foo" repository
@@ -261,7 +261,7 @@ automatic merge will work in cases where the changes are in different
 places in the same file.
 
     SCENARIO a three-way merge works when different branches change only different things in the same file
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND the branch "master" checked out in "foo" repository
@@ -286,7 +286,7 @@ that `git push -f` fails. For now, the test checks it succeeds, to check the
 force push itself is tested, and that the test is not failing for an unrelated reason
 
     SCENARIO developer can force push
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "force-branch" branched from "master" in "foo" repository
@@ -315,7 +315,7 @@ list commits by commit ID (the test uses tags as the test cannot predict the com
 IDs).
     
     SCENARIO developer can bisect
-    ASSUMING gitserver is running
+    GIVEN gitserver is running
     AND git client configured
     GIVEN a local clone of "foo" repository
     AND a local branch "scenario-debug" branched from "master" in "foo" repository

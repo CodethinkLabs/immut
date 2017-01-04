@@ -18,14 +18,14 @@ Common implementations for yarn tests
     attempt_command "git config" --global $var "$value"
 
 
-    IMPLEMENTS ASSUMING gitserver is running
+    IMPLEMENTS GIVEN gitserver is running
     if [ "x$gitserver_ip" = "x" ]; then
         die "\"$gitserver_ip\" variable is empty!"
     fi
     echo $gitserver_ip > "$DATADIR"/current.ip
 
 
-    IMPLEMENTS ASSUMING git client configured
+    IMPLEMENTS GIVEN git client configured
     execute_command "git config" --global user.email "user@domain.com"
     execute_command "git config" --global user.name "User Name"
 
