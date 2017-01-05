@@ -1,4 +1,8 @@
 {
+        "variables": {
+                "aws_access_key": "",
+                "aws_secret_key": ""
+        },
 	"builders": [{
 		"boot_command": [
 			"<tab> linux text biosdevname=0 ks=http://{{ .HTTPIP }}:{{ .HTTPPort}}/ks-fedora-atomic-24.cfg<enter><enter>"
@@ -55,31 +59,45 @@
 		"headless": "true",
 
 		"shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now"
-
+	}, {
+		"name": "aws",
+		"ami_name": "Atomic-host-{{timestamp}}",
+		"type": "amazon-ebs",
+		"access_key": "{{user `aws_access_key`}}",
+		"secret_key": "{{user `aws_secret_key`}}",
+		"region": "eu-west-1",
+		"source_ami": "ami-861842f5",
+		"instance_type": "t2.micro",
+		"ssh_username": "fedora",
+		"launch_block_device_mappings": [{
+			"device_name": "/dev/sda1",
+			"volume_type": "gp2",
+			"volume_size": "20"
+		}]
 	}],
 
 	"provisioners":[{
 		"type": "file",
 		"source": "../docker/ostree-builder",
-		"destination": "/home/ostree-builder"
+		"destination": "$HOME/ostree-builder"
 	}, {
 		"type": "shell",
 		"inline": [
-			"until docker ps; do sleep 1; done"
+			"until sudo docker ps; do sleep 1; done"
 		]
 	}, {
 		"type": "shell",
 		"inline": [
-			"mkdir -p /home/ostree-output",
-			"cd /home/ostree-builder",
-			"docker build -t ostree-builder .",
-			"docker run --privileged -v /home/ostree-output/:/data:rw ostree-builder",
-                        "docker run --privileged -v /home/ostree-output/:/data:rw ostree-builder sh -c 'cd /data; zip -r /home/repo.zip ./repo; rm -r /data/repo; mv /home/repo.zip /data/repo.zip'"
+			"mkdir -p $HOME/ostree-output",
+			"cd $HOME/ostree-builder",
+			"sudo docker build -t ostree-builder .",
+			"sudo docker run --privileged -v $HOME/ostree-output/:/data:rw ostree-builder",
+			"sudo docker run --privileged -v $HOME/ostree-output/:/data:rw ostree-builder sh -c 'cd /data; zip -r /home/repo.zip ./repo; rm -r /data/repo; mv /home/repo.zip /data/repo.zip'"
 		]
 	}, {
 		"type": "file",
 		"direction": "download",
-		"source": "/home/ostree-output/repo.zip",
+		"source": "$HOME/ostree-output/repo.zip",
 		"destination": "files/repo.zip"
 	}]
 }
