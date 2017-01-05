@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<org.jenkinsci.plugins.ghprb.GhprbTrigger_-DescriptorImpl plugin="ghprb@1.33.4">
+  <configVersion>1</configVersion>
+  <whitelistPhrase>.*add\W+to\W+whitelist.*</whitelistPhrase>
+  <okToTestPhrase>.*ok\W+to\W+test.*</okToTestPhrase>
+  <retestPhrase>.*test\W+this\W+please.*</retestPhrase>
+  <skipBuildPhrase>.*\[skip\W+ci\].*</skipBuildPhrase>
+  <cron>H/5 * * * *</cron>
+  <useComments>false</useComments>
+  <useDetailedComments>false</useDetailedComments>
+  <manageWebhooks>true</manageWebhooks>
+  <unstableAs>FAILURE</unstableAs>
+  <autoCloseFailedPullRequests>false</autoCloseFailedPullRequests>
+  <displayBuildErrorsOnDownstreamBuilds>false</displayBuildErrorsOnDownstreamBuilds>
+  <githubAuth>
+    <org.jenkinsci.plugins.ghprb.GhprbGitHubAuth>
+      <serverAPIUrl>https://api.github.com</serverAPIUrl>
+      <credentialsId>ct-labs-bot</credentialsId>
+      <id>1510cb35-7822-412e-9cc5-4399a7a072b7</id>
+      <description>Anonymous connection</description>
+      <secret>4mVkRcGZTnUWJodZRCof3g==</secret>
+    </org.jenkinsci.plugins.ghprb.GhprbGitHubAuth>
+  </githubAuth>
+  <adminlist></adminlist>
+  <requestForTestingPhrase>Can one of the admins verify this patch?</requestForTestingPhrase>
+  <extensions>
+    <org.jenkinsci.plugins.ghprb.extensions.status.GhprbSimpleStatus>
+      <commitStatusContext></commitStatusContext>
+      <triggeredStatus></triggeredStatus>
+      <startedStatus></startedStatus>
+      <statusUrl></statusUrl>
+      <addTestResults>false</addTestResults>
+    </org.jenkinsci.plugins.ghprb.extensions.status.GhprbSimpleStatus>
+  </extensions>
+</org.jenkinsci.plugins.ghprb.GhprbTrigger_-DescriptorImpl>
