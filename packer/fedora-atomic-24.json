@@ -78,6 +78,12 @@
 	}],
 
 	"provisioners": [{
+                "type": "shell",
+                "inline": [
+                        "echo 'ROOT_SIZE=4G' | sudo tee /etc/sysconfig/docker-storage-setup",
+                        "sudo docker-storage-setup"
+                ]
+        }, {
 		"type": "file",
 		"source": "files/repo",
 		"destination": "$HOME/rpm-update"
