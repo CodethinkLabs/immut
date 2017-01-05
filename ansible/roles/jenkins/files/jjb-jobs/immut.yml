@@ -28,7 +28,7 @@
                rm -rf ostree-build-temp
                rm -rf files/repo
                rm -rf files/repo.zip
-               packer build -only=qemu rpmostree-update.json
+               packer build -only {packer_backend} rpmostree-update.json
                unzip files/repo.zip -d files
                packer build -only {packer_backend} -var "aws_access_key=$AWS_ACCESS_KEY" -var "aws_secret_key=$AWS_SECRET_KEY" fedora-atomic-24.json
 
