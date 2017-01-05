@@ -67,7 +67,7 @@
 		"secret_key": "{{user `aws_secret_key`}}",
 		"region": "eu-west-1",
 		"source_ami": "ami-861842f5",
-		"instance_type": "t2.micro",
+		"instance_type": "t2.medium",
 		"ssh_username": "fedora",
 		"launch_block_device_mappings": [{
 			"device_name": "/dev/sda1",
