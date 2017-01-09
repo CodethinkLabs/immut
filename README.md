@@ -139,11 +139,7 @@ On the VM, create a new user, eg:
     adduser immutuser
     passwd immutuser (then set a password)
 
-Create a project group (for the example project):
-    
-    groupadd p1
-
-Add your new user to the new group:
+Add your new user to the example project group:
 
     usermod -a -G p1 immutuser
 
