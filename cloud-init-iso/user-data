@@ -6,4 +6,5 @@ chpasswd: { expire: False }
 bootcmd:
  - projects="p1"
  - services="gitserver"
- - /var/lib/immut-boot/config.sh $projects $services
+ - usergroups="developer reviewer product_owner"
+ - /var/lib/immut-boot/config.sh $projects $services $usergroups
