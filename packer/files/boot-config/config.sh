@@ -57,7 +57,7 @@ for i in $projects; do
     for usergroup in $usergroups; do
         echo $usergroup usergroup
         # Create user group
-        groupadd $usergroup || true
+        groupadd "$i"_"$usergroup" || true
     done
 
     for j in $services; do
