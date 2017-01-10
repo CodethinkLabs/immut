@@ -8,6 +8,7 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 
 projects=$1
 services=$2
+usergroups=$3
 
 # Stop and remove docker instances and networks
 docker kill $(docker ps -a -q) || true
@@ -47,6 +48,13 @@ done
 systemctl start autofs
 
 ip=3
+
+for usergroup in $usergroups; do
+    echo $usergroup usergroup
+    # Create user group
+    adduser $usergroup || true
+done
+
 for i in $projects; do
     echo $i i
     # Create user/group/home-folder for project
