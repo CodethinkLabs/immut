@@ -1,7 +1,7 @@
 {
     "ref": "fedora-atomic/f24/x86_64/docker-host",
 
-    "repos": ["fedora-24"],
+    "repos": ["fedora-24", "ec2"],
 
     "selinux": true,
 
@@ -13,7 +13,7 @@
 
     "install-langs": ["en_US"],
 
-    "postprocess-script": "treecompose-post.sh",
+    "postprocess-script": "treecompose-usrlocal-post.sh",
 
     "etc-group-members": ["wheel", "docker"],
 
@@ -79,8 +79,10 @@
 		 "oddjob-mkhomedir",
 		 "atomic-devmode",
 		 "runc",
+		 "ruby",
 		 "consul",
 		 "autofs",
+		 "ec2-ami-tools",
 		 "sssd-common",
 		 "sssd-dbus",
 		 "sssd-proxy"],

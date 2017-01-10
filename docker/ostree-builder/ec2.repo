@@ -1,0 +1,7 @@
+[ec2]
+name=Ec2
+failovermethod=priority
+baseurl=file:///home/working/rpm-repo/
+enabled=1
+gpgcheck=0
+skip_if_unavailable=False

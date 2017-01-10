@@ -62,13 +62,18 @@
 	}, {
                "name": "aws",
                "ami_name": "Atomic-host-{{timestamp}}",
-               "type": "amazon-ebs",
+               "type": "amazon-instance",
                "access_key": "{{user `aws_access_key`}}",
                "secret_key": "{{user `aws_secret_key`}}",
                "region": "eu-west-1",
                "source_ami": "ami-861842f5",
                "instance_type": "t2.micro",
                "ssh_username": "fedora",
+               "s3_bucket": "immut-bucket",
+               "x509_cert_path": "cert-CDX7KRS5OXG6DUUG3FK5MFSRW74LE4PU.pem",
+               "x509_key_path": "pk-CDX7KRS5OXG6DUUG3FK5MFSRW74LE4PU.pem",
+               "account_id": "475907266438",
+
                "launch_block_device_mappings": [{
                        "device_name": "/dev/sda1",
                        "volume_type": "gp2",
@@ -132,6 +137,7 @@
 	}, {
                "type": "shell",
                "inline": [
+                       "sudo systemctl daemon-reload",
                        "echo Rebooting system NOW",
                        "sudo reboot"
                ]
