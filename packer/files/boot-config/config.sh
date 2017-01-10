@@ -49,16 +49,16 @@ systemctl start autofs
 
 ip=3
 
-for usergroup in $usergroups; do
-    echo $usergroup usergroup
-    # Create user group
-    adduser $usergroup || true
-done
-
 for i in $projects; do
     echo $i i
     # Create user/group/home-folder for project
     adduser $i || true
+
+    for usergroup in $usergroups; do
+        echo $usergroup usergroup
+        # Create user group
+        groupadd $usergroup || true
+    done
 
     for j in $services; do
         echo $j j
