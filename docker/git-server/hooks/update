@@ -84,9 +84,9 @@ def get_tagger_tag(sha):
     result = re.search('<(.*)>', stdout.decode('ascii'))
     return result.group(1)
 
-# Function to check if the tagger was a commiter between
+# Function to check if the tagger was a committer between
 # two different tags
-def commiter_between_tags(tagger, new_tag_commit, old_tag):
+def committer_between_tags(tagger, new_tag_commit, old_tag):
     # If old_tag is not None, look at the log until that tag.
     # Otherwise, look at the entire log
     if old_tag:
@@ -145,9 +145,9 @@ if ref_name.startswith('refs/tags/'):
     else:
         tagger = get_tagger_tag(new_sha)
         last_tag_found = last_tag(commit_tagged)
-        if commiter_between_tags(tagger, commit_tagged, last_tag_found):
-            # User is tagging a release where he was also a commiter
-            print("TAGGING WHEN COMMITER SINCE LAST TAG IS NOT PERMITTED!")
-            error = "create-tag-when-commiter - User: \"%s\", Repo: \"%s\", Tag: \"%s\"" % (user, repo, tag_name)
+        if committer_between_tags(tagger, commit_tagged, last_tag_found):
+            # User is tagging a release where he was also a committer
+            print("TAGGING WHEN COMMITTER SINCE LAST TAG IS NOT PERMITTED!")
+            error = "create-tag-when-committer - User: \"%s\", Repo: \"%s\", Tag: \"%s\"" % (user, repo, tag_name)
             report_error(error)
             sys.exit(1) # Abort push
