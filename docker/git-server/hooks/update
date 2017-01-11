@@ -32,6 +32,10 @@ ref_name = sys.argv[1]  # refs/heads/master
 old_sha = sys.argv[2]   # 12aa37ee58379c29186200f1fd92db689f53a24d
 new_sha = sys.argv[3]   # b7eddb0077cae69a884c6ddc69cb18a030f0f27f
 
+# Our supported roles
+
+roles = ['developer', 'productowner', 'reviewer']
+
 # Function to report errors to syslog in a nice way
 def report_error(error_string):
     syslogger.critical(error_string)
@@ -104,11 +108,60 @@ def committer_between_tags(tagger, new_tag_commit, old_tag):
             return True
     return False
 
+def get_groups():
+    """ Give list of group names to which the current user belongs"""
+    cmd = ["id", "-Gn"]
+    # get list of groups that user is in
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=FNULL)
+    stdout, stderr = p.communicate()
+    groups = stdout
+    # split list of groups into an array so we can operate with them
+    groups = groups.split(" ")
+    return groups
+
+def check_user_has_role(role, groups):
+    """ Check relevant role is one of groups to which the user belongs."""
+
+    if role not in groups:
+        return role
+    else:
+        return
+
+def error_message(role):
+    """ Construct an informative error message depending on role needed"""
+
+    message = []
+    role_texts = {}
+    role_texts['developer']='YOU DO NOT HAVE PERMISSION TO PUSH.'
+    role_texts['reviewer']='YOU DO NOT HAVE PERMISSION TO MERGE.'
+    role_texts['productowner']='YOU DO NOT HAVE PERMISSION TO TAG.'
+
+    for key, value in role_texts.iteritems():
+        if key == role:
+            message = role_texts[key]
+
+    return message
+
+def is_action_allowed(role):
+    """ Check user's role permits them to perform an action, eg: `git push` """
+
+    groups = get_groups()
+
+    # check if a user lacks the right role
+    if check_user_has_role(role, groups) == role:
+        return error_message(role), 1
+    else:
+        return 'everything is good and this should be fine', 0
+
 if ref_name.startswith('refs/heads/'):
     # User is trying to push to a branch.
 
     # Get branch_name by removing 'refs/heads/' from ref_name
     branch_name = ref_name[11:]
+
+    if is_action_allowed('developer')[1]==1: # 2nd thing returned = exit status
+        print is_action_allowed('developer')[0] # Prints error message
+        sys.exit(1) # Abort push
 
     # Allow pushing to 'develop' and 'master' for now
     permitted_branches = ['master', 'develop']
@@ -125,6 +178,10 @@ if ref_name.startswith('refs/tags/'):
     # User is trying to push a tag
     tag_name = ref_name[10:]
     rev_type = get_rev_type(new_sha)
+
+    if is_action_allowed('productowner')[1]==1: # 2nd thing returned = exit status
+        print is_action_allowed('developer')[0] # Prints error message
+        sys.exit(1) # Abort push
 
     if rev_type == "commit":
         # User is trying to push an unannotated tag. We don't allow
