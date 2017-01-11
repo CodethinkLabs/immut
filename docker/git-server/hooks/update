@@ -27,10 +27,17 @@ print(os.environ)
 # Get name of the repo being used
 repo = os.path.basename(os.getcwd())
 
+# The project shares its name with the repo; this is syntactic sugar:
+project = repo
+
 # Get information passed to the update hook
 ref_name = sys.argv[1]  # refs/heads/master
 old_sha = sys.argv[2]   # 12aa37ee58379c29186200f1fd92db689f53a24d
 new_sha = sys.argv[3]   # b7eddb0077cae69a884c6ddc69cb18a030f0f27f
+
+# Our supported roles (productowner = 'release team' in yarns
+
+roles = ['developer', 'productowner', 'reviewer']
 
 # Function to report errors to syslog in a nice way
 def report_error(error_string):
@@ -104,27 +111,119 @@ def committer_between_tags(tagger, new_tag_commit, old_tag):
             return True
     return False
 
+
+def get_groups():
+    """ Get list of group names to which the current user belongs"""
+    cmd = ["id", "-Gn"]
+    # get list of groups that user is in
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=FNULL)
+    stdout, stderr = p.communicate()
+    groups = stdout
+    # split list of groups into an array so we can operate with them
+    groups = groups.split(" ")
+    return groups
+
+
+def check_user_has_role(role, groups):
+    """ Check relevant role is one of groups to which the user belongs."""
+
+    if role not in groups:
+        return role
+    else:
+        return
+
+
+def error_message(role):
+    """ Construct an informative error message depending on role needed"""
+
+    message = []
+    role_texts = {}
+    role_texts['developer'] = 'YOU DO NOT HAVE PERMISSION TO PUSH.'
+    role_texts['reviewer'] = 'YOU DO NOT HAVE PERMISSION TO MERGE.'
+    role_texts['productowner'] = 'YOU DO NOT HAVE PERMISSION TO TAG.'
+
+    if role in role_texts:
+        return role_texts[role]
+
+
+def is_action_allowed(role):
+    """ Check user's role permits them to perform an action, eg: `git push` """
+
+    groups = get_groups()
+
+    # check if a user lacks the right role
+    if check_user_has_role(role, groups) == role:
+        return error_message(role), 1
+    else:
+        return 'Action permitted.', 0
+
 if ref_name.startswith('refs/heads/'):
     # User is trying to push to a branch.
 
     # Get branch_name by removing 'refs/heads/' from ref_name
     branch_name = ref_name[11:]
 
-    # Allow pushing to 'develop' and 'master' for now
-    permitted_branches = ['master', 'develop']
-    if branch_name not in permitted_branches:
+    required_role = project + '_' + 'developer'
+
+    developer_message, developer_exit_status = is_action_allowed(required_role)
+
+    if developer_exit_status == 1:
+        print developer_message
+        sys.exit(1)  # Abort push
+
+    main_branches = ['master', 'develop']
+
+    # Allow push to develop if user has 'reviewer' role
+    if branch_name == 'develop':
+
+        required_role = project + '_' + 'revewier'
+        reviewer_message, reviewer_exit_status = is_action_allowed(required_role)
+
+        if reviewer_exit_status == 1:
+            print reviewer_message
+            sys.exit(1)  # Abort push
+
+    # Allow push to master if user has 'product owner' role
+    # note: our yarns currently suggest reviewers should be
+    # able to push to master when branch is a hotfix branch;
+    # we should change that or extend this.
+    if branch_name == 'master':
+
+        required_role = project + '_' + 'productowner'
+        owner_message, owner_exit_status = is_action_allowed(required_role)
+
+        if owner_exit_status == 1:
+            print owner_message
+            sys.exit(1)  # Abort push
+
+    if branch_name not in main_branches:
         # If user is creating a new branch, ban branches that
-        # don't start with "scenario"
-        if (old_sha == zero) and (not branch_name.startswith('scenario')):
+        # don't start with "scenario" or "hotfix"
+        permitted_new = ['scenario', 'hotfix']
+        prefix_permitted = False
+
+        for new_branch in permitted_new:
+            if branch_name.startswith(new_branch):
+                prefix_permitted = True
+        
+        if (old_sha == zero) and (not prefix_permitted):
             print("CREATING BRANCH WITH NAME '%s' IS NOT PERMITTED!" % branch_name)
             error = "create-branch-hook - User: \"%s\", Repo: \"%s\", Branch: \"%s\"" % (user, repo, branch_name)
             report_error(error)
-            sys.exit(1) # Abort push
+            sys.exit(1)  # Abort push
 
 if ref_name.startswith('refs/tags/'):
     # User is trying to push a tag
     tag_name = ref_name[10:]
     rev_type = get_rev_type(new_sha)
+
+    required_role = project + '_' + 'productowner'
+
+    owner_message, owner_exit_status = is_action_allowed(required_role)
+
+    if owner_exit_status == 1:
+        print owner_message
+        sys.exit(1)  # Abort push
 
     if rev_type == "commit":
         # User is trying to push an unannotated tag. We don't allow
@@ -133,7 +232,7 @@ if ref_name.startswith('refs/tags/'):
         print("TAGGING UNANNOTATED TAGS IS NOT PERMITTED!")
         error = "create-tag-unannotated - User: \"%s\", Repo: \"%s\", Tag: \"%s\"" % (user, repo, tag_name)
         report_error(error)
-        sys.exit(1) # Abort push
+        sys.exit(1)  # Abort push
 
     commit_tagged = get_commit_annotated_tag(new_sha)
     if not commit_in_branch(commit_tagged, "master"):
@@ -141,7 +240,7 @@ if ref_name.startswith('refs/tags/'):
         print("TAGGING COMMITS NOT PRESENT IN 'master' IS NOT PERMITTED!")
         error = "create-tag-not-in-master - User: \"%s\", Repo: \"%s\", Tag: \"%s\"" % (user, repo, tag_name)
         report_error(error)
-        sys.exit(1) # Abort push
+        sys.exit(1)  # Abort push
     else:
         tagger = get_tagger_tag(new_sha)
         last_tag_found = last_tag(commit_tagged)
@@ -150,4 +249,4 @@ if ref_name.startswith('refs/tags/'):
             print("TAGGING WHEN COMMITTER SINCE LAST TAG IS NOT PERMITTED!")
             error = "create-tag-when-committer - User: \"%s\", Repo: \"%s\", Tag: \"%s\"" % (user, repo, tag_name)
             report_error(error)
-            sys.exit(1) # Abort push
+            sys.exit(1)  # Abort push
