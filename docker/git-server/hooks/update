@@ -136,11 +136,8 @@ def error_message(role):
     role_texts['reviewer']='YOU DO NOT HAVE PERMISSION TO MERGE.'
     role_texts['productowner']='YOU DO NOT HAVE PERMISSION TO TAG.'
 
-    for key, value in role_texts.iteritems():
-        if key == role:
-            message = role_texts[key]
-
-    return message
+    if role in role_texts:
+        return role_texts[role]
 
 def is_action_allowed(role):
     """ Check user's role permits them to perform an action, eg: `git push` """
@@ -159,8 +156,10 @@ if ref_name.startswith('refs/heads/'):
     # Get branch_name by removing 'refs/heads/' from ref_name
     branch_name = ref_name[11:]
 
-    if is_action_allowed('developer')[1]==1: # 2nd thing returned = exit status
-        print is_action_allowed('developer')[0] # Prints error message
+    developer_message, developer_exit_status = is_action_allowed('developer')
+
+    if developer_exit_status == 1: 
+        print developer_message 
         sys.exit(1) # Abort push
 
     # Allow pushing to 'develop' and 'master' for now
@@ -179,8 +178,10 @@ if ref_name.startswith('refs/tags/'):
     tag_name = ref_name[10:]
     rev_type = get_rev_type(new_sha)
 
-    if is_action_allowed('productowner')[1]==1: # 2nd thing returned = exit status
-        print is_action_allowed('developer')[0] # Prints error message
+    owner_message, owner_exit_status = is_action_allowed('productowner')
+
+    if owner_exit_status == 1:
+        print owner_message
         sys.exit(1) # Abort push
 
     if rev_type == "commit":
