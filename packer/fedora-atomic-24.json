@@ -138,11 +138,13 @@
                "type": "shell",
                "inline": [
                        "sudo systemctl daemon-reload",
-                       "echo Rebooting system NOW",
-                       "sudo reboot"
+                       "echo Scheduling reboot in 1m",
+                       "sudo shutdown -r +1",
+                       "echo Reboot scheduled"
                ]
 	}, {
                "type": "shell",
+               "pause_before": "100s",
                "inline": [
                        "echo System rebooted"
                ]
