@@ -171,9 +171,29 @@ if ref_name.startswith('refs/heads/'):
         print developer_message
         sys.exit(1)  # Abort push
 
-    # Allow pushing to 'develop' and 'master' for now
-    permitted_branches = ['master', 'develop']
-    if branch_name not in permitted_branches:
+    main_branches = ['master', 'develop']
+
+    # Allow push to develop if user has 'reviewer' role
+    if branch_name == 'develop':
+
+        required_role = project + '_' + 'revewier'
+        reviewer_message, reviewer_exit_status = is_action_allowed(required_role)
+
+        if reviewer_exit_status == 1:
+            print reviewer_message
+            sys.exit(1)  # Abort push
+
+    # Allow push to master if user has 'product owner' role
+    if branch_name == 'master':
+
+        required_role = project + '_' + 'productowner'
+        owner_message, owner_exit_status = is_action_allowed(required_role)
+
+        if owner_exit_status == 1:
+            print owner_message
+            sys.exit(1)  # Abort push
+
+    if branch_name not in main_branches:
         # If user is creating a new branch, ban branches that
         # don't start with "scenario"
         if (old_sha == zero) and (not branch_name.startswith('scenario')):
