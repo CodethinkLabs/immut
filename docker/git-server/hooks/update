@@ -27,6 +27,9 @@ print(os.environ)
 # Get name of the repo being used
 repo = os.path.basename(os.getcwd())
 
+# The project shares its name with the repo; this is syntactic sugar:
+project = repo
+
 # Get information passed to the update hook
 ref_name = sys.argv[1]  # refs/heads/master
 old_sha = sys.argv[2]   # 12aa37ee58379c29186200f1fd92db689f53a24d
@@ -160,7 +163,9 @@ if ref_name.startswith('refs/heads/'):
     # Get branch_name by removing 'refs/heads/' from ref_name
     branch_name = ref_name[11:]
 
-    developer_message, developer_exit_status = is_action_allowed('developer')
+    required_role = project + '_' + 'developer'
+
+    developer_message, developer_exit_status = is_action_allowed(required_role)
 
     if developer_exit_status == 1:
         print developer_message
@@ -182,7 +187,9 @@ if ref_name.startswith('refs/tags/'):
     tag_name = ref_name[10:]
     rev_type = get_rev_type(new_sha)
 
-    owner_message, owner_exit_status = is_action_allowed('productowner')
+    required_role = project + '_' + 'productowner'
+
+    owner_message, owner_exit_status = is_action_allowed(required_role)
 
     if owner_exit_status == 1:
         print owner_message
