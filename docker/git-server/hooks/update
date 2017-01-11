@@ -113,7 +113,7 @@ def committer_between_tags(tagger, new_tag_commit, old_tag):
 
 
 def get_groups():
-    """ Give list of group names to which the current user belongs"""
+    """ Get list of group names to which the current user belongs"""
     cmd = ["id", "-Gn"]
     # get list of groups that user is in
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=FNULL)
