@@ -108,6 +108,7 @@ def committer_between_tags(tagger, new_tag_commit, old_tag):
             return True
     return False
 
+
 def get_groups():
     """ Give list of group names to which the current user belongs"""
     cmd = ["id", "-Gn"]
@@ -119,6 +120,7 @@ def get_groups():
     groups = groups.split(" ")
     return groups
 
+
 def check_user_has_role(role, groups):
     """ Check relevant role is one of groups to which the user belongs."""
 
@@ -127,17 +129,19 @@ def check_user_has_role(role, groups):
     else:
         return
 
+
 def error_message(role):
     """ Construct an informative error message depending on role needed"""
 
     message = []
     role_texts = {}
-    role_texts['developer']='YOU DO NOT HAVE PERMISSION TO PUSH.'
-    role_texts['reviewer']='YOU DO NOT HAVE PERMISSION TO MERGE.'
-    role_texts['productowner']='YOU DO NOT HAVE PERMISSION TO TAG.'
+    role_texts['developer'] = 'YOU DO NOT HAVE PERMISSION TO PUSH.'
+    role_texts['reviewer'] = 'YOU DO NOT HAVE PERMISSION TO MERGE.'
+    role_texts['productowner'] = 'YOU DO NOT HAVE PERMISSION TO TAG.'
 
     if role in role_texts:
         return role_texts[role]
+
 
 def is_action_allowed(role):
     """ Check user's role permits them to perform an action, eg: `git push` """
@@ -158,9 +162,9 @@ if ref_name.startswith('refs/heads/'):
 
     developer_message, developer_exit_status = is_action_allowed('developer')
 
-    if developer_exit_status == 1: 
-        print developer_message 
-        sys.exit(1) # Abort push
+    if developer_exit_status == 1:
+        print developer_message
+        sys.exit(1)  # Abort push
 
     # Allow pushing to 'develop' and 'master' for now
     permitted_branches = ['master', 'develop']
@@ -171,7 +175,7 @@ if ref_name.startswith('refs/heads/'):
             print("CREATING BRANCH WITH NAME '%s' IS NOT PERMITTED!" % branch_name)
             error = "create-branch-hook - User: \"%s\", Repo: \"%s\", Branch: \"%s\"" % (user, repo, branch_name)
             report_error(error)
-            sys.exit(1) # Abort push
+            sys.exit(1)  # Abort push
 
 if ref_name.startswith('refs/tags/'):
     # User is trying to push a tag
@@ -182,7 +186,7 @@ if ref_name.startswith('refs/tags/'):
 
     if owner_exit_status == 1:
         print owner_message
-        sys.exit(1) # Abort push
+        sys.exit(1)  # Abort push
 
     if rev_type == "commit":
         # User is trying to push an unannotated tag. We don't allow
@@ -191,7 +195,7 @@ if ref_name.startswith('refs/tags/'):
         print("TAGGING UNANNOTATED TAGS IS NOT PERMITTED!")
         error = "create-tag-unannotated - User: \"%s\", Repo: \"%s\", Tag: \"%s\"" % (user, repo, tag_name)
         report_error(error)
-        sys.exit(1) # Abort push
+        sys.exit(1)  # Abort push
 
     commit_tagged = get_commit_annotated_tag(new_sha)
     if not commit_in_branch(commit_tagged, "master"):
@@ -199,7 +203,7 @@ if ref_name.startswith('refs/tags/'):
         print("TAGGING COMMITS NOT PRESENT IN 'master' IS NOT PERMITTED!")
         error = "create-tag-not-in-master - User: \"%s\", Repo: \"%s\", Tag: \"%s\"" % (user, repo, tag_name)
         report_error(error)
-        sys.exit(1) # Abort push
+        sys.exit(1)  # Abort push
     else:
         tagger = get_tagger_tag(new_sha)
         last_tag_found = last_tag(commit_tagged)
@@ -208,4 +212,4 @@ if ref_name.startswith('refs/tags/'):
             print("TAGGING WHEN COMMITTER SINCE LAST TAG IS NOT PERMITTED!")
             error = "create-tag-when-committer - User: \"%s\", Repo: \"%s\", Tag: \"%s\"" % (user, repo, tag_name)
             report_error(error)
-            sys.exit(1) # Abort push
+            sys.exit(1)  # Abort push
