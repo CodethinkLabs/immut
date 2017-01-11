@@ -28,18 +28,18 @@ HAPROXYCONF="$HAPROXYDIR/haproxy.cfg"
 mkdir -p "$HAPROXYDIR"
 cp "$SCRIPTPATH"/haproxy.cfg "$HAPROXYCONF"
 
-for i in $projects; do
-    mkdir -p /var/data/"$i"/public_html
-    echo "public_html" -rw,soft :/var/data/"$i"/public_html >> /etc/auto.master.d/auto."$i"
-    for j in $services; do
+for project in $projects; do
+    mkdir -p /var/data/"$project"/public_html
+    echo "public_html" -rw,soft :/var/data/"$project"/public_html >> /etc/auto.master.d/auto."$project"
+    for service in $services; do
         # Create autofs configuration file
-        mkdir -p /var/data/"$i"/"$j"
-        echo "$j" -rw,soft :/var/data/"$i"/"$j" >> /etc/auto.master.d/auto."$i"
-        echo /var/lib/immut/"$i" /etc/auto.master.d/auto."$i" >> /etc/auto.master
+        mkdir -p /var/data/"$project"/"$service"
+        echo "$service" -rw,soft :/var/data/"$project"/"$service" >> /etc/auto.master.d/auto."$project"
+        echo /var/lib/immut/"$project" /etc/auto.master.d/auto."$project" >> /etc/auto.master
 
         # Update haproxy configuration
-        echo "    acl host_""$i""_""$j"" hdr(host) -m beg -i ""$j"".""$i" >> "$HAPROXYCONF"
-        echo "    use_backend ""$i""_""$j""_""http if host_""$i""_""$j" >> "$HAPROXYCONF"
+        echo "    acl host_""$project""_""$service"" hdr(host) -m beg -project ""$service"".""$project" >> "$HAPROXYCONF"
+        echo "    use_backend ""$project""_""$service""_""http if host_""$project""_""$service" >> "$HAPROXYCONF"
         echo >> "$HAPROXYCONF"
     done
 done
@@ -49,33 +49,33 @@ systemctl start autofs
 
 ip=3
 
-for i in $projects; do
-    echo $i i
+for project in $projects; do
+    echo $project project
     # Create user/group/home-folder for project
-    adduser $i || true
+    adduser $project || true
 
     for usergroup in $usergroups; do
         echo $usergroup usergroup
         # Create user group
-        groupadd "$i"_"$usergroup" || true
+        groupadd "$project"_"$usergroup" || true
     done
 
-    for j in $services; do
-        echo $j j
-        echo "$i"_"$j" i j
+    for service in $services; do
+        echo $service service
+        echo "$project"_"$service" project service
         # Launch container
         docker run -d -v=/dev/log:/dev/log --net immut-net \
                    --ip 172.101.0.$ip \
-                   -e "PROJECT_NAME=$i" \
-                   -v=/var/lib/immut/$i/$j:/data/$j:rw \
-                   -v=/var/lib/immut/$i/public_html:/data/public_html:rw \
+                   -e "PROJECT_NAME=$project" \
+                   -v=/var/lib/immut/$project/$service:/data/$service:rw \
+                   -v=/var/lib/immut/$project/public_html:/data/public_html:rw \
                    -v=/var/lib/sss/pipes/:/var/lib/sss/pipes/:rw \
                    -v=/run/dbus/system_bus_socket:/run/dbus/system_bus_socket:rw \
-                   $j # Service name has to match docker image name
+                   $service # Service name has to match docker image name
 
         # Update haproxy with IP
-        echo "backend ""$i""_""$j""_http" >> "$HAPROXYCONF"
-        echo "    server ""$i""_""$j"" 172.101.0.""$ip"":80" >> "$HAPROXYCONF"
+        echo "backend ""$project""_""$service""_http" >> "$HAPROXYCONF"
+        echo "    server ""$project""_""$service"" 172.101.0.""$ip"":80" >> "$HAPROXYCONF"
         echo >> "$HAPROXYCONF"
 
         ip=$(expr $ip + 1)
