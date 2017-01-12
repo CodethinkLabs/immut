@@ -163,11 +163,15 @@ if ref_name.startswith('refs/heads/'):
     # Get branch_name by removing 'refs/heads/' from ref_name
     branch_name = ref_name[11:]
 
-    required_role = project + '_' + 'developer'
+    exit_statuses = []
 
-    developer_message, developer_exit_status = is_action_allowed(required_role)
+    for role in roles:
+        required_role = project + '_' + role
+        role_message, role_exit_status = is_action_allowed(required_role)
+        exit_statuses.append(role_exit_status)
 
-    if developer_exit_status == 1:
+
+    if 0 not in exit_statuses:
         print developer_message
         sys.exit(1)  # Abort push
 
