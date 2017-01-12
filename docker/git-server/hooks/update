@@ -155,7 +155,7 @@ def is_action_allowed(role):
     if check_user_has_role(role, groups) == role:
         return error_message(role), 1
     else:
-        return 'everything is good and this should be fine', 0
+        return 'Action permitted.', 0
 
 if ref_name.startswith('refs/heads/'):
     # User is trying to push to a branch.
