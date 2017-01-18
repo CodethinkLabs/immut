@@ -38,7 +38,7 @@ for project in $projects; do
         echo /var/lib/immut/"$project" /etc/auto.master.d/auto."$project" >> /etc/auto.master
 
         # Update haproxy configuration
-        echo "    acl host_""$project""_""$service"" hdr(host) -m beg -project ""$service"".""$project" >> "$HAPROXYCONF"
+        echo "    acl host_""$project""_""$service"" hdr(host) -m beg -i ""$service"".""$project" >> "$HAPROXYCONF"
         echo "    use_backend ""$project""_""$service""_""http if host_""$project""_""$service" >> "$HAPROXYCONF"
         echo >> "$HAPROXYCONF"
     done
