@@ -10,7 +10,8 @@ COPY git-server.conf /etc/httpd/conf.d/git-server.conf
 
 # Include post-receive hook
 COPY hooks/post-receive post-receive
-
+# Include update hook
+COPY hooks/update update
 
 # Make pwauth pam conf use sss
 RUN ln -sf /etc/pam.d/sss_git /etc/pam.d/pwauth

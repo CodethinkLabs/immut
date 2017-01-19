@@ -30,6 +30,7 @@ echo "scan-path=/data/gitserver" >> /etc/cgitrc
 if [ "x$PROJECT_NAME" != "x" ]; then
 
     cp /git-server/post-receive /data/gitserver/$PROJECT_NAME/hooks/post-receive
+    cp /git-server/update /data/gitserver/$PROJECT_NAME/hooks/update
 
     #Create project repo is PROJECT_NAME is defined
     if [ ! -d "/data/gitserver/$PROJECT_NAME" ]; then
@@ -39,6 +40,7 @@ if [ "x$PROJECT_NAME" != "x" ]; then
 else
 
     cp /git-server/post-receive /data/gitserver/$reponame/hooks/post-receive
+    cp /git-server/update /data/gitserver/$reponame/hooks/update
 
     #Create example repositories if /data is empty
     if ! [ "$(ls -A /data/gitserver)" ]; then
