@@ -113,16 +113,17 @@ def committer_between_tags(tagger, new_tag_commit, old_tag):
 
 
 def get_groups():
-    """ Get list of group names to which the current user belongs"""
-    cmd = ["id", "-Gn"]
+    """ Give list of group names to which the current user belongs"""
+    cmd = ["id", user, "-Gn"]
+    FNULL = open(os.devnull, 'w')
     # get list of groups that user is in
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=FNULL)
     stdout, stderr = p.communicate()
     groups = stdout
+    groups = groups.decode('ascii').strip() #remove newline in last group
     # split list of groups into an array so we can operate with them
     groups = groups.split(" ")
     return groups
-
 
 def check_user_has_role(role, groups):
     """ Check relevant role is one of groups to which the user belongs."""
@@ -138,10 +139,14 @@ def error_message(role):
 
     message = []
     role_texts = {}
-    role_texts['developer'] = 'YOU DO NOT HAVE PERMISSION TO PUSH.'
-    role_texts['reviewer'] = 'YOU DO NOT HAVE PERMISSION TO MERGE.'
-    role_texts['productowner'] = 'YOU DO NOT HAVE PERMISSION TO TAG.'
+    developer = project + '_' + 'developer'
+    reviewer = project + '_' + 'reviewer'
+    productowner = project + '_' + 'productowner'
+    role_texts[developer] = 'YOU DO NOT HAVE PERMISSION TO PUSH.'
+    role_texts[reviewer] = 'YOU DO NOT HAVE PERMISSION TO MERGE.'
+    role_texts[productowner] = 'YOU DO NOT HAVE PERMISSION TO RELEASE.'
 
+    project_role = role
     if role in role_texts:
         return role_texts[role]
 
@@ -171,8 +176,9 @@ if ref_name.startswith('refs/heads/'):
         exit_statuses.append(role_exit_status)
 
 
+    # if user is not a developer
     if 0 not in exit_statuses:
-        print developer_message
+        print("YOU ARE NOT PERMITTED TO PUSH.")
         sys.exit(1)  # Abort push
 
     main_branches = ['master', 'develop']
@@ -184,7 +190,7 @@ if ref_name.startswith('refs/heads/'):
         reviewer_message, reviewer_exit_status = is_action_allowed(required_role)
 
         if reviewer_exit_status == 1:
-            print reviewer_message
+            print(reviewer_message)
             sys.exit(1)  # Abort push
 
     # Allow push to master if user has 'product owner' role
@@ -197,7 +203,7 @@ if ref_name.startswith('refs/heads/'):
         owner_message, owner_exit_status = is_action_allowed(required_role)
 
         if owner_exit_status == 1:
-            print owner_message
+            print(owner_message)
             sys.exit(1)  # Abort push
 
     if branch_name not in main_branches:
@@ -226,7 +232,7 @@ if ref_name.startswith('refs/tags/'):
     owner_message, owner_exit_status = is_action_allowed(required_role)
 
     if owner_exit_status == 1:
-        print owner_message
+        print(owner_message)
         sys.exit(1)  # Abort push
 
     if rev_type == "commit":
