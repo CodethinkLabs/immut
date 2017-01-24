@@ -186,7 +186,7 @@ if ref_name.startswith('refs/heads/'):
     # Allow push to develop if user has 'reviewer' role
     if branch_name == 'develop':
 
-        required_role = project + '_' + 'revewier'
+        required_role = project + '_' + 'reviewer'
         reviewer_message, reviewer_exit_status = is_action_allowed(required_role)
 
         if reviewer_exit_status == 1:
